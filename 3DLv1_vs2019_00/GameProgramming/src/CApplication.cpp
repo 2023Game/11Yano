@@ -1,5 +1,5 @@
 #include "CApplication.h"
-#include "CRectangle.h"
+#include "glut.h" //OpenGL
 
 //クラスのstatic変数
 CTexture CApplication::mTexture;
@@ -25,5 +25,27 @@ void CApplication::Start()
 
 void CApplication::Update()
 {
+	//視点の設定
+	gluLookAt(1.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	//描画開始
+	glBegin(GL_TRIANGLES);
+	//法線（面の向き）の設定
+	glNormal3f(0.0f, 1.0f, 0.0f);
+	//頂点座標の設定
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, -0.5f);
+	//面の向きはZ軸方向
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-0.5f, 0.0f, 0.0f);
+
+	glNormal3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, -0.5f, 0.0f);
 	
+	//描画終了
+	glEnd();
 }
