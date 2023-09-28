@@ -22,7 +22,7 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
-	
+	mEye = CVector(1.0f, 2.0f, 3.0f);
 }
 
 void CApplication::Update()
@@ -33,8 +33,33 @@ void CApplication::Update()
 	v1.Set(1.0f, 0.0f, 0.0f); //頂点2の座標
 	v2.Set(0.0f, 0.0f, -0.5f); //頂点3の座標
 
+	if (mInput.Key('J'))
+	{
+		mEye = mEye - CVector(0.1f, 0.0f, 0.0f);
+	}
+	if (mInput.Key('L'))
+	{
+		mEye = mEye + CVector(0.1f, 0.0f, 0.0f);
+	}
+	if (mInput.Key('I'))
+	{
+		mEye = mEye - CVector(0.0f, 0.0f, 0.1f);
+	}
+	if (mInput.Key('K'))
+	{
+		mEye = mEye + CVector(0.0f, 0.0f, 0.1f);
+	}
+	if (mInput.Key('O'))
+	{
+		mEye = mEye - CVector(0.0f, 0.1f, 0.0f);
+	}
+	if (mInput.Key('M'))
+	{
+		mEye = mEye + CVector(0.0f, 0.1f, 0.0f);
+	}
+
 	//視点の設定
-	gluLookAt(1.0f, 2.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	gluLookAt(mEye.X(), mEye.Y(), mEye.Z(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	//描画開始
 	glBegin(GL_TRIANGLES);
 	//法線（面の向き）の設定

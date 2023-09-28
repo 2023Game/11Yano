@@ -4,6 +4,8 @@
 
 class CVector {
 public:
+	CVector operator+(const CVector &v) const; //+演算子のオーバーロード
+	CVector operator-(const CVector &v) const; //-演算子のオーバーロード
 	CVector(); //デフォルトコンストラクタ
 	CVector(float x, float y, float z); //コンストラクタ
 	void Set(float x, float y, float z); //各軸での値の設定
