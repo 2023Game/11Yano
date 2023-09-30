@@ -184,7 +184,7 @@ public:
 	*/
 	void Stop()
 	{
-		//if (mpSourceVoice)
+		if (mpSourceVoice)
 		{
 			mpSourceVoice->Stop();
 			mpSourceVoice->FlushSourceBuffers();
