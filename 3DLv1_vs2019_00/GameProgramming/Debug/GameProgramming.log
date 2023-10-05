@@ -1,4 +1,16 @@
 ﻿  CApplication.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
-LINK : warning LNK4098: defaultlib 'LIBCMT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
+  CBullet.cpp
+  CEnemy.cpp
+  CEnemy2.cpp
+  CGame.cpp
+  CModel.cpp
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(49,61): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(49,47): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(49,33): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(63,61): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(63,47): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(63,33): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(71,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+  main.cpp
+  コードを生成中...
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe

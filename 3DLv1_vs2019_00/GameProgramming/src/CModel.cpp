@@ -15,6 +15,7 @@ int strcmp(const char* s1, const char* s2) //文字列s1とs2の比較
 
 void CModel::Load(char* obj, char* mtl) {
 	std::vector<CVector> vertex; //頂点データの保存
+	std::vector<CVector> normal;
 	FILE* fp; //ファイルポインタ変数の作成
 	char buf[256]; //ファイルからデータ入力、入力エリア作成
 
@@ -55,7 +56,11 @@ void CModel::Load(char* obj, char* mtl) {
 			sscanf(str[3], "%d//%d", &v[2], &n[2]);
 			CTriangle t; //三角形作成
 			t.Vertex(vertex[v[0] - 1], vertex[v[1] - 1], vertex[v[2] - 1]);
+			t.Normal(normal[n[0] - 1], normal[n[1] - 1], normal[n[2] - 1]);
 			mTriangles.push_back(t); //mTrianglesに三角形を追加
+		}
+		else if (strcmp(str[0], "vn") == 0) {
+			normal.push_back(CVector(atof(str[1]), atof(str[2]), atof(str[3])));
 		}
 	}
 

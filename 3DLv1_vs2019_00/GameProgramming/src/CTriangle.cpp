@@ -10,14 +10,23 @@ void CTriangle::Vertex(const CVector& v0, const CVector& v1, const CVector& v2) 
 
 //Normal(法線ベクトル)
 void CTriangle::Normal(const CVector& n) {
-	mN = n;
+	mN[0] = mN[1] = mN[2] = n;
+}
+
+void CTriangle::Normal(const CVector& v0, const CVector& v1, const CVector& v2)
+{
+	mN[0] = v0;
+	mN[1] = v1;
+	mN[2] = v2;
 }
 
 void CTriangle::Render() {
 	glBegin(GL_TRIANGLES);
-	glNormal3f(mN.X(), mN.Y(), mN.Z());
+	glNormal3f(mN[0].X(),mN[0].Y(),mN[0].Z());
 	glVertex3f(mV[0].X(), mV[0].Y(), mV[0].Z());
+	glNormal3f(mN[1].X(), mN[1].Y(), mN[1].Z());
 	glVertex3f(mV[1].X(), mV[1].Y(), mV[1].Z());
+	glNormal3f(mN[2].X(), mN[2].Y(), mN[2].Z());
 	glVertex3f(mV[2].X(), mV[2].Y(), mV[2].Z());
 	glEnd();
 }
