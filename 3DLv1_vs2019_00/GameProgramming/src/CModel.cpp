@@ -27,8 +27,24 @@ void CModel::Load(char* obj, char* mtl) {
 		return;
 	}
 
+	int idx = 0; //マテリアルインデックス
 	while (fgets(buf, sizeof(buf), fp) != NULL) {
-		printf("%s", buf); //入力した値をコンソールに出力する
+		char str[4][64] = { "","","","" };
+		sscanf(buf, "%s %s %s %s", str[0], str[1], str[2], str[3]); //文字列からデータを4つ変数へ代入
+		if (strcmp(str[0], "newmtl") == 0) {
+			CMaterial* pm = new CMaterial();
+			pm->Name(str[1]); //マテリアル名の設定
+			mpMaterials.push_back(pm); //マテリアルの可変長配列に追加
+			idx = mpMaterials.size() - 1; //配列の長さを取得
+		}
+		else if (strcmp(str[0], "Kd") == 0) {
+			mpMaterials[idx]->Diffuse()[0] = atof(str[1]);
+			mpMaterials[idx]->Diffuse()[1] = atof(str[2]);
+			mpMaterials[idx]->Diffuse()[2] = atof(str[3]);
+		}
+		else if (strcmp(str[0], "d") == 0) {
+			mpMaterials[idx]->Diffuse()[3] = atof(str[1]);
+		}
 	}
 
 	fclose(fp); //ファイルのクローズ
@@ -57,10 +73,20 @@ void CModel::Load(char* obj, char* mtl) {
 			CTriangle t; //三角形作成
 			t.Vertex(vertex[v[0] - 1], vertex[v[1] - 1], vertex[v[2] - 1]);
 			t.Normal(normal[n[0] - 1], normal[n[1] - 1], normal[n[2] - 1]);
+			t.MaterialIdx(idx); //マテリアル番号の設定
 			mTriangles.push_back(t); //mTrianglesに三角形を追加
 		}
 		else if (strcmp(str[0], "vn") == 0) {
 			normal.push_back(CVector(atof(str[1]), atof(str[2]), atof(str[3])));
+		}
+		else if (strcmp(str[0], "usemtl") == 0) {
+			//可変長配列を後から比較
+			for (idx = mpMaterials.size() - 1; idx > 0; idx--) {
+				//同じ名前のマテリアルがあればループ終了
+				if (strcmp(mpMaterials[idx]->Name(), str[1]) == 0) {
+					break; //ループから出る
+				}
+			}
 		}
 	}
 
@@ -69,6 +95,15 @@ void CModel::Load(char* obj, char* mtl) {
 
 void CModel::Render() {
 	for (int i = 0; i < mTriangles.size(); i++) {
+		mpMaterials[mTriangles[i].MaterialIdx()]->Enebled(); //マテリアルの適用
 		mTriangles[i].Render();
+	}
+}
+
+CModel::~CModel()
+{
+	for (int i = 0; i < mpMaterials.size(); i++)
+	{
+		delete mpMaterials[i];
 	}
 }
