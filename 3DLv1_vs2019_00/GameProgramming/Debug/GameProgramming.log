@@ -1,29 +1,2 @@
 ﻿  CApplication.cpp
-  CBullet.cpp
-  CEnemy.cpp
-  CEnemy2.cpp
-  CGame.cpp
-  CMaterial.cpp
-  CModel.cpp
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(41,41): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(42,41): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(43,41): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(46,41): warning C4244: '=': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(65,61): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(65,47): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(65,33): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(80,61): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(80,47): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(80,33): warning C4244: '引数': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(97,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(105,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
-  CPlayer.cpp
-  CPlayer2.cpp
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CPlayer2.cpp(12,1): warning C4005: 'VELOCITY': マクロが再定義されました。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CCharacter.h(6): message : 'VELOCITY' の以前の定義を確認してください
-  CTriangle.cpp
-  main.cpp
-  コードを生成中...
-LINK : warning LNK4098: defaultlib 'MSVCRT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
-LINK : warning LNK4098: defaultlib 'LIBCMT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe

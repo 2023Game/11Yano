@@ -19,6 +19,7 @@
 class CApplication
 {
 private:
+	CModel mBackGround; //”wŒiƒ‚ƒfƒ‹
 	CModel mModel;
 	CVector mEye;
 	CSound mSoundBgm;	//BGM

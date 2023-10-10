@@ -1,6 +1,7 @@
 #include "CModel.h"
 #include <stdio.h>
 #include "CVector.h"
+#include "CMaterial.h"
 
 int strcmp(const char* s1, const char* s2) //文字列s1とs2の比較
 {
@@ -15,7 +16,9 @@ int strcmp(const char* s1, const char* s2) //文字列s1とs2の比較
 
 void CModel::Load(char* obj, char* mtl) {
 	std::vector<CVector> vertex; //頂点データの保存
-	std::vector<CVector> normal;
+	std::vector<CVector> normal; //法線データの保存
+	std::vector<CVector> uv; //テクスチャマッピングの保存
+
 	FILE* fp; //ファイルポインタ変数の作成
 	char buf[256]; //ファイルからデータ入力、入力エリア作成
 
@@ -45,6 +48,9 @@ void CModel::Load(char* obj, char* mtl) {
 		else if (strcmp(str[0], "d") == 0) {
 			mpMaterials[idx]->Diffuse()[3] = atof(str[1]);
 		}
+		else if (strcmp(str[0], "map_Kd") == 0) {
+			mpMaterials[idx]->Texture()->Load(str[1]);
+		}
 	}
 
 	fclose(fp); //ファイルのクローズ
@@ -67,14 +73,28 @@ void CModel::Load(char* obj, char* mtl) {
 
 		else if (strcmp(str[0], "f") == 0) {
 			int v[3], n[3]; //頂点と法線の番号作成
-			sscanf(str[1], "%d//%d", &v[0], &n[0]); //頂点と法線の番号取得
-			sscanf(str[2], "%d//%d", &v[1], &n[1]);
-			sscanf(str[3], "%d//%d", &v[2], &n[2]);
-			CTriangle t; //三角形作成
-			t.Vertex(vertex[v[0] - 1], vertex[v[1] - 1], vertex[v[2] - 1]);
-			t.Normal(normal[n[0] - 1], normal[n[1] - 1], normal[n[2] - 1]);
-			t.MaterialIdx(idx); //マテリアル番号の設定
-			mTriangles.push_back(t); //mTrianglesに三角形を追加
+			if (strstr(str[1], "//")) {
+				sscanf(str[1], "%d//%d", &v[0], &n[0]); //頂点と法線の番号取得
+				sscanf(str[2], "%d//%d", &v[1], &n[1]);
+				sscanf(str[3], "%d//%d", &v[2], &n[2]);
+				CTriangle t; //三角形作成
+				t.Vertex(vertex[v[0] - 1], vertex[v[1] - 1], vertex[v[2] - 1]);
+				t.Normal(normal[n[0] - 1], normal[n[1] - 1], normal[n[2] - 1]);
+				t.MaterialIdx(idx); //マテリアル番号の設定
+				mTriangles.push_back(t); //mTrianglesに三角形を追加
+			}
+			else {
+				int u[3]; //テクスチャマッピングの番号
+				sscanf(str[1], "%d/%d/%d", &v[0], &u[0], &n[0]); //頂点と法線とマッピングの番号取得
+				sscanf(str[2], "%d/%d/%d", &v[1], &u[1], &n[1]);
+				sscanf(str[3], "%d/%d/%d", &v[2], &u[2], &n[2]);
+				CTriangle t; //三角形作成
+				t.Vertex(vertex[v[0] - 1], vertex[v[1] - 1], vertex[v[2] - 1]);
+				t.Normal(normal[n[0] - 1], normal[n[1] - 1], normal[n[2] - 1]);
+				t.UV(uv[u[0] - 1], uv[u[1] - 1], uv[u[2] - 1]);
+				t.MaterialIdx(idx);
+				mTriangles.push_back(t);
+			}
 		}
 		else if (strcmp(str[0], "vn") == 0) {
 			normal.push_back(CVector(atof(str[1]), atof(str[2]), atof(str[3])));
@@ -88,6 +108,10 @@ void CModel::Load(char* obj, char* mtl) {
 				}
 			}
 		}
+		else if (strcmp(str[0], "vt") == 0) {
+			//可変長配列uvに追加
+			uv.push_back(CVector(atof(str[1]), atof(str[2]), 0.0));
+		}
 	}
 
 	fclose(fp);
@@ -95,8 +119,9 @@ void CModel::Load(char* obj, char* mtl) {
 
 void CModel::Render() {
 	for (int i = 0; i < mTriangles.size(); i++) {
-		mpMaterials[mTriangles[i].MaterialIdx()]->Enebled(); //マテリアルの適用
+		mpMaterials[mTriangles[i].MaterialIdx()]->Enabled(); //マテリアルの適用
 		mTriangles[i].Render();
+		mpMaterials[mTriangles[i].MaterialIdx()]->Disabled();
 	}
 }
 

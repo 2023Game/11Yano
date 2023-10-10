@@ -22,9 +22,16 @@ CMaterial::CMaterial()
 	memset(mDiffuse, 0, sizeof(mDiffuse)); //0で埋める
 }
 
-void CMaterial::Enebled()
+void CMaterial::Enabled()
 {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mDiffuse); //拡散光の設定
+	if (mTexture.Id()) //テクスチャあり
+	{
+		glEnable(GL_TEXTURE_2D); //テクスチャを使用可能
+		glBindTexture(GL_TEXTURE_2D, mTexture.Id()); //テクスチャをバインド
+		glEnable(GL_BLEND); //アルファブレンドを有効
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //ブレンド方法を指定
+	}
 }
 
 char* CMaterial::Name()
@@ -40,4 +47,19 @@ void CMaterial::Name(char* name)
 float* CMaterial::Diffuse()
 {
 	return mDiffuse;
+}
+
+void CMaterial::Disabled()
+{
+	if (mTexture.Id())
+	{
+		glDisable(GL_BLEND); //アルファブレンド無効
+		glBindTexture(GL_TEXTURE_2D, 0); //テクスチャのバインドを解く
+		glDisable(GL_TEXTURE_2D); //テクスチャ無効
+	}
+}
+
+CTexture* CMaterial::Texture()
+{
+	return &mTexture;
 }
