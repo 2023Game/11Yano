@@ -4,6 +4,7 @@
 #include "CTriangle.h"
 #include "CModel.h"
 #include "CMaterial.h"
+#include "CMatrix.h"
 
 //ÉNÉâÉXÇÃstaticïœêî
 CTexture CApplication::mTexture;
@@ -26,6 +27,8 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
+	CMatrix matrix;
+	matrix.Point();
 	mBackGround.Load(MODEL_BACKGROUND);
 	mEye = CVector(1.0f, 2.0f, 3.0f);
 	mModel.Load(MODEL_OBJ);
