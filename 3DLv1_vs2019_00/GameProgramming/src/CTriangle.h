@@ -6,6 +6,7 @@
 
 class CTriangle {
 public:
+	void Render(const CMatrix& m); //描画
 	void UV(const CVector& v0, const CVector& v1, const CVector& v2); //UV設定
 	int MaterialIdx(); //マテリアル番号の取得
 	void MaterialIdx(int idx); //マテリアル番号の設定

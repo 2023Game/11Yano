@@ -1,2 +1,14 @@
-﻿  CMatrix.cpp
+﻿  CApplication.cpp
+  CBullet.cpp
+  CEnemy.cpp
+  CEnemy2.cpp
+  CGame.cpp
+  CMatrix.cpp
+  CModel.cpp
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(121,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(130,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(137,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+  CPlayer.cpp
+  main.cpp
+  コードを生成中...
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe

@@ -1,9 +1,12 @@
 #pragma once
+#include "CMatrix.h"
+
 #ifndef CVECTOR_H
 #define CVECTIR_H
 
 class CVector {
 public:
+	CVector operator*(const CMatrix &m);
 	CVector operator+(const CVector &v) const; //+演算子のオーバーロード
 	CVector operator-(const CVector &v) const; //-演算子のオーバーロード
 	CVector(); //デフォルトコンストラクタ

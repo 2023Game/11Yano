@@ -70,7 +70,7 @@ void CApplication::Update()
 
 	//‹“_‚Ìİ’è
 	gluLookAt(mEye.X(), mEye.Y(), mEye.Z(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	mModel.Render();
+	mModel.Render(CMatrix().Scale(0.1f,0.1f,0.1f));
 
 	mBackGround.Render();
 }

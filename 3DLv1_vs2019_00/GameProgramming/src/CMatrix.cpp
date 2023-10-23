@@ -27,3 +27,15 @@ CMatrix CMatrix::Identity() {
 	mM[0][0] = 1.0f; mM[1][1] = 1.0f; mM[2][2] = 1.0f; mM[3][3] = 1.0f;
 	return *this; //‚±‚Ìs—ñ‚ğ•Ô‚·
 }
+
+CMatrix CMatrix::Scale(float sx, float sy, float sz)
+{
+	Identity();
+	mM[0][0] = sx; mM[1][1] = sy; mM[2][2] = sz; mM[3][3] = 1.0f;
+	return *this;
+}
+
+float CMatrix::M(int r, int c) const
+{
+	return mM[r][c];
+}

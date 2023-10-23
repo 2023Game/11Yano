@@ -132,3 +132,11 @@ CModel::~CModel()
 		delete mpMaterials[i];
 	}
 }
+
+void CModel::Render(const CMatrix& m) {
+	for (int i = 0; i < mTriangles.size(); i++) {
+		mpMaterials[mTriangles[i].MaterialIdx()]->Enabled();
+		mTriangles[i].Render(m);
+		mpMaterials[mTriangles[i].MaterialIdx()]->Disabled();
+	}
+}
