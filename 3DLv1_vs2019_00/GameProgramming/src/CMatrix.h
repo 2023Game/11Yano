@@ -5,6 +5,7 @@
 
 class CMatrix {
 public:
+	const CMatrix operator*(const CMatrix& m) const;
 	void M(int row, int col, float value); //s—ñ’l‚Ì‘ã“ü
 	CMatrix Translate(float mx, float my, float mz); //ˆÚ“®s—ñ‚Ìì¬
 	CMatrix RotateX(float degree);

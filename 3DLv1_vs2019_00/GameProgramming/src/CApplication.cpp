@@ -70,7 +70,12 @@ void CApplication::Update()
 
 	//éãì_ÇÃê›íË
 	gluLookAt(mEye.X(), mEye.Y(), mEye.Z(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	mModel.Render(CMatrix().Translate(-2.0f,0.0f,-15.0f));
+	CMatrix matrix, position, rotation, scale;
+	position.Translate(0.5f, 1.8f, 0.5f);
+	rotation.RotateY(180.0f);
+	scale.Scale(0.1f, 0.1f, 0.1f);
+	matrix = scale * rotation * position;
+	mModel.Render(matrix);
 
 	mBackGround.Render();
 }
