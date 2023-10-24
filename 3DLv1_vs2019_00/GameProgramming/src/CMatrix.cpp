@@ -68,3 +68,13 @@ CMatrix CMatrix::RotateX(float degree) {
 	mM[2][1] = -mM[1][2];
 	return *this;
 }
+
+CMatrix CMatrix::Translate(float mx, float my, float mz) {
+	Identity();
+	mM[3][0] = mx; mM[3][1] = my; mM[3][2] = mz; mM[3][3] = 1.0f;
+	return *this;
+}
+
+void CMatrix::M(int row, int col, float value) {
+	mM[row][col] = value;
+}

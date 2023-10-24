@@ -5,6 +5,8 @@
 
 class CMatrix {
 public:
+	void M(int row, int col, float value); //行列値の代入
+	CMatrix Translate(float mx, float my, float mz); //移動行列の作成
 	CMatrix RotateX(float degree);
 	CMatrix RotateZ(float degree);
 	CMatrix RotateY(float degree); //回転行列(Y軸)の作成
