@@ -5,6 +5,7 @@
 #include "CModel.h"
 #include "CMaterial.h"
 #include "CMatrix.h"
+#include "CTransform.h"
 
 //ÉNÉâÉXÇÃstaticïœêî
 CTexture CApplication::mTexture;
@@ -27,6 +28,12 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
+	mPlayer.Model(&mModel);
+	mPlayer.Scale(CVector(0.1f, 0.1f, 0.1f));
+	mPlayer.Position(CVector(0.0f, 0.0f, -3.0f));
+	mPlayer.Rotation(CVector(0.0f,180.0f,0.0f));
+	mCharacter.Model(&mModel);
+	mCharacter.Scale(CVector(0.1f, 0.1f, 0.1f));
 	CMatrix matrix;
 	matrix.Point();
 	mBackGround.Load(MODEL_BACKGROUND);
@@ -70,12 +77,10 @@ void CApplication::Update()
 
 	//éãì_ÇÃê›íË
 	gluLookAt(mEye.X(), mEye.Y(), mEye.Z(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	CMatrix matrix, position, rotation, scale;
-	position.Translate(0.5f, 1.8f, 0.5f);
-	rotation.RotateY(180.0f);
-	scale.Scale(0.1f, 0.1f, 0.1f);
-	matrix = scale * rotation * position;
-	mModel.Render(matrix);
+	mCharacter.Update();
+	mCharacter.Render();
+	mPlayer.Update();
+	mPlayer.Render();
 
 	mBackGround.Render();
 }
