@@ -1,73 +1,27 @@
 #include "CPlayer.h"
-#include "CApplication.h"
-//#include "CGame.h"
 
-#define TEXCOORD 168, 188, 158, 128	//テクスチャマッピング
-#define GRAVITY (TIPSIZE / 20.0f)	//重力加速度
-#define JUMPV0 (TIPSIZE / 1.4f)		//ジャンプの初速
+#define ROTATION_YV CVector(0.0f,1.0f,0.0f)//回転速度
+#define VELOCITY CVector(0.0f,0.0f,0.1f)//移動速度
 
-CPlayer::CPlayer(float x, float y, float w, float h, CTexture* pt)
-	: mVy(0.0f)
+CPlayer::CPlayer(const CVector& pos, const CVector& rot
+	, const CVector& scale)
 {
-	Set(x, y, w, h);
-	Texture(pt, TEXCOORD);
-	mTag = ETag::EPLAYER;
+	CTransform::Update(pos, rot, scale);//行列の更新
 }
 
 void CPlayer::Update()
 {
-	if (mInput.Key(VK_SPACE))
+	if (mInput.Key('D'))
 	{
-		CApplication::CharacterManager()->Add(
-			new CBullet(X(), Y() + H() + 10.0f
-				, 3.0f, 10.0f, 1396, 1420, 750, 592, CApplication::Texture()));
+		mRotation = mRotation - ROTATION_YV;
 	}
 	if (mInput.Key('A'))
 	{
-		float x = X() - 4.0f;
-		X(x);
+		mRotation = mRotation + ROTATION_YV;
 	}
-
-	if (mInput.Key('D'))
+	if (mInput.Key(VK_UP))
 	{
-		float x = X() + 4.0f;
-		X(x);
+		mPosition = mPosition + VELOCITY * mMatrixRotate;
 	}
-
-	if (mInput.Key('J') 
-		&& mState != EState::EJUMP
-		&& mVy >= 0.0f)
-	{
-		mVy = JUMPV0;
-		mState = EState::EJUMP;
-	}
-
-	Y(Y() + mVy);
-	mVy -= GRAVITY;
-}
-
-void CPlayer::Collision()
-{
-	CApplication::CharacterManager()->Collision(this);
-}
-
-void CPlayer::Collision(CCharacter* m, CCharacter* o)
-{
-	float x, y;
-	switch (o->Tag())
-	{
-	case ETag::EPLAYER:
-		break;
-	default:
-		if (CRectangle::Collision(o, &x, &y))
-		{
-			X(X() + x);
-			Y(Y() + y);
-			if (x == 0.0f)
-			{
-				mVy = 0.0f;
-				mState = EState::EMOVE;
-			}
-		}
-	}
+	CTransform::Update();//変換行列の更新
 }
