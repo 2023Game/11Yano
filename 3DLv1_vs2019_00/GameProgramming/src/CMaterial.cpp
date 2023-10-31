@@ -9,7 +9,7 @@ int CMaterial::VertexNum()
 
 void CMaterial::VertexNum(int num)
 {
-	num = mVertexNum;
+	mVertexNum = num;
 }
 
 //コピー先str1にコピー元str2の文字をlen文字数までコピーする
