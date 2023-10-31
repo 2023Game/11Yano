@@ -13,6 +13,8 @@ public:
 	void Load(char* obj, char* mtl); //モデルファイルの入力
 	void Render();
 private:
+	CVertex* mpVertexes;
+	void CreateVertexbuffer();
 	std::vector<CMaterial*> mpMaterials;
 	std::vector<CTriangle> mTriangles;
 };

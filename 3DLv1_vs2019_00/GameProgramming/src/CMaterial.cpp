@@ -2,6 +2,16 @@
 #include <string.h> //mamset,strncpyのインクルード
 #include "glut.h"
 
+int CMaterial::VertexNum()
+{
+	return mVertexNum;
+}
+
+void CMaterial::VertexNum(int num)
+{
+	num = mVertexNum;
+}
+
 //コピー先str1にコピー元str2の文字をlen文字数までコピーする
 char* strncpy(char* str1, const char* str2, int len)
 {
@@ -17,6 +27,7 @@ char* strncpy(char* str1, const char* str2, int len)
 }
 
 CMaterial::CMaterial()
+	:mVertexNum(0)
 {
 	memset(mName, 0, sizeof(mName)); //名前をゼロで埋め
 	memset(mDiffuse, 0, sizeof(mDiffuse)); //0で埋める

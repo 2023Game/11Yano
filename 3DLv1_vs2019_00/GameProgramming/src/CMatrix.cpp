@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <math.h>
 
+float* CMatrix::M() const
+{
+	return (float*)mM[0];
+}
+
 void CMatrix::Point() {
 	printf("%10f %10f %10f %10f\n",
 		mM[0][0], mM[0][1], mM[0][2], mM[0][3]);

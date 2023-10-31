@@ -3,6 +3,31 @@
 #include "CVector.h"
 #include "CMaterial.h"
 
+void CModel::CreateVertexbuffer()
+{
+	mpVertexes = new CVertex[mTriangles.size() * 3];
+	int idx = 0;
+	for (int i = 0; i < mpMaterials.size(); i++)
+	{
+		for (int j = 0; j < mTriangles.size(); j++)
+		{
+			if (i == mTriangles[j].MaterialIdx())
+			{
+				mpMaterials[i]->VertexNum(mpMaterials[i]->VertexNum() + 3);
+				mpVertexes[idx].mPosition = mTriangles[j].V0();
+				mpVertexes[idx].mNormal = mTriangles[j].N0();
+				mpVertexes[idx++].mTextureCoords = mTriangles[j].U0();
+				mpVertexes[idx].mPosition = mTriangles[j].V1();
+				mpVertexes[idx].mNormal = mTriangles[j].N1();
+				mpVertexes[idx++].mTextureCoords = mTriangles[j].U1();
+				mpVertexes[idx].mPosition = mTriangles[j].V2();
+				mpVertexes[idx].mNormal = mTriangles[j].N2();
+				mpVertexes[idx++].mTextureCoords = mTriangles[j].U2();
+			}
+		}
+	}
+}
+
 int strcmp(const char* s1, const char* s2) //•¶Žš—ñs1‚Æs2‚Ì”äŠr
 {
 	int i = 0;
@@ -115,6 +140,7 @@ void CModel::Load(char* obj, char* mtl) {
 	}
 
 	fclose(fp);
+	CreateVertexbuffer();
 }
 
 void CModel::Render() {
@@ -131,12 +157,31 @@ CModel::~CModel()
 	{
 		delete mpMaterials[i];
 	}
+	delete[] mpVertexes;
 }
 
 void CModel::Render(const CMatrix& m) {
-	for (int i = 0; i < mTriangles.size(); i++) {
-		mpMaterials[mTriangles[i].MaterialIdx()]->Enabled();
-		mTriangles[i].Render(m);
-		mpMaterials[mTriangles[i].MaterialIdx()]->Disabled();
+	glPushMatrix();
+	glMultMatrixf(m.M());
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, sizeof(CVertex), (void*)&mpVertexes[0].mPosition);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glNormalPointer(GL_FLOAT, sizeof(CVertex), (void*)&mpVertexes[0].mNormal);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(CVertex), (void*)& mpVertexes[0].mTextureCoords);
+	
+	int first = 0;
+	for (size_t i = 0; i < mpMaterials.size(); i++)
+	{
+		mpMaterials[i]->Enabled();
+		glDrawArrays(GL_TRIANGLES, first, mpMaterials[i]->VertexNum());
+		mpMaterials[i]->Disabled();
+		first += mpMaterials[i]->VertexNum();
 	}
+	glPopMatrix();
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
+
