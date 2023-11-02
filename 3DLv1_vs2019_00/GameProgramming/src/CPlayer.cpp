@@ -1,5 +1,5 @@
 #include "CPlayer.h"
-
+#define ROTATION_XV CVector(1.0f,0.0f,0.0f)//‰ñ“]‘¬“x
 #define ROTATION_YV CVector(0.0f,1.0f,0.0f)//‰ñ“]‘¬“x
 #define VELOCITY CVector(0.0f,0.0f,0.1f)//ˆÚ“®‘¬“x
 
@@ -11,6 +11,14 @@ CPlayer::CPlayer(const CVector& pos, const CVector& rot
 
 void CPlayer::Update()
 {
+	if (mInput.Key('S'))
+	{
+		mRotation = mRotation - ROTATION_XV;
+	}
+	if (mInput.Key('W'))
+	{
+		mRotation = mRotation + ROTATION_XV;
+	}
 	if (mInput.Key('D'))
 	{
 		mRotation = mRotation - ROTATION_YV;

@@ -32,8 +32,8 @@ void CApplication::Start()
 	mPlayer.Scale(CVector(0.1f, 0.1f, 0.1f));
 	mPlayer.Position(CVector(0.0f, 0.0f, -3.0f));
 	mPlayer.Rotation(CVector(0.0f,180.0f,0.0f));
-	mCharacter.Model(&mModel);
-	mCharacter.Scale(CVector(0.1f, 0.1f, 0.1f));
+	//mCharacter.Model(&mModel);
+	//mCharacter.Scale(CVector(0.1f, 0.1f, 0.1f));
 	CMatrix matrix;
 	matrix.Point();
 	mBackGround.Load(MODEL_BACKGROUND);
@@ -76,10 +76,15 @@ void CApplication::Update()
 	}
 
 	//視点の設定
-	gluLookAt(mEye.X(), mEye.Y(), mEye.Z(), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	mCharacter.Update();
-	mCharacter.Render();
+	//
+	//mCharacter.Update();
+	//mCharacter.Render();
 	mPlayer.Update();
+	CVector e, c, u; //視点、注意点、上方向
+	e = mPlayer.Position() + CVector(0.0f, 1.0f, -3.0f) * mPlayer.MatrixRotate();
+	c = mPlayer.Position();
+	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
+	gluLookAt(e.X(), e.Y(), e.Z(), c.X(), c.Y(), c.Z(), u.X(), u.Y(), u.Z());
 	mPlayer.Render();
 
 	mBackGround.Render();
