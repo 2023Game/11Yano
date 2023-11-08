@@ -31,5 +31,11 @@ void CPlayer::Update()
 	{
 		mPosition = mPosition + VELOCITY * mMatrixRotate;
 	}
+	if (mInput.Key(VK_SPACE))
+	{
+		bullet.Set(0.1f, 1.5f);
+		bullet.Position(CVector(0.0f, 0.0f, 10.0f) * mMatrix);
+		bullet.Rotation(mRotation);
+	}
 	CTransform::Update();//ïœä∑çsóÒÇÃçXêV
 }

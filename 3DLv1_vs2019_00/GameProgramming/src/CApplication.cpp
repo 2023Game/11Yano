@@ -86,6 +86,8 @@ void CApplication::Update()
 	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
 	gluLookAt(e.X(), e.Y(), e.Z(), c.X(), c.Y(), c.Z(), u.X(), u.Y(), u.Z());
 	mPlayer.Render();
-
+    mPlayer.bullet.Update();
+	mPlayer.bullet.Render();
 	mBackGround.Render();
+	
 }
