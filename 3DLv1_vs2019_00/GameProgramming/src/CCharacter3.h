@@ -3,8 +3,9 @@
 #define CCHARACTER3_H
 #include "CModel.h"
 #include "CTransform.h"
+#include "CTask.h"
 
-class CCharacter3 :public CTransform {
+class CCharacter3 :public CTransform ,public CTask {
 public:
 	void Model(CModel* m);//ƒ‚ƒfƒ‹‚Ìİ’è
 	void Render();

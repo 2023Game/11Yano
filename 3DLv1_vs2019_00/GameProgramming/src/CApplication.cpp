@@ -75,10 +75,6 @@ void CApplication::Update()
 		mEye = mEye + CVector(0.0f, 0.1f, 0.0f);
 	}
 
-	//視点の設定
-	//
-	//mCharacter.Update();
-	//mCharacter.Render();
 	mPlayer.Update();
 	CVector e, c, u; //視点、注意点、上方向
 	e = mPlayer.Position() + CVector(0.0f, 1.0f, -3.0f) * mPlayer.MatrixRotate();
@@ -86,8 +82,13 @@ void CApplication::Update()
 	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
 	gluLookAt(e.X(), e.Y(), e.Z(), c.X(), c.Y(), c.Z(), u.X(), u.Y(), u.Z());
 	mPlayer.Render();
-    mPlayer.bullet.Update();
-	mPlayer.bullet.Render();
+	mTaskManager.Update();
+	mTaskManager.Render();
 	mBackGround.Render();
 	
+}
+
+CTaskManager CApplication::mTaskManager;
+CTaskManager* CApplication::TaskManager() {
+	return &mTaskManager;
 }
