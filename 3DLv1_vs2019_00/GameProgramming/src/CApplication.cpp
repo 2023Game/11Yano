@@ -32,8 +32,6 @@ void CApplication::Start()
 	mPlayer.Scale(CVector(0.1f, 0.1f, 0.1f));
 	mPlayer.Position(CVector(0.0f, 0.0f, -3.0f));
 	mPlayer.Rotation(CVector(0.0f,180.0f,0.0f));
-	//mCharacter.Model(&mModel);
-	//mCharacter.Scale(CVector(0.1f, 0.1f, 0.1f));
 	CMatrix matrix;
 	matrix.Point();
 	mBackGround.Load(MODEL_BACKGROUND);
@@ -44,6 +42,7 @@ void CApplication::Start()
 
 void CApplication::Update()
 {
+	mTaskManager.Update();
 	CVector v0, v1, v2, n; //頂点1，2，3，法線データの作成
 	n.Set(0.0f, 1.0f, 0.0f); //法線を上向きで設定する
 	v0.Set(0.0f, 0.0f, 0.5f); //頂点1の座標
@@ -75,14 +74,13 @@ void CApplication::Update()
 		mEye = mEye + CVector(0.0f, 0.1f, 0.0f);
 	}
 
-	mPlayer.Update();
 	CVector e, c, u; //視点、注意点、上方向
 	e = mPlayer.Position() + CVector(0.0f, 1.0f, -3.0f) * mPlayer.MatrixRotate();
 	c = mPlayer.Position();
 	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
 	gluLookAt(e.X(), e.Y(), e.Z(), c.X(), c.Y(), c.Z(), u.X(), u.Y(), u.Z());
-	mPlayer.Render();
-	mTaskManager.Update();
+	
+	mTaskManager.Delete();
 	mTaskManager.Render();
 	mBackGround.Render();
 	

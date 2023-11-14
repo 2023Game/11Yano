@@ -12,7 +12,6 @@ public:
 	CPlayer(const CVector& pos, const CVector& rot
 		, const CVector& scale);
 	void Update();
-	CBullet bullet;
 private:
 	CInput mInput;
 };

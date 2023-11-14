@@ -5,6 +5,8 @@
 
 class CTaskManager {
 public:
+	void Delete();//タスクの削除
+	void Remove(CTask* task);//リストから削除
 	virtual ~CTaskManager();//デストラクタ
 	void Add(CTask* addTask);//リストに追加
 	void Update();

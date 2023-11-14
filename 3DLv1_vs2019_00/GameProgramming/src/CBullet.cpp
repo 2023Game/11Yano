@@ -1,5 +1,11 @@
 #include "CBullet.h"
 
+CBullet::CBullet()
+	:mLife(50)
+{
+
+}
+
 void CBullet::Set(float w, float d) {
 	mScale = CVector(1.0f, 1.0f, 1.0f);//ƒXƒP[ƒ‹Ý’è
 	mT.Vertex(CVector(w, 0.0f, 0.0f), CVector(0.0f, 0.0f, -d), CVector(-w, 0.0f, 0.0f));
@@ -7,8 +13,13 @@ void CBullet::Set(float w, float d) {
 }
 
 void CBullet::Update() {
-	CTransform::Update();
-	mPosition = mPosition + CVector(0.0f, 0.0f, 1.0f) * mMatrixRotate;
+	if (mLife-- > 0) {
+		CTransform::Update();
+		mPosition = mPosition + CVector(0.0f, 0.0f, 1.0f) * mMatrixRotate;
+	}
+	else {
+		mEnabled = false;
+	}
 }
 
 void CBullet::Render() {

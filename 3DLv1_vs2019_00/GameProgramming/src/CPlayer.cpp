@@ -40,7 +40,6 @@ void CPlayer::Update()
 		bullet->Position(CVector(0.0f, 0.0f, 10.0f) * mMatrix);
 		bullet->Rotation(mRotation);
 		bullet->Update();
-		CApplication::TaskManager()->Add(bullet);
 	}
 	CTransform::Update();//•ÏŠ·s—ñ‚ÌXV
 }

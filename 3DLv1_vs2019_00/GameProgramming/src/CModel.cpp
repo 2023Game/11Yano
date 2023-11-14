@@ -164,7 +164,7 @@ void CModel::Render(const CMatrix& m) {
 	glPushMatrix();
 	glMultMatrixf(m.M());
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, sizeof(CVertex), (void*)&mpVertexes[0].mPosition);
+	glVertexPointer(3, GL_FLOAT, sizeof(CVertex), (void *)&mpVertexes[0].mPosition);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glNormalPointer(GL_FLOAT, sizeof(CVertex), (void*)&mpVertexes[0].mNormal);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
