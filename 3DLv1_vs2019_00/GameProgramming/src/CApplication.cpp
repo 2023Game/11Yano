@@ -7,6 +7,7 @@
 #include "CMatrix.h"
 #include "CTransform.h"
 #include "CEnemy.h"
+#include "CCollisionManager.h"
 
 //クラスのstatic変数
 CTexture CApplication::mTexture;
@@ -49,7 +50,7 @@ void CApplication::Start()
 
 void CApplication::Update()
 {
-	mTaskManager.Update();
+	CTaskManager::Instance()->Update();
 	CVector v0, v1, v2, n; //頂点1，2，3，法線データの作成
 	n.Set(0.0f, 1.0f, 0.0f); //法線を上向きで設定する
 	v0.Set(0.0f, 0.0f, 0.5f); //頂点1の座標
@@ -87,13 +88,8 @@ void CApplication::Update()
 	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
 	gluLookAt(e.X(), e.Y(), e.Z(), c.X(), c.Y(), c.Z(), u.X(), u.Y(), u.Z());
 	
-	mTaskManager.Delete();
-	mTaskManager.Render();
+	CTaskManager::Instance()->Delete();
+	CTaskManager::Instance()->Render();
 	mBackGround.Render();
-	
-}
-
-CTaskManager CApplication::mTaskManager;
-CTaskManager* CApplication::TaskManager() {
-	return &mTaskManager;
+	CCollisionManager::Instance()->Render();
 }

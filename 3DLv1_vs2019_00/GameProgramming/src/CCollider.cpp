@@ -1,4 +1,5 @@
 #include "CCollider.h"
+#include "CCollisionManager.h"
 
 CCollider::CCollider(CCharacter3* parent, CMatrix* matrix,
 	const CVector& position, float radius) {
@@ -6,6 +7,7 @@ CCollider::CCollider(CCharacter3* parent, CMatrix* matrix,
 	mpMatrix = matrix;//es—ñÝ’è
 	mPosition = position;//ˆÊ’u
 	mRadius = radius;//”¼ŒaÝ’è
+	CCollisionManager::Instance()->Add(this);
 }
 
 CCharacter3* CCollider::Parent() {
@@ -20,4 +22,8 @@ void CCollider::Render() {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, c);
 	glutWireSphere(mRadius, 16, 16);//‹…•`‰æ
 	glPopMatrix();
+}
+
+CCollider::~CCollider() {
+	CCollisionManager::Instance()->Remove(this);
 }

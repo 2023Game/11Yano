@@ -48,3 +48,12 @@ void CTaskManager::Delete() {
 		}
 	}
 }
+
+CTaskManager* CTaskManager::mpInstance = nullptr;
+
+CTaskManager* CTaskManager::Instance() {
+	if (mpInstance == nullptr) {
+		mpInstance = new CTaskManager();
+	}
+	return mpInstance;
+}

@@ -7,12 +7,6 @@
 class CEnemy : public CCharacter3
 {
 public:
-	void CEnemy::Render() {//確認用、削除予定
-		CCharacter3::Render();
-		mCollider1.Render();
-		mCollider2.Render();
-		mCollider3.Render();
-	}
 	//CEnemy(モデル、位置、回転、拡縮)
 	CEnemy(CModel* model, const CVector& position,
 		const CVector& rotation, const CVector& scale);

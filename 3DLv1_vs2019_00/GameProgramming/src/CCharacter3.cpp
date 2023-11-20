@@ -12,11 +12,11 @@ void CCharacter3::Render() {
 }
 
 CCharacter3::~CCharacter3() {
-	CApplication::TaskManager()->Remove(this);
+	CTaskManager::Instance()->Remove(this);
 }
 
 CCharacter3::CCharacter3() 
 	:mpModel(nullptr)
 {
-	CApplication::TaskManager()->Add(this);
+	CTaskManager::Instance()->Add(this);
 }

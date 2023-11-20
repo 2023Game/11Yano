@@ -27,5 +27,4 @@ void CBullet::Render() {
 	float c[] = { 1.0f,1.0f,0.0f,1.0f };
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, c);
 	mT.Render(mMatrix);
-	mCollider.Render();
 }
