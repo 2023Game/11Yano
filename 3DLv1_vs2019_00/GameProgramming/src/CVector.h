@@ -6,6 +6,7 @@
 
 class CVector {
 public:
+	float Length() const;
 	CVector operator*(const CMatrix &m);
 	CVector operator+(const CVector &v) const; //+演算子のオーバーロード
 	CVector operator-(const CVector &v) const; //-演算子のオーバーロード

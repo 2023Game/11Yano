@@ -27,3 +27,15 @@ void CCollider::Render() {
 CCollider::~CCollider() {
 	CCollisionManager::Instance()->Remove(this);
 }
+
+bool CCollider::Collision(CCollider* m, CCollider* o) {
+	//各コライダの中心座標を求める
+	//原点×コライダの変換行列×親の変換行列
+	CVector mpos = m->mPosition * *m->mpMatrix;
+	CVector opos = o->mPosition * *o->mpMatrix;
+	mpos = mpos - opos;//中心から中心のベクトルを求める
+	if (m->mRadius + o->mRadius > mpos.Length()) {
+		return true;//衝突している
+	}
+	return false;//衝突していない
+}

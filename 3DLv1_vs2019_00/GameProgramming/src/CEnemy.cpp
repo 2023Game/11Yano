@@ -1,4 +1,5 @@
 #include "CEnemy.h"
+#include "CCollisionManager.h"
 #define VELOCITY CVector(0.0f,0.0f,0.09f)
 
 CEnemy::CEnemy(CModel* model, const CVector& position,
@@ -17,4 +18,10 @@ void CEnemy::Update()
 {
 	CTransform::Update();
 	mPosition = mPosition + VELOCITY * mMatrixRotate;
+}
+
+void CEnemy::Collision(CCollider* m, CCollider* o) {
+	if (CCollider::Collision(m, o)) {
+		mEnabled = false;
+	}
 }

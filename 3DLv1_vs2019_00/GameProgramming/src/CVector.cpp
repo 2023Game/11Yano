@@ -1,4 +1,5 @@
 #include "CVector.h"
+#include <math.h>
 
 CVector CVector::operator+(const CVector &v) const
 {
@@ -53,4 +54,8 @@ float CVector::Y() const
 float CVector::Z() const
 {
 	return mZ;
+}
+
+float CVector::Length() const {
+	return sqrtf(mX * mX + mY * mY + mZ * mZ);//sqrtŠÖ”‚Å•½•ûª‚ğ•Ô‚·
 }

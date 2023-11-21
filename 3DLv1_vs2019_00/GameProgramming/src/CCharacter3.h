@@ -5,8 +5,11 @@
 #include "CTransform.h"
 #include "CTask.h"
 
+class CCollider;
+
 class CCharacter3 :public CTransform ,public CTask {
 public:
+	virtual void Collision(CCollider *m,CCollider *o){}//Õ“Ëˆ—
 	CCharacter3();
 	~CCharacter3();
 	void Model(CModel* m);//ƒ‚ƒfƒ‹‚Ìİ’è

@@ -1,4 +1,5 @@
 #include "CBullet.h"
+#include "CCollisionManager.h"
 
 CBullet::CBullet()
 	:mLife(50)
@@ -27,4 +28,10 @@ void CBullet::Render() {
 	float c[] = { 1.0f,1.0f,0.0f,1.0f };
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, c);
 	mT.Render(mMatrix);
+}
+
+void CBullet::Collision(CCollider* m, CCollider* o) {
+	if (CCollider::Collision(m, o)) {
+		mEnabled = false;
+	}
 }
