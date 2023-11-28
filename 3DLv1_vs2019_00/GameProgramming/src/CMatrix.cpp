@@ -104,3 +104,13 @@ const CMatrix CMatrix::operator*(const CMatrix& m) const {
 	t.mM[3][3] = mM[3][0] * m.mM[0][3] + mM[3][1] * m.mM[1][3] + mM[3][2] * m.mM[2][3] + mM[3][3] * m.mM[3][3];
 	return t;
 }
+
+CMatrix CMatrix::Transpose() const {
+	CMatrix tmp;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			tmp.mM[j][i] = mM[i][j];
+		}
+	}
+	return tmp;
+}

@@ -5,6 +5,7 @@
 
 class CMatrix {
 public:
+	CMatrix Transpose() const;
 	float* M() const;
 	const CMatrix operator*(const CMatrix& m) const;
 	void M(int row, int col, float value); //s—ñ’l‚Ì‘ã“ü
