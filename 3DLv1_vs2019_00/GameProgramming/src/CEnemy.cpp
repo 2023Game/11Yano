@@ -1,5 +1,6 @@
 #include "CEnemy.h"
 #include "CCollisionManager.h"
+#include "CEffect.h"
 #define VELOCITY CVector(0.0f,0.0f,0.09f)
 
 CEnemy::CEnemy(CModel* model, const CVector& position,
@@ -22,6 +23,6 @@ void CEnemy::Update()
 
 void CEnemy::Collision(CCollider* m, CCollider* o) {
 	if (CCollider::Collision(m, o)) {
-		mEnabled = false;
+		new CEffect(o->Parent()->Position(), 1.0f, 1.0f, "exp.tga", 4, 4, 2);
 	}
 }
