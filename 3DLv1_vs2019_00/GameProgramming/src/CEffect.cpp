@@ -28,7 +28,7 @@ void CEffect::Update() {
 	mT[1].UV(CVector(left, top, 0.0f), CVector(left, bot, 0.0f),
 		CVector(right, top, 0.0f));
 	CBillBoard::Update();
-	if (mFrame==32) {
+	if (mFrame==(mRows*mCols)*mFps) {
 		mEnabled = false;
 	}
 }

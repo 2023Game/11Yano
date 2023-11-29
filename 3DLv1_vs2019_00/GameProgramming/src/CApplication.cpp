@@ -100,9 +100,10 @@ void CApplication::Update()
 	mModelViewInverse.M(2, 3, 0);
 	
 	CTaskManager::Instance()->Delete();
-	CTaskManager::Instance()->Render();
 	mBackGround.Render();
+	CTaskManager::Instance()->Render();
 	CCollisionManager::Instance()->Render();
+	
 }
 
 CMatrix CApplication::mModelViewInverse;
