@@ -1,13 +1,23 @@
 #include "CCollider.h"
 #include "CCollisionManager.h"
 
+CCollider::CCollider()
+	:mpParent(nullptr)
+	,mpMatrix(&mMatrix)
+	,mType(EType::ESPHERE)
+	,mRadius(0)
+{
+	CCollisionManager::Instance()->Add(this);
+}
+
 CCollider::CCollider(CCharacter3* parent, CMatrix* matrix,
-	const CVector& position, float radius) {
+	const CVector& position, float radius) 
+	:CCollider()
+{
 	mpParent = parent;//親設定
 	mpMatrix = matrix;//親行列設定
 	mPosition = position;//位置
 	mRadius = radius;//半径設定
-	CCollisionManager::Instance()->Add(this);
 }
 
 CCharacter3* CCollider::Parent() {
