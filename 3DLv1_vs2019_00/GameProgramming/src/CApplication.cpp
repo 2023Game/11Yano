@@ -9,7 +9,6 @@
 #include "CEnemy.h"
 #include "CCollisionManager.h"
 #include "CBillBoard.h"
-#include "CColliderTriangle.h"
 
 //クラスのstatic変数
 CTexture CApplication::mTexture;
@@ -96,7 +95,7 @@ void CApplication::Update()
 	}
 
 	CVector e, c, u; //視点、注意点、上方向
-	e = mPlayer.Position() + CVector(0.0f, 1.0f, -3.0f) * mPlayer.MatrixRotate();
+	e = mPlayer.Position() + CVector(-0.2f, 1.0f, -3.0f) * mPlayer.MatrixRotate();
 	c = mPlayer.Position();
 	u = CVector(0.0f, 1.0f, 0.0f) * mPlayer.MatrixRotate();
 	//カメラ設定

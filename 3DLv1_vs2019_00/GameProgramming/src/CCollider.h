@@ -12,6 +12,7 @@ public:
 	enum class EType {
 		ESPHERE,//球コライダ
 		ETRIANGLE,//三角コライダ
+		ELINE,//線分コライダ
 	};
 	CCollider();
 	static bool Collision(CCollider* m, CCollider* o);//衝突判定
