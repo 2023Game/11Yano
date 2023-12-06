@@ -51,3 +51,20 @@ void CPlayer::Update()
 	}
 	CTransform::Update();//変換行列の更新
 }
+
+void CPlayer::Collision(CCollider* m, CCollider* o) {
+	//自身のコライダタイプの判定
+	switch (m->Type()) {
+	case CCollider::EType::ELINE:
+		if (o->Type() == CCollider::EType::ETRIANGLE) {
+			CVector adjust;//調整用ベクトル
+			//三角形と線分の衝突判定
+			if (CCollider::CollisionTriangleLine(o, m, &adjust)) {
+				//位置の更新
+				mPosition = mPosition + adjust;
+				CTransform::Update();
+			}
+		}
+		break;
+	}
+}

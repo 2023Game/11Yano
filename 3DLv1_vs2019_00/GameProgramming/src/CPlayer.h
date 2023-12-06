@@ -9,6 +9,7 @@
 class CPlayer : public CCharacter3
 {
 public:
+	void Collision(CCollider* m, CCollider* o);//Õ“Ëˆ—
 	CPlayer();
 	CPlayer(const CVector& pos, const CVector& rot
 		, const CVector& scale);

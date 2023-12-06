@@ -49,3 +49,42 @@ bool CCollider::Collision(CCollider* m, CCollider* o) {
 	}
 	return false;//衝突していない
 }
+
+bool CCollider::CollisionTriangleLine(CCollider* t, CCollider* l, CVector* a) {
+	CVector v[3], sv, ev;
+	//各コライダの頂点をワールド座標へ変換
+	v[0] = t->mV[0] * *t->mpMatrix;
+	v[1] = t->mV[1] * *t->mpMatrix;
+	v[2] = t->mV[2] * *t->mpMatrix;
+	sv = l->mV[0] * *l->mpMatrix;
+	ev = l->mV[1] * *l->mpMatrix;
+	//面の法線を外積を正規化して求める
+	CVector normal = (v[1] - v[0]).Cross(v[2] - v[0]).Nomalize();
+	//三角の頂点から線分支店へのベクトルを求める
+	CVector v0sv = sv - v[0];
+	//三角の頂点から線分終点へのベクトルを求める
+	CVector v0ev = ev - v[0];
+	//線分画面と交差しているか内積で確認
+	float dots = v0sv.Dot(normal);
+	float dote = v0ev.Dot(normal);
+	//プラスは交差していない
+	if (dots * dote >= 0.0f) {
+		//衝突していない
+		*a = CVector(0.0f, 0.0f, 0.0f);
+		return false;
+	}
+	//交差しているので調整池計算
+	if (dots < 0.0f) {
+		//視点が裏面
+		*a = normal * -dots;
+	}
+	else {
+		//終点が裏面
+		*a = normal * -dote;
+	}
+	return true;
+}
+
+CCollider::EType CCollider::Type() {
+	return mType;
+}
