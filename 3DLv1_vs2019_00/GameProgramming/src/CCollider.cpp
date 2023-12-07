@@ -73,6 +73,28 @@ bool CCollider::CollisionTriangleLine(CCollider* t, CCollider* l, CVector* a) {
 		*a = CVector(0.0f, 0.0f, 0.0f);
 		return false;
 	}
+	//好転の計算
+	CVector cross = sv + (ev - sv) * (abs(dots) / (abs(dots) + abs(dote)));
+	//好転が三角形なら衝突している
+	// 頂点１頂点２ベクトルと頂点１交点ベクトルとの外積を求め
+	// 法線との内積がマイナスなら三角形の外
+	if ((v[1] - v[0]).Cross(cross - v[0]).Dot(normal) < 0.0f) {
+		//衝突していない
+		*a = CVector(0.0f, 0.0f, 0.0f);
+		return false;
+	}
+	//頂点２頂点3ベクトルと頂点２交点ベクトルの外積を求め
+	// 法線との内積がマイナスなら三角形の外
+	if ((v[2] - v[1]).Cross(cross - v[1]).Dot(normal) < 0.0f) {
+		*a = CVector(0.0f, 0.0f, 0.0f);
+		return false;
+	}
+	//頂点３頂点１ベクトルと頂点３交点ベクトルとの外積を求め
+	// 法線との内積がマイナスなら三角形の外
+	if ((v[0] - v[2]).Cross(cross - v[2]).Dot(normal) < 0.0f) {
+		*a = CVector(0.0f, 0.0f, 0.0f);
+		return false;
+	}
 	//交差しているので調整池計算
 	if (dots < 0.0f) {
 		//視点が裏面
