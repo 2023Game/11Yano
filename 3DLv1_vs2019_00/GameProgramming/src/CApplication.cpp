@@ -32,14 +32,6 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
-	mColliderTriangle.Set(nullptr, nullptr
-		, CVector(-50.0f, 0.0f, -50.0f)
-		, CVector(-50.0f, 0.0f, 50.0f)
-		, CVector(50.0f, 0.0f, -50.0f));
-	mColliderTriangle2.Set(nullptr, nullptr
-		, CVector(50.0f, 0.0f, 50.0f)
-		, CVector(50.0f, 0.0f, -50.0f)
-		, CVector(-50.0f, 0.0f, 50.0f));
 	mModelC5.Load(MODEL_C5);
 	new CEnemy(&mModelC5, CVector(0.0f, 10.0f, -100.0f),
 		CVector(), CVector(0.1f, 0.1f, 0.1f));
@@ -56,7 +48,7 @@ void CApplication::Start()
 	mModel.Load(MODEL_OBJ);
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
-
+    mColliderMesh.Set(nullptr, nullptr, &mBackGround);
 }
 
 void CApplication::Update()
