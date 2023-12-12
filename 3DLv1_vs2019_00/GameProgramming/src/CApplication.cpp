@@ -9,6 +9,7 @@
 #include "CEnemy.h"
 #include "CCollisionManager.h"
 #include "CBillBoard.h"
+#include "CColliderLine.h"
 
 //ƒNƒ‰ƒX‚Ìstatic•Ï”
 CTexture CApplication::mTexture;

@@ -22,7 +22,22 @@ void CEnemy::Update()
 }
 
 void CEnemy::Collision(CCollider* m, CCollider* o) {
-	if (CCollider::Collision(m, o)) {
-		new CEffect(o->Parent()->Position(), 1.0f, 1.0f, "exp.tga", 4, 4, 2);
+	switch (o->Type())
+	{
+	case CCollider::EType::ESPHERE:
+		if (CCollider::Collision(m, o)) {
+			new CEffect(o->Parent()->Position(), 1.0f, 1.0f, "exp.tga", 4, 4, 2);
+			//Õ“Ë‚µ‚Ä‚¢‚é‚Æ–³Œø
+			//mEnabled=false;
+		}
+		break;
+	case CCollider::EType::ETRIANGLE:
+		CVector adjust;//’²®’r
+		if (CCollider::CollisionTriangleSphere(o, m, &adjust))
+		{
+			//Õ“Ës“àˆê‚Ü‚Å–ß‚·
+			mPosition = mPosition + adjust;
+		}
+		break;
 	}
 }

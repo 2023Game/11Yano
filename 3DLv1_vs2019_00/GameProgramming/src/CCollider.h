@@ -8,7 +8,7 @@ class CCollisionManager;
 class CCollider :public CTransform, public CTask {
 	friend CCollisionManager;
 public:
-	
+	static bool CollisionTriangleSphere(CCollider* triangle, CCollider* sphere, CVector* adjust);
 	//CollisionTriangleLine(三角コライダ、線分コライダ、調整値)
 	//調整池：衝突しない位置まで戻す地
 	static bool CollisionTriangleLine(CCollider* triangle, CCollider* line, CVector* adjust);
