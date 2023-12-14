@@ -10,7 +10,12 @@ CTaskManager::~CTaskManager() {
 }
 
 void CTaskManager::Add(CTask* addTask) {
-	CTask* task = &mTail;//mTailの前に追加
+	CTask* task = mHead.mpNext;//mHeadの次から検索
+	//優先度の大きい順に入れる
+	while (addTask->mPriority < task->mPriority)
+	{
+		task = task->mpNext;//次へ
+	}
 	addTask->mpNext = task;//addTaskの次をtask
 	addTask->mpPrev = task->mpPrev;//addtaskの前をtaskの前に
 	addTask->mpPrev->mpNext = addTask;//addtaskの前の次をaddtaskに
@@ -26,10 +31,10 @@ void CTaskManager::Update() {
 }
 
 void CTaskManager::Render() {
-	CTask* task = mHead.mpNext;
-	while (task->mpNext) {
+	CTask* task = mTail.mpPrev;
+	while (task->mpPrev) {
 		task->Render();
-		task = task->mpNext;
+		task = task->mpPrev;
 	}
 }
 

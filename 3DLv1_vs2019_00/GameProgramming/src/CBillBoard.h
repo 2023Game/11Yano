@@ -5,6 +5,7 @@
 
 class CBillBoard :public CCharacter3 {
 public:
+	CBillBoard(CVector pos, float w, float h, int priority);
 	CBillBoard();
 	CBillBoard(CVector pos, float w, float h);
 	void Set(CVector pos, float w, float h);//ˆÊ’u‚Æ‘å‚«‚³

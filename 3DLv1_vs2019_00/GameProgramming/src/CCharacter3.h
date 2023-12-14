@@ -9,6 +9,7 @@ class CCollider;
 
 class CCharacter3 :public CTransform ,public CTask {
 public:
+	CCharacter3(int priority);
 	virtual void Collision(CCollider *m,CCollider *o){}//Õ“Ëˆ—
 	CCharacter3();
 	~CCharacter3();
