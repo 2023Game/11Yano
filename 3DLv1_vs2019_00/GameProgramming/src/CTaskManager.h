@@ -5,6 +5,7 @@
 
 class CTaskManager {
 public:
+	void Collision();
 	static CTaskManager* Instance();//インスタンスの取得
 	void Delete();//タスクの削除
 	void Remove(CTask* task);//リストから削除

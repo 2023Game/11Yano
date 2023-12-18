@@ -55,7 +55,8 @@ void CApplication::Start()
 void CApplication::Update()
 {
 	CTaskManager::Instance()->Update();
-	CCollisionManager::Instance()->Collision();
+	//CCollisionManager::Instance()->Collision();
+	CTaskManager::Instance()->Collision();
 	CVector v0, v1, v2, n; //頂点1，2，3，法線データの作成
 	n.Set(0.0f, 1.0f, 0.0f); //法線を上向きで設定する
 	v0.Set(0.0f, 0.0f, 0.5f); //頂点1の座標

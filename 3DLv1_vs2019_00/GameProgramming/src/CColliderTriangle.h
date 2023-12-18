@@ -5,6 +5,7 @@
 
 class CColliderTriangle :public CCollider {
 public:
+	void ChangePriority();//優先度の変更
 	CColliderTriangle(){}
 	//コンストラクタ（三角コライダ）
 	CColliderTriangle(CCharacter3* parent, CMatrix* matrix

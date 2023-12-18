@@ -1,5 +1,6 @@
 #include "CPlayer.h"
 #include "CTaskManager.h"
+#include "CCollisionManager.h"
 #include "CApplication.h"
 #define ROTATION_XV CVector(1.0f,0.0f,0.0f)//回転速度
 #define ROTATION_YV CVector(0.0f,1.0f,0.0f)//回転速度
@@ -67,4 +68,16 @@ void CPlayer::Collision(CCollider* m, CCollider* o) {
 		}
 		break;
 	}
+}
+
+void CPlayer::Collision()
+{
+	//コライダ優先度変更
+	mLine.ChangePriority();
+	mLine2.ChangePriority();
+	mLine3.ChangePriority();
+	//衝突処理を実行
+	CCollisionManager::Instance()->Collision(&mLine, COLLISIONRANGE);
+	CCollisionManager::Instance()->Collision(&mLine2, COLLISIONRANGE);
+	CCollisionManager::Instance()->Collision(&mLine3, COLLISIONRANGE);
 }

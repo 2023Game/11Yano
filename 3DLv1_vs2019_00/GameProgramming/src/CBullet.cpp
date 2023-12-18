@@ -35,3 +35,9 @@ void CBullet::Collision(CCollider* m, CCollider* o) {
 		mEnabled = false;
 	}
 }
+
+void CBullet::Collision()
+{
+	mCollider.ChangePriority();
+	CCollisionManager::Instance()->Collision(&mCollider, COLLISIONRANGE);
+}

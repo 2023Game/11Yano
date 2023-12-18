@@ -8,6 +8,8 @@ class CCollisionManager;
 class CCollider :public CTransform, public CTask {
 	friend CCollisionManager;
 public:
+	void ChangePriority();//優先度の変更
+	void ChangePriority(int priority);
 	static bool CollisionTriangleSphere(CCollider* triangle, CCollider* sphere, CVector* adjust);
 	//CollisionTriangleLine(三角コライダ、線分コライダ、調整値)
 	//調整池：衝突しない位置まで戻す地

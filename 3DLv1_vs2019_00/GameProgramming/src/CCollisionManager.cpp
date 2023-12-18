@@ -28,3 +28,29 @@ void CCollisionManager::Collision() {
 		task = (CCollider*)task->mpNext;//現在地を次にする
 	}
 }
+
+void CCollisionManager::Collision(CCollider* c, int range)
+{
+	//現在位置を先頭にする
+	CCollider* task = (CCollider*)mHead.mpNext;
+	//範囲まで読み飛ばし
+	while (task->mpNext) {
+		if (task->mPriority <= c->mPriority + range)
+		{
+			break;
+		}
+		//現在位置を次にする
+		task = (CCollider*)task->mpNext;
+	}
+	while (task->mpNext) {
+		if (task->mPriority <= c->mPriority - range)
+		{
+			break;
+		}
+		//親の衝突処理呼出し
+		if (c->mpParent && c != task)
+			c->mpParent->Collision(c, task);
+		//現在位置を次にする
+		task = (CCollider*)task->mpNext;
+	}
+}
