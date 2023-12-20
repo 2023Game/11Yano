@@ -18,10 +18,12 @@
 #include "CTaskManager.h"
 #include "CColliderTriangle.h"
 #include "CColliderMesh.h"
+#include "CUi.h"
 
 class CApplication
 {
 private:
+	static CUi* spUi;//UIクラスのポインタ
 	CColliderMesh mColliderMesh;
 	//モデルビューの逆行列
 	static CMatrix mModelViewInverse;
@@ -53,6 +55,8 @@ private:
 	//CCharacterのポインタの可変長配列
 //	std::vector<CCharacter*> mCharacters;
 public:
+	~CApplication();
+	static CUi* Ui();//UIクラスのインスタンス取得
 	static const CMatrix& ModelViewInverse();
 	static CCharacterManager* CharacterManager();
 	static CTexture* Texture();

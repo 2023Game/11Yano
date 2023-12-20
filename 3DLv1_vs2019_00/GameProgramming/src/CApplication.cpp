@@ -50,6 +50,7 @@ void CApplication::Start()
 	//ビルボードの作成
 	new CBillBoard(CVector(-6.0f, 3.0f, -10.0f), 1.0f, 1.0f);
     mColliderMesh.Set(nullptr, nullptr, &mBackGround);
+	spUi = new CUi();//UIクラスの生成
 }
 
 void CApplication::Update()
@@ -106,6 +107,7 @@ void CApplication::Update()
 	mBackGround.Render();
 	CTaskManager::Instance()->Render();
 	CCollisionManager::Instance()->Render();
+	spUi->Render();//UIの描画
 	
 }
 
@@ -113,4 +115,16 @@ CMatrix CApplication::mModelViewInverse;
 
 const CMatrix& CApplication::ModelViewInverse() {
 	return mModelViewInverse;
+}
+
+CUi* CApplication::spUi = nullptr;
+
+CUi* CApplication::Ui()
+{
+	return spUi;//インスタンスのポインタを返す
+}
+
+CApplication::~CApplication()
+{
+	delete spUi;
 }
