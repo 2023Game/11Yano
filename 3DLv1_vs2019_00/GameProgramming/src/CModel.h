@@ -12,7 +12,7 @@ public:
 	~CModel();
 	void Load(char* obj, char* mtl); //モデルファイルの入力
 	void Render();
-	std::vector<CTriangle> Triangles() const;
+	const std::vector<CTriangle>& Triangles() const;
 private:
 	CVertex* mpVertexes;
 	void CreateVertexbuffer();

@@ -185,7 +185,7 @@ void CModel::Render(const CMatrix& m) {
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-std::vector<CTriangle> CModel::Triangles() const
+const std::vector<CTriangle>& CModel::Triangles() const
 {
 	return mTriangles;
 }
