@@ -9,6 +9,7 @@
 class CPlayer : public CCharacter3
 {
 public:
+	static CPlayer* Instance();
 	void Collision();
 	void Collision(CCollider* m, CCollider* o);//Õ“Ëˆ—
 	CPlayer();
@@ -16,6 +17,7 @@ public:
 		, const CVector& scale);
 	void Update();
 private:
+	static CPlayer* spInstance;
 	CColliderLine mLine;
 	CColliderLine mLine2;
 	CColliderLine mLine3;

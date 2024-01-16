@@ -1,10 +1,14 @@
 #pragma once
-
 #ifndef CMATRIX_H
 #define CMATRIX_H
 
+class CVector;
+
 class CMatrix {
 public:
+	CVector VectorZ() const; //Z軸ベクトルの取得
+	CVector VectorX() const; //X軸ベクトルの取得
+	CVector VectorY() const; //Y軸ベクトルの取得
 	CMatrix Transpose() const;
 	float* M() const;
 	const CMatrix operator*(const CMatrix& m) const;
