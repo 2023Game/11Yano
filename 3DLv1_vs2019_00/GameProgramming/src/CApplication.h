@@ -14,10 +14,12 @@
 #include "CColliderTriangle.h"
 #include "CColliderMesh.h"
 #include "CUi.h"
+#include "CModelX.h"
 
 class CApplication
 {
 private:
+	CModelX mModelX;
 	static CUi* spUi;//UIクラスのポインタ
 	CColliderMesh mColliderMesh;
 	//モデルビューの逆行列
