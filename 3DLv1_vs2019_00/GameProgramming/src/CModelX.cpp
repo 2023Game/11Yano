@@ -36,7 +36,7 @@ void CModelX::Load(char* file)
 	fread(buf, size, 1, fp);
 	//最後に\0を設定する（文字列の終端）
 	buf[size] = '\0';
-	printf("%s", buf);
+	
 	fclose(fp);//ファイルクローズ
 	//文字列最後まで繰り返し
 	while (*mpPointer != '\0')
