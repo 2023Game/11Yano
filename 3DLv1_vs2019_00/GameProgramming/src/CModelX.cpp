@@ -45,15 +45,8 @@ void CModelX::Load(char* file)
 		//単語がFrameの場合
 		if (strcmp(mToken, "Frame") == 0)
 		{
-			printf("%s", mToken);//Frame出力
-			GetToken();//Frame名を取得
-			printf("%s\n", mToken);//Frame名を出力
-		}
-		if (strcmp(mToken, "AnimationSet") == 0)
-		{
-			printf("%s", mToken);
-			GetToken();
-			printf("%s\n", mToken);
+			//フレーム作成
+			new CModelXFrame(this);
 		}
 	}
 
@@ -94,7 +87,7 @@ char* CModelX::GetToken()
 		while (*p != '\0' && !strchr("\r\n", *p))p++;
 		//読み込み位置の更新
 		mpPointer = p;
-		//単語を取得
+		//単語を取得(再帰呼出し)
 		return GetToken();
 	}
 	return mToken;
@@ -115,5 +108,90 @@ bool CModelX::IsDelimiter(char c)
 		return true;
 	//区切り文字でない
 	return false;
+}
 
+CModelX::~CModelX()
+{
+	if (mFrame.size() > 0)
+	{
+		delete mFrame[0];
+	}
+}
+
+void CModelX::SkipNode()
+{
+	//文字が終わったら終了
+	while (*mpPointer != '\0')
+	{
+		GetToken();//次の単語取得
+		//{が見つかったらループ終了
+		if (strchr(mToken, '{'))break;
+	}
+	int count = 1;
+	//文字が終わるかカウントが０になったら終了
+	while (*mpPointer != '\0' && count > 0)
+	{
+		GetToken();//次の単語取得
+		//{を見つけるとカウントアップ
+		if (strchr(mToken, '{'))count++;
+		//}を見つけるとカウントダウン
+		else if (strchr(mToken, '}'))count--;
+	}
+}
+
+
+
+CModelXFrame::~CModelXFrame()
+{
+	//子フレームをすべて開放する
+	std::vector<CModelXFrame*>::iterator itr;
+	for (itr = mChild.begin(); itr != mChild.end(); itr++)
+	{
+		delete* itr;
+	}
+	//名前エリアを開放する
+	SAFE_DELETE_ARRAY(mpName);
+}
+
+CModelXFrame::CModelXFrame(CModelX* model)
+	:mpName(nullptr)
+	, mIndex(0)
+{
+	//現在のフレーム配列の要素数を取得し設定する
+	mIndex = model->mFrame.size();
+	//CModelXのフレーム配列に追加する
+	model->mFrame.push_back(this);
+	//変換行列を単位行列にする
+	mTransformMatrix.Identity();
+	//次の単語（フレーム名の予定）を取得する
+	model->GetToken();//frame name
+	//フレーム名分エリアを確保
+	mpName = new char[strlen(model->mToken) + 1];
+	//フレーム名こっぴー
+	strcpy(mpName, model->mToken);
+	//次の単語（｛の予定）を取得する
+	model->GetToken();//{
+	//文字がなくなったら終わり
+	while (*model->mpPointer != '\0')
+	{
+		//次の単語取得
+		model->GetToken();//frame
+		//}かっこの場合は終了
+		if (strchr(model->mToken, '}')) break;
+		//新たなフレームな場合は子フレームに追加
+		if (strcmp(model->mToken,"Frame")==0)
+		{
+			//フレーム作成し子フレームの配列に追加
+			mChild.push_back(new CModelXFrame(model));
+		}
+		else
+		{
+			//上記以外は読み飛ばす
+			model->SkipNode();
+		}
+	}
+	//デバッグバージョンのみ有効
+#ifdef _DEBUG
+	printf("%s\n", mpName);
+#endif
 }
