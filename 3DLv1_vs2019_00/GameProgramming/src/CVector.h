@@ -6,6 +6,9 @@
 
 class CVector {
 public:
+	void X(float f);
+	void Y(float f);
+	void Z(float f);
 	CVector Nomalize() const;//正規化（大きさ1のベクトル）
 	CVector Cross(const CVector& v) const;//外積
 	CVector operator*(const float& f) const;//*演算子のオーバーロード
