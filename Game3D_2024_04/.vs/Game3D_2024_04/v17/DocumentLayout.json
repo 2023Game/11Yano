@@ -1,0 +1,155 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\shiori_0620\\Game3D_2024_04\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Application.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Application.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Window.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Renderer.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Window.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Renderer.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{8C747E64-66B5-4489-A615-E65D2EBB298E}|Game3D_2024_04\\Game3D_2024_04.vcxproj|solutionrelative:Game3D_2024_04\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Application.cpp",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.cpp",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Application.cpp",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.cpp",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Application.cpp",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAABAAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-14T03:26:01.529Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Window.cpp",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.cpp",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Window.cpp",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.cpp",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Window.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-14T03:19:42.275Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Window.h",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.h",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Window.h",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Window.h",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Window.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-14T03:17:41.259Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Renderer.cpp",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.cpp",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Renderer.cpp",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.cpp",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Renderer.cpp",
+              "ViewState": "AQIAAHgAAAAAAAAAAAAAAFMAAAATAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-05-01T05:13:36.073Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Application.h",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.h",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Application.h",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Application.h",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Application.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA4AAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-01T02:46:29.818Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Renderer.h",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.h",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Renderer.h",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Renderer.h",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Renderer.h",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-05-01T04:53:49.515Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\main.cpp",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\main.cpp",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\main.cpp",
+              "RelativeToolTip": "Game3D_2024_04\\src\\main.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-04-29T08:29:46.686Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Game.cpp",
+              "DocumentMoniker": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Game.cpp",
+              "RelativeDocumentMoniker": "Game3D_2024_04\\src\\Game.cpp",
+              "ToolTip": "C:\\Users\\shiori_0620\\Game3D_2024_04\\Game3D_2024_04\\src\\Game.cpp",
+              "RelativeToolTip": "Game3D_2024_04\\src\\Game.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-04-29T08:30:09.747Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
