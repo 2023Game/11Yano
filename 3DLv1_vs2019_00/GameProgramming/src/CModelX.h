@@ -14,6 +14,7 @@ class CMesh;
 class CModelX {
 	friend CModelXFrame;
 public:
+	void Render();
 	char* Token();
 	~CModelX();
 	//ノードの読み飛ばし
@@ -33,6 +34,7 @@ private:
 
 class CModelXFrame {
 public:
+	void Render();
 	//コンストラクタ
 	CModelXFrame(CModelX* model);
 	~CModelXFrame();//デストラクタ
@@ -46,6 +48,7 @@ private:
 
 class CMesh {
 public:
+	void Render();
 	//コンストラクタ
 	CMesh();
 	~CMesh();
