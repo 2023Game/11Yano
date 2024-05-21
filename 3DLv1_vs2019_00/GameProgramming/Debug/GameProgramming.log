@@ -1,5 +1,2 @@
 ﻿  CModelX.cpp
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModelX.cpp(301,9): warning C4477: 'printf' : 書式文字列 '%f' には、型 'double' の引数が必要ですが、可変個引数 1 は型 'CVector' です
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModelX.cpp(301,9): warning C4477: 'printf' : 書式文字列 '%f' には、型 'double' の引数が必要ですが、可変個引数 2 は型 'CVector' です
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModelX.cpp(301,9): warning C4477: 'printf' : 書式文字列 '%f' には、型 'double' の引数が必要ですが、可変個引数 3 は型 'CVector' です
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe

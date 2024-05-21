@@ -301,9 +301,11 @@ void CMesh::Init(CModelX* model)
 	}//End of MeshNormals
 #ifdef _DEBUG
 	printf("NormalNum:%d\n", mNormalNum);
-	for (int i = 0; i < mNormalNum; i += 3)
+	for (int i = 0; i < mNormalNum; i++)
 	{
-		printf("%f %f %f\n", mpNormal[i], mpNormal[i + 1], mpNormal[i + 2]);
+		printf("%10f", mpNormal[i].X());
+		printf("%10f", mpNormal[i].Y());
+		printf("%10f\n", mpNormal[i].Z());
 	}
 #endif
 }
