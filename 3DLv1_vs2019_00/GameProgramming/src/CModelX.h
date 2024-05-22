@@ -6,6 +6,7 @@
 class CModelX;//クラスの宣言
 class CModelXFrame;
 class CMesh;
+class CMaterial;
 
 #define MODEL_FILE "res\\sample.blend.x"
 //領域開放をマクロか
@@ -14,6 +15,7 @@ class CMesh;
 class CModelX {
 	friend CModelXFrame;
 public:
+	bool EOT();//トークンがなくなったらtrue
 	void Render();
 	char* Token();
 	~CModelX();
@@ -55,6 +57,10 @@ public:
 	//読み込み処理
 	void Init(CModelX* model);
 private:
+	int mMaterialNum;//マテリアル数
+	int mMaterialIndexNum;//マテリアル番号数（面数）
+	int* mpMaterialIndex;//マテリアル番号
+	std::vector<CMaterial*> mMaterial;//マテリアルデータ
 	int mNormalNum;//法線数
 	CVector* mpNormal;//法線ベクトル
 	int mFaceNum;//面数
