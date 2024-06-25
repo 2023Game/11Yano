@@ -3,10 +3,12 @@
 #define CMODELX_H
 #include <vector>
 #include "CMatrix.h"
+class CSkinWeights;
 class CModelX;//クラスの宣言
 class CModelXFrame;
 class CMesh;
 class CMaterial;
+
 
 #define MODEL_FILE "res\\sample.blend.x"
 //領域開放をマクロか
@@ -48,6 +50,24 @@ private:
 	int mIndex;//フレーム番号
 };
 
+class CSkinWeights {
+	friend class CMesh;
+	friend class CModelX;
+public:
+	CSkinWeights(CModelX* model);
+	~CSkinWeights();
+	const int& FrameIndex();
+	const CMatrix& Offset();
+	char* mpFrameName;//フレーム名
+	int mFrameIndex;//フレーム番号
+	int mIndexNum;//頂点番号数
+	int* mpIndex;//頂点番号配列
+	float* mpWeight;//頂点ウェイト配列
+	CMatrix mOffset;//オフセットマトリクス
+private:
+	
+};
+
 class CMesh {
 public:
 	void Render();
@@ -57,6 +77,7 @@ public:
 	//読み込み処理
 	void Init(CModelX* model);
 private:
+	std::vector<CSkinWeights*> mSkinWeights;//スキンウェイト
 	int mMaterialNum;//マテリアル数
 	int mMaterialIndexNum;//マテリアル番号数（面数）
 	int* mpMaterialIndex;//マテリアル番号
@@ -68,4 +89,6 @@ private:
 	int mVertexNum;//頂点数
 	CVector* mpVertex;//頂点データ
 };
+
+
 #endif

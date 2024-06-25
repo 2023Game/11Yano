@@ -246,6 +246,8 @@ void CModelXFrame::Render()
 }
 
 
+
+
 CMesh::CMesh()
 	:mVertexNum(0)
 	,mpVertex(nullptr)
@@ -266,6 +268,11 @@ CMesh::~CMesh()
 	SAFE_DELETE_ARRAY(mpVertexIndex);
 	SAFE_DELETE_ARRAY(mpNormal);
 	SAFE_DELETE_ARRAY(mpMaterialIndex);
+	//スキンウェイトの削除
+	for (size_t i = 0; i < mSkinWeights.size(); i++)
+	{
+		delete mSkinWeights[i];
+	}
 }
 
 void CMesh::Init(CModelX* model) 
@@ -354,16 +361,19 @@ void CMesh::Init(CModelX* model)
 			}
 			model->GetToken();//End of MeshMaterialList
 		}//End of MeshMaterialList
+		//SkinWeightsのとき
+		else if (strcmp(model->Token(), "SkinWeights") == 0) {
+			//CSkinWeightsクラスのインスタンス作成、配列に追加
+			mSkinWeights.push_back(new CSkinWeights(model));
+		}
+		else
+		{
+			//以外のノードは読み飛ばし
+			model->SkipNode();
+		}
+
 	}
-#ifdef _DEBUG
-	printf("NormalNum:%d\n", mNormalNum);
-	for (int i = 0; i < mNormalNum; i++)
-	{
-		printf("%10f", mpNormal[i].X());
-		printf("%10f", mpNormal[i].Y());
-		printf("%10f\n", mpNormal[i].Z());
-	}
-#endif
+
 }
 
 void CMesh::Render()
@@ -386,4 +396,56 @@ void CMesh::Render()
 	//頂点データ、法線データの配列を無効にする
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
+}
+
+CSkinWeights::~CSkinWeights()
+{
+	SAFE_DELETE_ARRAY(mpFrameName);
+	SAFE_DELETE_ARRAY(mpIndex);
+	SAFE_DELETE_ARRAY(mpWeight);
+}
+
+CSkinWeights::CSkinWeights(CModelX* model)
+	:mpFrameName(nullptr)
+	,mFrameIndex(0)
+	,mIndexNum(0)
+	,mpIndex(nullptr)
+	,mpWeight(nullptr)
+{
+	model->GetToken();//{
+	model->GetToken();//FrameName
+	//フレーム名エリア確保、設定
+	mpFrameName = new char[strlen(model->Token()) + 1];
+	strcpy(mpFrameName, model->Token());
+
+	//頂点番号数取得
+	mIndexNum = atoi(model->GetToken());
+	//頂点番号が０を超える
+	if (mIndexNum > 0)
+	{
+		//頂点番号と頂点ウェイトのエリア確保
+		mpIndex = new int[mIndexNum];
+		mpWeight = new float[mIndexNum];
+		//頂点番号取得
+		for (int i = 0; i < mIndexNum; i++)
+			mpIndex[i] = atoi(model->GetToken());
+		//頂点ウェイト取得
+		for (int i = 0; i < mIndexNum; i++)
+			mpWeight[i] = atof(model->GetToken());
+	}
+	//オフセット行列取得
+	for (int i = 0; i < 16; i++) {
+		mOffset.M()[i] = atof(model->GetToken());
+	}
+	model->GetToken();//}
+	
+#ifdef _DEBUG
+	printf("SkinWeights:%s\n", mpFrameName);
+	for (int i = 0; i < mIndexNum; i++)
+	{
+		printf("%3d %10f\n", mpIndex[i], mpWeight[i]);
+	}
+	mOffset.Point();
+#endif
+
 }
