@@ -8,6 +8,7 @@ class CModelX;//クラスの宣言
 class CModelXFrame;
 class CMesh;
 class CMaterial;
+class CAnimationSet;
 
 
 #define MODEL_FILE "res\\sample.blend.x"
@@ -16,6 +17,7 @@ class CMaterial;
 
 class CModelX {
 	friend CModelXFrame;
+	friend CAnimationSet;
 public:
 	bool EOT();//トークンがなくなったらtrue
 	void Render();
@@ -29,6 +31,7 @@ public:
 	//ファイル読み込み
 	void Load(char* file);
 private:
+	std::vector<CAnimationSet*> mAnimationSet;//兄イメーションの配列
 	std::vector<CModelXFrame*> mFrame;//フレームの配列
 	//cが区切り文字ならtrueを返す
 	bool IsDelimiter(char c);
@@ -90,5 +93,12 @@ private:
 	CVector* mpVertex;//頂点データ
 };
 
+class CAnimationSet {
+public:
+	CAnimationSet(CModelX* model);
+	~CAnimationSet();
+private:
+	char* mpName;//アニメーションセット名
+};
 
 #endif

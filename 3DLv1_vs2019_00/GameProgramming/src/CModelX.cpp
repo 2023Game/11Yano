@@ -50,6 +50,10 @@ void CModelX::Load(char* file)
 			//フレーム作成
 			new CModelXFrame(this);
 		}
+		//単語がAnimationSetの場合
+		else if (strcmp(mToken, "AnimationSet") == 0) {
+			new CAnimationSet(this);
+		}
 	}
 
 	SAFE_DELETE_ARRAY(buf);//確保した領域を解放する
@@ -117,6 +121,10 @@ CModelX::~CModelX()
 	if (mFrame.size() > 0)
 	{
 		delete mFrame[0];
+	}
+	for (size_t i = 0; i < mAnimationSet.size(); i++)
+	{
+		delete mAnimationSet[i];
 	}
 }
 
@@ -344,7 +352,7 @@ void CMesh::Init(CModelX* model)
 		else if (strcmp(model->Token(), "MeshMaterialList") == 0) {
 			model->GetToken();//{
 			//Materialの数
-			mMaterialNum=atoi(model->GetToken());
+			mMaterialNum = atoi(model->GetToken());
 			//FaceNum
 			mMaterialIndexNum = atoi(model->GetToken());
 			//マテリアルインデックスの作成
@@ -371,9 +379,7 @@ void CMesh::Init(CModelX* model)
 			//以外のノードは読み飛ばし
 			model->SkipNode();
 		}
-
 	}
-
 }
 
 void CMesh::Render()
@@ -438,14 +444,32 @@ CSkinWeights::CSkinWeights(CModelX* model)
 		mOffset.M()[i] = atof(model->GetToken());
 	}
 	model->GetToken();//}
-	
-#ifdef _DEBUG
-	printf("SkinWeights:%s\n", mpFrameName);
-	for (int i = 0; i < mIndexNum; i++)
-	{
-		printf("%3d %10f\n", mpIndex[i], mpWeight[i]);
-	}
-	mOffset.Point();
-#endif
 
+}
+
+CAnimationSet::~CAnimationSet()
+{
+	SAFE_DELETE_ARRAY(mpName);
+}
+
+CAnimationSet::CAnimationSet(CModelX* model)
+	:mpName(nullptr)
+{
+	model->mAnimationSet.push_back(this);
+	model->GetToken();//AnimationName
+	//アニメーションセット名を退避
+	mpName = new char[strlen(model->Token()) + 1];
+	strcpy(mpName, model->Token());
+	model->GetToken();//{
+	while (!model->EOT()) {
+		model->GetToken();//} or Animation
+		if (strchr(model->Token(), '}')) break;
+		if (strcmp(model->Token(), "Animation") == 0) {
+			//とりあえす読み飛ばし
+			model->SkipNode();
+		}
+	}
+#ifdef _DEBUG
+	printf("AnimationSet:%s\n", mpName);
+#endif
 }
