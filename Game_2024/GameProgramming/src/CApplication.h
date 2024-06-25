@@ -18,7 +18,7 @@
 class CApplication
 {
 private:
-	//CModel mAngle;
+	//CAngle mAngle;
 	static CUi* spUi;//UIクラスのポインタ
 	CColliderMesh mColliderMesh;
 	//モデルビューの逆行列

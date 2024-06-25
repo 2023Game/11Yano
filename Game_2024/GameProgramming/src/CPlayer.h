@@ -16,12 +16,12 @@ public:
 		, const CVector& scale);
 	void Update();
 private:
-
 	float speed;
 	float speed2;
+	float roll;
+	float roll2;
 	static CPlayer* spInstance;
 	CCollider mCollider;
-
 	CInput mInput;
 };
 

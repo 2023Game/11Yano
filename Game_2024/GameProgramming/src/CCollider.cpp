@@ -31,7 +31,7 @@ void CCollider::Render() {
 	glMultMatrixf(CMatrix().Translate(pos.X(), pos.Y(), pos.Z()).M());//’†SÀ•W‚ÖˆÚ“®
 	//float c[] = { 1.0f,0.0f,0.0f,1.0f };//DIFFUSEÔFİ’è
 	//glMaterialfv(GL_FRONT, GL_DIFFUSE, c);
-	glutWireSphere(mRadius, 16, 16);//‹…•`‰æ
+	//glutWireSphere(mRadius, 16, 16);//‹…•`‰æ
 	glPopMatrix();
 }
 

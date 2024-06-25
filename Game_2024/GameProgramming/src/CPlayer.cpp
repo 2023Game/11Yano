@@ -2,13 +2,12 @@
 #include "CTaskManager.h"
 #include "CCollisionManager.h"
 #include "CApplication.h"
-#define ROTATION_XV CVector(1.0f,0.0f,0.0f)//回転速度
-#define ROTATION_YV CVector(0.0f,1.0f,0.0f)//回転速度
-#define VELOCITY CVector(0.0f,0.0f,speed)//移動速度
-#define VELOCITY2 CVector(speed2,0.0f,0.0f)
-#define GLAVITY CVector(0.0f,-9.8f,0.0f)
-#define MOS_POS_X 400 //マウス座標のX補正
-#define MOS_POS_Y 300 //マウス座標のY補正
+#define VELOCITY CVector(speed,0.0f,0.0f)//移動速度
+#define VELOCITY2 CVector(0.0f,0.0f,speed2)
+#define GLAVITY CVector(0.0f,-0.1f,0.0f)
+#define ROTATION_XV CVector(roll,0.0f,0.0f)//回転速度
+#define ROTATION_YV CVector(0.0f,0.0f,roll2)//回転速度
+
 
 CPlayer::CPlayer() 
 	 :mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 0.65f)
@@ -24,61 +23,61 @@ CPlayer::CPlayer(const CVector& pos, const CVector& rot
 
 void CPlayer::Update()
 {
-	if (mInput.Key(VK_DOWN))
-	{
-		mRotation = mRotation - ROTATION_XV;
-	}
-	if (mInput.Key(VK_UP))
-	{
-		mRotation = mRotation + ROTATION_XV;
-	}
-	if (mInput.Key(VK_RIGHT))
-	{
-		mRotation = mRotation - ROTATION_YV;
-	}
-	if (mInput.Key(VK_LEFT))
-	{
-		mRotation = mRotation + ROTATION_YV;
-	}
 	if (mInput.Key('W'))
 	{
-		speed += 0.001f;
-		mPosition = mPosition + VELOCITY * mMatrixRotate;
-	}
-	else if (!mInput.Key('W') && speed > 0)
-	{
 		speed -= 0.001f;
-		mPosition = mPosition + VELOCITY * mMatrixRotate;
+		roll += 0.05f;
+		mRotation = mRotation + ROTATION_XV;
+		mPosition = mPosition + VELOCITY;
+	}
+	else if (!mInput.Key('W') && !mInput.Key('S') && speed < 0 )
+	{
+		speed += 0.001f;
+		roll -= 0.05f;
+		mRotation = mRotation + ROTATION_XV;
+		mPosition = mPosition + VELOCITY;
 	}
 	if (mInput.Key('S'))
 	{
-		speed -= 0.001f;
-		mPosition = mPosition + VELOCITY * mMatrixRotate;
-	}
-	else if (!mInput.Key('S') && speed < 0)
-	{
 		speed += 0.001f;
-		mPosition = mPosition + VELOCITY * mMatrixRotate;
+		roll -= 0.05f;
+		mRotation = mRotation + ROTATION_XV;
+		mPosition = mPosition + VELOCITY;
+	}
+	else if (!mInput.Key('S') && !mInput.Key('W') && speed > 0)
+	{
+		speed -= 0.001f;
+		roll += 0.05f;
+		mRotation = mRotation + ROTATION_XV;
+		mPosition = mPosition + VELOCITY;
 	}
 	if (mInput.Key('A'))
 	{
 		speed2 += 0.001f;
-		mPosition = mPosition + VELOCITY2 * mMatrixRotate;
+		roll2 -= 0.05f;
+		mRotation = mRotation + ROTATION_YV;
+		mPosition = mPosition + VELOCITY2;
 	}
-	else if (!mInput.Key('A') && speed2 > 0)
+	else if (!mInput.Key('A') && !mInput.Key('D') && speed2 > 0)
 	{
 		speed2 -= 0.001f;
-		mPosition = mPosition + VELOCITY2 * mMatrixRotate;
+		roll2 += 0.05f;
+		mRotation = mRotation + ROTATION_YV;
+		mPosition = mPosition + VELOCITY2;
 	}
 	if (mInput.Key('D'))
 	{
 		speed2 -= 0.001f;
-		mPosition = mPosition + VELOCITY2 * mMatrixRotate;
+		roll2 += 0.05f;
+		mRotation = mRotation + ROTATION_YV;
+		mPosition = mPosition + VELOCITY2;
 	}
-	else if (!mInput.Key('D') && speed2 < 0)
+	else if (!mInput.Key('D') && !mInput.Key('A') && speed2 < 0)
 	{
 		speed2 += 0.001f;
-		mPosition = mPosition + VELOCITY2 * mMatrixRotate;
+		roll2 -= 0.05f;
+		mRotation = mRotation + ROTATION_YV;
+		mPosition = mPosition + VELOCITY2;
 	}
 	CTransform::Update();//変換行列の更新
 
