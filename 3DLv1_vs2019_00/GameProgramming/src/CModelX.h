@@ -3,6 +3,8 @@
 #define CMODELX_H
 #include <vector>
 #include "CMatrix.h"
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
+
 class CSkinWeights;
 class CModelX;//クラスの宣言
 class CModelXFrame;
@@ -10,6 +12,7 @@ class CMesh;
 class CMaterial;
 class CAnimationSet;
 class CAnimation;
+class CAnimationKey;
 
 
 #define MODEL_FILE "res\\sample.blend.x"
@@ -115,7 +118,17 @@ public:
 	CAnimation(CModelX* model);
 	~CAnimation();
 private:
+	int mKeyNum;//キー数(時間数)
+	CAnimationKey* mpKey;//キーの配列
 	char* mpFrameName;//フレーム名
 	int mFrameIndex;//フレーム番号
+};
+
+class CAnimationKey {
+	friend CAnimation;
+	friend CAnimationSet;
+private:
+	float mTime;//時間
+	CMatrix mMatrix;//行列
 };
 #endif

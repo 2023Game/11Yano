@@ -10,7 +10,7 @@ float* CMatrix::M() const
 	return (float*)mM[0];
 }
 
-void CMatrix::Point() {
+void CMatrix::Print() {
 	printf("%10f %10f %10f %10f\n",
 		mM[0][0], mM[0][1], mM[0][2], mM[0][3]);
 	printf("%10f %10f %10f %10f\n",
@@ -134,4 +134,25 @@ CVector CMatrix::VectorY() const
 int CMatrix::Size()
 {
 	return sizeof(mM) / sizeof(float);
+}
+
+CMatrix CMatrix::Quaternion(float x, float y, float z, float w)
+{
+	mM[0][0] = x * x - y * y - z * z + w * w;
+	mM[0][1] = 2 * x * y - 2 * w * z;
+	mM[0][2] = 2 * x * z + 2 * w * y;
+	mM[0][3] = 0;
+	mM[1][0] = 2 * x * y + 2 * w * z;
+	mM[1][1] = -x * x + y * y - z * z + w * w;
+	mM[1][2] = 2 * y * z - 2 * w * x;
+	mM[1][3] = 0;
+	mM[2][0] = 2 * x * z - 2 * w * y;
+	mM[2][1] = 2 * y * z + 2 * w * x;
+	mM[2][2] = -x * x - y * y + z * z + w * w;
+	mM[2][3] = 0;
+	mM[3][0] = 0;
+	mM[3][1] = 0;
+	mM[3][2] = 0;
+	mM[3][3] = 1;
+	return *this;
 }

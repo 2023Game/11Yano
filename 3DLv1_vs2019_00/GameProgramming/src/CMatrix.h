@@ -6,6 +6,8 @@ class CVector;
 
 class CMatrix {
 public:
+	//クォータニオンで回転行列を設定する
+	CMatrix Quaternion(float x, float y, float z, float w);
 	//要素数の取得
 	int Size();
 	CVector VectorZ() const; //Z軸ベクトルの取得
@@ -21,7 +23,7 @@ public:
 	CMatrix RotateY(float degree); //回転行列(Y軸)の作成
 	float M(int r, int c) const; //行列地の取得
 	CMatrix Scale(float sx, float sy, float sz); //拡大縮小行列の作成
-	void Point(); //4x4の行列を画面出力
+	void Print(); //4x4の行列を画面出力
 	CMatrix(); //デフォルトコンストラクタ
 	CMatrix Identity(); //単位行列の作成
 private:
