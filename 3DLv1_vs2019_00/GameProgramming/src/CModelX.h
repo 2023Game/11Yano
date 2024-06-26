@@ -9,6 +9,7 @@ class CModelXFrame;
 class CMesh;
 class CMaterial;
 class CAnimationSet;
+class CAnimation;
 
 
 #define MODEL_FILE "res\\sample.blend.x"
@@ -18,7 +19,10 @@ class CAnimationSet;
 class CModelX {
 	friend CModelXFrame;
 	friend CAnimationSet;
+	friend CAnimation;
 public:
+	//フレーム名に該当するフレームのアドレスを返す
+	CModelXFrame* FindFrame(char* name);
 	bool EOT();//トークンがなくなったらtrue
 	void Render();
 	char* Token();
@@ -40,7 +44,10 @@ private:
 };
 
 class CModelXFrame {
+	friend CAnimation;
+	friend CModelX;
 public:
+	int Index();
 	void Render();
 	//コンストラクタ
 	CModelXFrame(CModelX* model);
@@ -98,7 +105,17 @@ public:
 	CAnimationSet(CModelX* model);
 	~CAnimationSet();
 private:
+	std::vector<CAnimation*> mAnimation;
 	char* mpName;//アニメーションセット名
 };
 
+class CAnimation {
+	friend CAnimationSet;
+public:
+	CAnimation(CModelX* model);
+	~CAnimation();
+private:
+	char* mpFrameName;//フレーム名
+	int mFrameIndex;//フレーム番号
+};
 #endif
