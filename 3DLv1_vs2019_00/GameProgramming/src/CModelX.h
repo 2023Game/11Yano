@@ -24,6 +24,7 @@ class CModelX {
 	friend CAnimationSet;
 	friend CAnimation;
 public:
+	std::vector<CModelXFrame*>& Frames();
 	void AnimateFrame();
 	std::vector<CAnimationSet*>& AnimationSet();
 	//フレーム名に該当するフレームのアドレスを返す
@@ -53,12 +54,14 @@ class CModelXFrame {
 	friend CAnimation;
 	friend CModelX;
 public:
+	void AnimateCombined(CMatrix* parent);
 	int Index();
 	void Render();
 	//コンストラクタ
 	CModelXFrame(CModelX* model);
 	~CModelXFrame();//デストラクタ
 private:
+	CMatrix mCombinedMatrix;//合成行列
 	CMesh* mpMesh;//Meshデータ
 	std::vector<CModelXFrame*> mChild;//子フレームの配列
 	CMatrix mTransformMatrix;//変換行列
