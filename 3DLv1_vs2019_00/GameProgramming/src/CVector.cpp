@@ -1,6 +1,13 @@
 #include "CVector.h"
 #include <math.h>
 
+void CVector::operator+=(const CVector& v)
+{
+	mX += v.mX;
+	mY += v.mY;
+	mZ += v.mZ;
+}
+
 CVector CVector::operator+(const CVector &v) const
 {
 	return CVector(mX + v.mX, mY + v.mY, mZ + v.mZ);
@@ -64,7 +71,7 @@ float CVector::Dot(const CVector& v) const {
 	return mX * v.mX + mY * v.mY + mZ * v.mZ;
 }
 
-CVector CVector::Nomalize() const {
+CVector CVector::Normalize() const {
 	//ベクトルの大きさで割ったベクトルを返す（長さ１のベクトル）
 	return *this * (1.0f / Length());
 }

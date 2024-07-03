@@ -60,7 +60,7 @@ bool CCollider::CollisionTriangleLine(CCollider* t, CCollider* l, CVector* a) {
 	sv = l->mV[0] * *l->mpMatrix;
 	ev = l->mV[1] * *l->mpMatrix;
 	//面の法線を外積を正規化して求める
-	CVector normal = (v[1] - v[0]).Cross(v[2] - v[0]).Nomalize();
+	CVector normal = (v[1] - v[0]).Cross(v[2] - v[0]).Normalize();
 	//三角の頂点から線分支店へのベクトルを求める
 	CVector v0sv = sv - v[0];
 	//三角の頂点から線分終点へのベクトルを求める
@@ -119,7 +119,7 @@ bool CCollider::CollisionTriangleSphere(CCollider* t, CCollider* s, CVector* a) 
 	v[1] = t->mV[1] * *t->mpMatrix;
 	v[2] = t->mV[2] * *t->mpMatrix;
 	//面の法線を外積を正規化して求める
-	CVector normal = (v[1] - v[0]).Cross(v[2] - v[0]).Nomalize();
+	CVector normal = (v[1] - v[0]).Cross(v[2] - v[0]).Normalize();
 	//線コライダをワールド座標で作成
 	sv = s->mPosition * *s->mpMatrix + normal * s->mRadius;
 	ev = s->mPosition * *s->mpMatrix - normal * s->mRadius;
