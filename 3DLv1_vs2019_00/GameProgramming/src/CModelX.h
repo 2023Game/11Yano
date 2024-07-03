@@ -15,7 +15,7 @@ class CAnimation;
 class CAnimationKey;
 
 
-#define MODEL_FILE "res\\sample.blend.x"
+#define MODEL_FILE "res\\ラグナ.x"
 //領域開放をマクロか
 #define SAFE_DELETE_ARRAY(a){if(a) delete[] a;a=nullptr;}
 
@@ -24,6 +24,8 @@ class CModelX {
 	friend CAnimationSet;
 	friend CAnimation;
 public:
+	std::vector<CMaterial*>& Material();
+	CMaterial* FindMaterial(char* name);
 	void AnimateVertex();//頂点にアニメーション適用
 	//スキンウェイトのフレーム番号設定
 	void SetSkinWeightFrameIndex();
@@ -44,6 +46,7 @@ public:
 	//ファイル読み込み
 	void Load(char* file);
 private:
+	std::vector<CMaterial*> mMaterial;//まれリアル配列
 	std::vector<CAnimationSet*> mAnimationSet;//兄イメーションの配列
 	std::vector<CModelXFrame*> mFrame;//フレームの配列
 	//cが区切り文字ならtrueを返す

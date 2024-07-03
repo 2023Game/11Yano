@@ -5,6 +5,8 @@
 CMaterial::CMaterial(CModelX* model)
 	:mpTextureFilename(nullptr)
 {
+	//CModelXにマテリアルを追加
+	model->Material().push_back(this);
 	model->GetToken();//{ ? Name
 	if (strcmp(model->Token(), "{") != 0) {
 		//{出ないときはマテリアル名
