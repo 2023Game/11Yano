@@ -106,6 +106,7 @@ public:
 	//読み込み処理
 	void Init(CModelX* model);
 private:
+	float* mpTextureCoords;//テクスチャ座標データ
 	CVector* mpAnimateVertex;//アニメーション用頂点
 	CVector* mpAnimateNormal;//アニメーション用法線
 	std::vector<CSkinWeights*> mSkinWeights;//スキンウェイト
