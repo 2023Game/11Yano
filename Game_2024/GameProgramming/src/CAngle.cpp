@@ -1,41 +1,54 @@
 #include "CAngle.h"
+#include "CTaskManager.h"
 #include "CCollisionManager.h"
-#define ROTATION_XV CVector(1.0f,0.0f,0.0f)//回転速度
-#define ROTATION_YV CVector(0.0f,1.0f,0.0f)//回転速度
+#include "CApplication.h"
 
-CAngle::CAngle(CModel* model, const CVector& position,
-	const CVector& rotation, const CVector& scale)
-	:mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 0.0f), 0.2f)
+CAngle::CAngle()
+	:mCollider(this, &mMatrix, CVector(0.0f, 0.0f, 5.0f), 0.2f)
 {
-	mpModel = model;//モデルの設定
-	mPosition = position;//位置の設定
-	mRotation = rotation;//回転の設定
-	mScale = scale;//拡縮の設定
+	spInstance = this;
+}
+
+CAngle::CAngle(const CVector& pos, const CVector& rot
+	, const CVector& scale)
+{
+	CTransform::Update(pos, rot, scale);//行列の更新
 }
 
 void CAngle::Update()
 {
 	
-	CTransform::Update();
-	//mPosition = mPlayer.Position();
+	CTransform::Update();//変換行列の更新
 }
 
 void CAngle::Collision(CCollider* m, CCollider* o) {
-	switch (o->Type())
-	{
+	//自身のコライダタイプの判定
+	switch (m->Type()) {
 	case CCollider::EType::ESPHERE:
-		if (CCollider::Collision(m, o)) {
-			//衝突していると無効
-			//mEnabled=false;
-		}
-		break;
-	case CCollider::EType::ETRIANGLE:
-		CVector adjust;//調整池
-		if (CCollider::CollisionTriangleSphere(o, m, &adjust))
-		{
-			//衝突市内一まで戻す
-			mPosition = mPosition + adjust;
+		if (o->Type() == CCollider::EType::ETRIANGLE) {
+			CVector adjust;//調整用ベクトル
+			//三角形と線分の衝突判定
+			if (CCollider::CollisionTriangleSphere(o, m, &adjust)) {
+				//位置の更新
+				mPosition = mPosition + adjust;
+				CTransform::Update();
+			}
 		}
 		break;
 	}
+}
+
+void CAngle::Collision()
+{
+	//コライダ優先度変更
+	mCollider.ChangePriority();
+	//衝突処理を実行
+	CCollisionManager::Instance()->Collision(&mCollider, COLLISIONRANGE);
+}
+
+CAngle* CAngle::spInstance = nullptr;
+
+CAngle* CAngle::Instance()
+{
+	return spInstance;
 }

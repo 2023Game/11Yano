@@ -13,17 +13,18 @@
 #include "CColliderTriangle.h"
 #include "CColliderMesh.h"
 #include "CUi.h"
-//#include "CAngle.h"
+#include "CGame.h"
 
 class CApplication
 {
 private:
-	//CAngle mAngle;
+	bool Clear;
+	CGame* mpGame;
+	int mTime;
 	static CUi* spUi;//UIクラスのポインタ
 	CColliderMesh mColliderMesh;
 	//モデルビューの逆行列
 	static CMatrix mModelViewInverse;
-	CModel mModelGround;//うごゆか
 	CPlayer mPlayer;
 	CModel mBackGround; //背景モデル
 	CModel mModel;

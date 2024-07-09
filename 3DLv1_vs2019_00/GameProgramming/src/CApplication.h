@@ -15,10 +15,12 @@
 #include "CColliderMesh.h"
 #include "CUi.h"
 #include "CModelX.h"
+#include "CXCharacter.h"
 
 class CApplication
 {
 private:
+	CXCharacter mCharacter;//キャラクタのインスタンス
 	CMatrix mMatrix;
 	CModelX mModelX;
 	static CUi* spUi;//UIクラスのポインタ

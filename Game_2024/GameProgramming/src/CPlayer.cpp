@@ -5,8 +5,9 @@
 #define VELOCITY CVector(speed,0.0f,0.0f)//移動速度
 #define VELOCITY2 CVector(0.0f,0.0f,speed2)
 #define GLAVITY CVector(0.0f,-0.1f,0.0f)
-#define ROTATION_XV CVector(roll,0.0f,0.0f)//回転速度
-#define ROTATION_YV CVector(0.0f,0.0f,roll2)//回転速度
+#define ROTATION CVector(0.0f,0.0f,roll)//回転速度
+#define ROTATION_XV CVector(roll2,0.0f,0.0f)//回転速度
+#define ROTATION_YV CVector(0.0f,roll,0.0f)//回転速度
 
 
 CPlayer::CPlayer() 
@@ -23,69 +24,76 @@ CPlayer::CPlayer(const CVector& pos, const CVector& rot
 
 void CPlayer::Update()
 {
+	
 	if (mInput.Key('W'))
 	{
 		speed -= 0.001f;
 		roll += 0.05f;
-		mRotation = mRotation + ROTATION_XV;
+		mRotation = mRotation + ROTATION;
 		mPosition = mPosition + VELOCITY;
 	}
 	else if (!mInput.Key('W') && !mInput.Key('S') && speed < 0 )
 	{
 		speed += 0.001f;
 		roll -= 0.05f;
-		mRotation = mRotation + ROTATION_XV;
+		mRotation = mRotation + ROTATION;
 		mPosition = mPosition + VELOCITY;
 	}
 	if (mInput.Key('S'))
 	{
 		speed += 0.001f;
 		roll -= 0.05f;
-		mRotation = mRotation + ROTATION_XV;
+		mRotation = mRotation + ROTATION;
 		mPosition = mPosition + VELOCITY;
 	}
 	else if (!mInput.Key('S') && !mInput.Key('W') && speed > 0)
 	{
 		speed -= 0.001f;
 		roll += 0.05f;
-		mRotation = mRotation + ROTATION_XV;
+		mRotation = mRotation + ROTATION;
 		mPosition = mPosition + VELOCITY;
 	}
 	if (mInput.Key('A'))
 	{
 		speed2 += 0.001f;
-		roll2 -= 0.05f;
-		mRotation = mRotation + ROTATION_YV;
+		roll2 += 0.05f;
+		mRotation = mRotation + ROTATION_XV;
 		mPosition = mPosition + VELOCITY2;
 	}
 	else if (!mInput.Key('A') && !mInput.Key('D') && speed2 > 0)
 	{
 		speed2 -= 0.001f;
-		roll2 += 0.05f;
-		mRotation = mRotation + ROTATION_YV;
+		roll2 -= 0.05f;
+		mRotation = mRotation + ROTATION_XV;
 		mPosition = mPosition + VELOCITY2;
 	}
 	if (mInput.Key('D'))
 	{
 		speed2 -= 0.001f;
-		roll2 += 0.05f;
-		mRotation = mRotation + ROTATION_YV;
+		roll2 -= 0.05f;
+		mRotation = mRotation + ROTATION_XV;
 		mPosition = mPosition + VELOCITY2;
 	}
 	else if (!mInput.Key('D') && !mInput.Key('A') && speed2 < 0)
 	{
 		speed2 += 0.001f;
-		roll2 -= 0.05f;
-		mRotation = mRotation + ROTATION_YV;
+		roll2 += 0.05f;
+		mRotation = mRotation + ROTATION_XV;
 		mPosition = mPosition + VELOCITY2;
 	}
 	CTransform::Update();//変換行列の更新
 
 	//UI設定
 	CApplication::Ui()->PosY(mPosition.Y());
-	CApplication::Ui()->RotX(mRotation.X());
+	CApplication::Ui()->PosX(mPosition.X());
+	CApplication::Ui()->PosZ(mPosition.Z());
 	CApplication::Ui()->RotY(mRotation.Y());
-	mPosition = mPosition + GLAVITY;
+	CApplication::Ui()->RotX(mRotation.X());
+	CApplication::Ui()->RotZ(mRotation.Z());
+	if (Ground == false)
+	{
+		mPosition = mPosition + GLAVITY;
+	}
 }
 
 void CPlayer::Collision(CCollider* m, CCollider* o) {
@@ -99,6 +107,10 @@ void CPlayer::Collision(CCollider* m, CCollider* o) {
 				//位置の更新
 				mPosition = mPosition + adjust;
 				CTransform::Update();
+				Ground = true;
+			}
+			else {
+				Ground = false;
 			}
 		}
 		break;

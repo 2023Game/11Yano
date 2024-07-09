@@ -1,6 +1,5 @@
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\vc143.pdb
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\vc143.idb
-c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ctaskmanager.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\csound.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\crectangle.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cplayer.obj
@@ -9,6 +8,7 @@ c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cmatr
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cmaterial.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cfont.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cground.obj
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cgame.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ceffect.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ccollisionmanager.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ccollidertriangle.obj
@@ -27,14 +27,15 @@ c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ctria
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ctransform.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\cinput.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ctexture.obj
-c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\debug\gameprogramming.exe
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\ctaskmanager.obj
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\debug\gameprogramming.pdb
-c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.ilk
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\cl.command.1.tlog
-c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\cl.items.tlog
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\cl.read.1.tlog
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\cl.write.1.tlog
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link-cvtres.read.1.tlog
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link-cvtres.write.1.tlog
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link-rc.read.1.tlog
+c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link-rc.write.1.tlog
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link.command.1.tlog
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link.read.1.tlog
-c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link.secondary.1.tlog
 c:\users\shiori_0620\desktop\いぬ\11yano\game_2024\gameprogramming\debug\gameprogramming.tlog\link.write.1.tlog

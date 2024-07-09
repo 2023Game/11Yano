@@ -8,16 +8,14 @@
 #include "CTransform.h"
 #include "CCollisionManager.h"
 #include "CColliderLine.h"
-#include "CGround.h"
-//#include "CAngle.h"
 #include <math.h>
 
 //クラスのstatic変数
 CTexture CApplication::mTexture;
 CCharacterManager CApplication::mCharacterManager;
 
-#define MODEL_OBJ "res\\Maru.obj","res\\Maru.mtl" //モデルデータの指定
-#define MODEL_BACKGROUND "res\\Stage1.obj", "res\\Stage1.mtl"
+#define MODEL_OBJ "res\\Col.obj","res\\Col.mtl" //モデルデータの指定
+#define MODEL_BACKGROUND "res\\BS1.obj", "res\\BS1.mtl"
 #define MODEL_GROUND "res\\Yuka.obj", "res\\Yuka.mtl"//うごゆか
 
 CCharacterManager* CApplication::CharacterManager()
@@ -32,20 +30,17 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
-	mModelGround.Load(MODEL_GROUND);
-	new CGround(&mModelGround, CVector(0.0f, 1.0f, -10.0f), CVector(), CVector());
+	Clear = false;
 	mPlayer.Model(&mModel);
-	mPlayer.Scale(CVector(0.5f, 0.5f, 0.5f));
-	mPlayer.Position(CVector(-30.0f, 2.5f, 0.0f));
-	mPlayer.Rotation(CVector(0.0f, 270.0f, 0.0f));
+	mPlayer.Scale(CVector(0.63f, 0.63f, 0.63f));
+	mPlayer.Position(CVector(0.0f, 2.5f, 0.0f));
+	mPlayer.Rotation(CVector(0.0f, 0.0f, 0.0f));
 	CMatrix matrix;
 	matrix.Point();
 	mBackGround.Load(MODEL_BACKGROUND);
 	mEye = CVector(1.0f, 2.0f, 3.0f);
 	mModel.Load(MODEL_OBJ);
-	//new CAngle(&mModel, CVector(-30.0f, 1.5f, 5.0f), CVector(), CVector());
 	mColliderMesh.Set(nullptr, nullptr, &mBackGround);
-	mColliderMesh.Set(nullptr, nullptr, &mModelGround);
 	spUi = new CUi();//UIクラスの生成
 }
 
@@ -62,7 +57,7 @@ void CApplication::Update()
 
 
 	CVector e, c, u; //視点、注意点、上方向
-	e = mPlayer.Position() + CVector(6.0f, 2.0f, 0.0f); 
+	e = mPlayer.Position() + CVector(6.0f, 3.0f, 0.0f); 
 	c = mPlayer.Position();
 	u = CVector(0.0f, 1.0f, 0.0f);
 	//カメラ設定
@@ -77,17 +72,25 @@ void CApplication::Update()
 
 	CTaskManager::Instance()->Delete();
 	mBackGround.Render();
-	mModelGround.Render();
 
 	CTaskManager::Instance()->Render();
 	CCollisionManager::Instance()->Render();
+	if (Clear == false)
+	{
+		spUi->Time(mTime++);
+	}
+	
 	spUi->Render();//UIの描画
 
-
 	//落ちたらリスタート
-	if (mPlayer.Position().Y() < -10.0f)
+	if (mPlayer.Position().Y() < -14.0f)
 	{
 		mPlayer.Position(CVector(0.0f, 1.5f, 0.0f));
+	}
+	if (mPlayer.Position().Y() <= -8.0f && mPlayer.Position().X()<-32.0f && mPlayer.Position().X() > -33.0f)
+	{
+		Clear = true;
+		spUi->Clear();
 	}
 }
 

@@ -16,6 +16,7 @@ public:
 		, const CVector& scale);
 	void Update();
 private:
+	bool Ground;
 	float speed;
 	float speed2;
 	float roll;

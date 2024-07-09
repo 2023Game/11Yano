@@ -1,10 +1,2 @@
 ﻿  CApplication.cpp
-  CBillBoard.cpp
-  CBullet.cpp
-  CCharacter3.cpp
-  CCollider.cpp
-  CColliderLine.cpp
-  CColliderMesh.cpp
-  main.cpp
-  コードを生成中...
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe
