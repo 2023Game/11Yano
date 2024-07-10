@@ -1,7 +1,17 @@
 ﻿  CApplication.cpp
-  CBillBoard.cpp
-  CCharacter3.cpp
-  CPlayer.cpp
+  CModel.cpp
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(10,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(12,21): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(147,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CModel.cpp(156,20): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+  CSound.cpp
+  CTaskManager.cpp
+  CTexture.cpp
+  CInput.cpp
+  CTransform.cpp
+  CTriangle.cpp
+  CUi.cpp
+  CVector.cpp
   CXCharacter.cpp
   CXPlayer.cpp
   main.cpp
