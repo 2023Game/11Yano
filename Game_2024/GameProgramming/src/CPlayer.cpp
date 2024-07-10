@@ -7,7 +7,7 @@
 #define GLAVITY CVector(0.0f,-0.1f,0.0f)
 #define ROTATION CVector(0.0f,0.0f,roll)//‰ñ“]‘¬“x
 #define ROTATION_XV CVector(roll2,0.0f,0.0f)//‰ñ“]‘¬“x
-#define ROTATION_YV CVector(0.0f,roll,0.0f)//‰ñ“]‘¬“x
+//#define ROTATION_YV CVector(0.0f,roll,0.0f)//‰ñ“]‘¬“x
 
 
 CPlayer::CPlayer() 

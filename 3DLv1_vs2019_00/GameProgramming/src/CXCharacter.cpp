@@ -74,3 +74,14 @@ bool CXCharacter::IsAnimationFinished() {
 int CXCharacter::AnimationIndex() {
 	return mAnimationIndex;
 }
+
+void CXCharacter::Update() {
+	//変換行列の更新
+	CTransform::Update();
+	//アニメーション更新
+	Update(mMatrix);
+}
+
+CXCharacter::CXCharacter() {
+	mScale = CVector(1.0f, 1.0f, 1.0f);
+}

@@ -34,18 +34,13 @@ void CApplication::Start()
 	//3Dモデルファイルの読み込み
 	mModelX.Load(MODEL_FILE);
 	//キャラクターのモデルを設定
-	mCharacter.Init(&mModelX);
+	mXPlayer.Init(&mModelX);
 	mFont.Load("FontG.png", 1, 4096 / 64);
 }
 
 void CApplication::Update()
 {
-	if (mCharacter.IsAnimationFinished()) {
-		int ai = mCharacter.AnimationIndex() + 1;
-		ai %= mModelX.AnimationSet().size();
-		mCharacter.ChangeAnimation(ai, true, 60);
-	}
-	mCharacter.Update(CMatrix());//キャラクタクラスの更新
+	mXPlayer.Update();//キャラクタクラスの更新
 
 	//カメラのパラメータを作成する
 	CVector e, c, u;//視点、注意点、上方向
@@ -92,7 +87,7 @@ void CApplication::Update()
 	mModelX.AnimateVertex();
 	//モデル描画
 	mModelX.Render();
-	mCharacter.Render();
+	mXPlayer.Render();
 
 	//2D描画開始
 	CCamera::Start(0, 800, 0, 600);

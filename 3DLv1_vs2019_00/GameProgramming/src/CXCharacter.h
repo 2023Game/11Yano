@@ -4,12 +4,15 @@
 
 #include "CModelX.h"
 #include "CMatrix.h"
+#include "CCharacter3.h"
 
-class CXCharacter {
+class CXCharacter : public CCharacter3 {
 public:
+	CXCharacter();
 	void Init(CModelX* model);//初期化処理
 	void ChangeAnimation(int index, bool loop, float framesize);//アニメーションの変更
 	void Update(CMatrix& m);//更新処理
+	void Update();
 	void Render();//描画処理
 	//アニメーションの再生終了判定
 	//true:終了　false:再生中
