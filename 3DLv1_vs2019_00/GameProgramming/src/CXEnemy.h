@@ -3,8 +3,15 @@
 #define CXENEMY_H
 
 #include "CXCharacter.h"
+#include "CCollider.h"
 
 class CXEnemy :public CXCharacter {
-
+public:
+	CXEnemy();
+	void Init(CModelX* model);
+private:
+	CCollider mColSphereBody;//‘Ì
+	CCollider mColSphereHead;//“ª
+	CCollider mColSphereSword;//Œ•
 };
 #endif

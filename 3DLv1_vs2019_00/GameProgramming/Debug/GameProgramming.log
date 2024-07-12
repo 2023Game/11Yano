@@ -1,9 +1,4 @@
-﻿  CApplication.cpp
-  CBillBoard.cpp
-  CModelX.cpp
-  CTaskManager.cpp
-  main.cpp
-  コードを生成中...
+﻿  CPlayer.cpp
 LINK : warning LNK4098: defaultlib 'MSVCRT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
 LINK : warning LNK4098: defaultlib 'LIBCMT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe

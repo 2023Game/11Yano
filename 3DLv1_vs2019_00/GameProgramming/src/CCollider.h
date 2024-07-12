@@ -2,12 +2,14 @@
 #ifndef CCOLLIDER_H
 #define CCOLLIDER_H
 #include "CCharacter3.h"
+#include "CMatrix.h"
 
 class CCollisionManager;
 
 class CCollider :public CTransform, public CTask {
 	friend CCollisionManager;
 public:
+	void Matrix(CMatrix* m);
 	void ChangePriority();//—Dæ“x‚Ì•ÏX
 	void ChangePriority(int priority);
 	static bool CollisionTriangleSphere(CCollider* triangle, CCollider* sphere, CVector* adjust);
