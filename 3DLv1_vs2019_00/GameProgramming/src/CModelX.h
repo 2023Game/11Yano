@@ -24,6 +24,7 @@ class CModelX {
 	friend CAnimationSet;
 	friend CAnimation;
 public:
+	void AnimateVertex(CMatrix*);
 	std::vector<CMaterial*>& Material();
 	CMaterial* FindMaterial(char* name);
 	void AnimateVertex();//頂点にアニメーション適用
@@ -96,6 +97,7 @@ private:
 
 class CMesh {
 public:
+	void AnimateVertex(CMatrix*);
 	void AnimateVertex(CModelX* model);//頂点にアニメーション適用
 	//スキンウェイトにフレーム番号を設定
 	void SetSkinWeightFrameIndex(CModelX* model);

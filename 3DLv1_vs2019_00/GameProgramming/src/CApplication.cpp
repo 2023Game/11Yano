@@ -35,12 +35,17 @@ void CApplication::Start()
 	mModelX.Load(MODEL_FILE);
 	//キャラクターのモデルを設定
 	mXPlayer.Init(&mModelX);
+	//敵の初期設定
+	mXEnemy.Init(&mModelX);
+	//敵の配置
+	mXEnemy.Position(CVector(7.0f, 0.0f, 0.0f));
 	mFont.Load("FontG.png", 1, 4096 / 64);
 }
 
 void CApplication::Update()
 {
 	mXPlayer.Update();//キャラクタクラスの更新
+	mXEnemy.Update();//敵の更新
 
 	//カメラのパラメータを作成する
 	CVector e, c, u;//視点、注意点、上方向
@@ -88,6 +93,7 @@ void CApplication::Update()
 	//モデル描画
 	mModelX.Render();
 	mXPlayer.Render();
+	mXEnemy.Render();
 
 	//2D描画開始
 	CCamera::Start(0, 800, 0, 600);

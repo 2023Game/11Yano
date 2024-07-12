@@ -16,10 +16,12 @@
 #include "CUi.h"
 #include "CModelX.h"
 #include "CXPlayer.h"
+#include "CXEnemy.h"
 
 class CApplication
 {
 private:
+	CXEnemy mXEnemy;//敵のインスタンス
 	CXPlayer mXPlayer;//キャラクタのインスタンス
 	CMatrix mMatrix;
 	CModelX mModelX;
