@@ -7,6 +7,7 @@
 
 class CXEnemy :public CXCharacter {
 public:
+	void Collision(CCollider* m, CCollider* o);
 	CXEnemy();
 	void Init(CModelX* model);
 private:

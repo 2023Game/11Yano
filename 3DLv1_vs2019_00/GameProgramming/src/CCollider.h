@@ -9,6 +9,11 @@ class CCollisionManager;
 class CCollider :public CTransform, public CTask {
 	friend CCollisionManager;
 public:
+	enum class ETag {
+		EBODY, //体
+		ESWORD, //剣
+	};
+	ETag Tag();//タグの取得
 	void Matrix(CMatrix* m);
 	void ChangePriority();//優先度の変更
 	void ChangePriority(int priority);
@@ -26,11 +31,12 @@ public:
 	static bool Collision(CCollider* m, CCollider* o);//衝突判定
 	~CCollider();
 	CCollider(CCharacter3* parent, CMatrix* matrix,
-		const CVector& position, float radius);
+		const CVector& position, float radius, ETag tag = ETag::EBODY);
 	CCharacter3* Parent();//親ポインタの取得
 	void Render();
 	EType Type();
 protected:
+	ETag mTag;//タグ
 	EType mType;//コライダタイプ
 	CVector mV[3];//頂点
 	CCharacter3* mpParent;//親
