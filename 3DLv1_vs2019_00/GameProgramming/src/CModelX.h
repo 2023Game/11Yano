@@ -16,6 +16,7 @@ class CAnimationKey;
 
 
 #define MODEL_FILE "res\\ラグナ.x"
+#define MODEL_X "res\\knight\\knight_low.x"
 //領域開放をマクロか
 #define SAFE_DELETE_ARRAY(a){if(a) delete[] a;a=nullptr;}
 
@@ -61,6 +62,7 @@ class CModelXFrame {
 	friend CAnimation;
 	friend CModelX;
 public:
+	CModelXFrame();
 	const CMatrix& CombinedMatrix();
 	void AnimateCombined(CMatrix* parent);
 	int Index();

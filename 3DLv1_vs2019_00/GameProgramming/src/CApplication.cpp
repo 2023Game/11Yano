@@ -31,12 +31,14 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
+	
 	//3Dモデルファイルの読み込み
 	mModelX.Load(MODEL_FILE);
+	mKnight.Load(MODEL_X);
 	//キャラクターのモデルを設定
 	mXPlayer.Init(&mModelX);
 	//敵の初期設定
-	mXEnemy.Init(&mModelX);
+	mXEnemy.Init(&mKnight);
 	//敵の配置
 	mXEnemy.Position(CVector(7.0f, 0.0f, 0.0f));
 	mFont.Load("FontG.png", 1, 4096 / 64);

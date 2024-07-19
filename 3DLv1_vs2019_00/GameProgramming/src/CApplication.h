@@ -21,6 +21,7 @@
 class CApplication
 {
 private:
+	CModelX mKnight;
 	CXEnemy mXEnemy;//敵のインスタンス
 	CXPlayer mXPlayer;//キャラクタのインスタンス
 	CMatrix mMatrix;
