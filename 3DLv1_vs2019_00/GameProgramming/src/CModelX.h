@@ -21,10 +21,19 @@ class CAnimationKey;
 #define SAFE_DELETE_ARRAY(a){if(a) delete[] a;a=nullptr;}
 
 class CModelX {
+	/*
+	アニメーションを抜き出す
+	idx:分割したいアニメーションセットの番号
+	start:分割したいアニメーションの開始時間
+	end:分割したいアニメーションの終了時間
+	name:追加するアニメーションセットの名前
+	*/
+	
 	friend CModelXFrame;
 	friend CAnimationSet;
 	friend CAnimation;
 public:
+	void CModelX::SeparateAnimationSet(int idx, int start, int end, char* name);
 	void AnimateVertex(CMatrix*);
 	std::vector<CMaterial*>& Material();
 	CMaterial* FindMaterial(char* name);
@@ -129,6 +138,7 @@ private:
 class CAnimationSet {
 	friend CModelX;
 public:
+	CAnimationSet();
 	float Time();
 	float MaxTime();
 	void AnimateMatrix(CModelX* model);
@@ -149,6 +159,7 @@ class CAnimation {
 	friend CModelX;
 	friend CAnimationSet;
 public:
+	CAnimation();
 	CAnimation(CModelX* model);
 	~CAnimation();
 private:
@@ -161,6 +172,7 @@ private:
 class CAnimationKey {
 	friend CAnimation;
 	friend CAnimationSet;
+	friend CModelX;
 private:
 	float mTime;//時間
 	CMatrix mMatrix;//行列
