@@ -31,7 +31,8 @@ CTexture* CApplication::Texture()
 
 void CApplication::Start()
 {
-	
+	mpPaladin = new CPaladin();
+	mpPaladin->Position(CVector(-1.0f, 0.0f, 5.0f));
 	//3Dモデルファイルの読み込み
 	mModelX.Load(MODEL_FILE);
 	mKnight.Load(MODEL_X);
@@ -63,6 +64,7 @@ void CApplication::Update()
 	CCollisionManager::Instance()->Collision();
 	mXPlayer.Update();//キャラクタクラスの更新
 	mXEnemy.Update();//敵の更新
+	mpPaladin->Update();
 
 	//カメラのパラメータを作成する
 	CVector e, c, u;//視点、注意点、上方向
@@ -113,6 +115,7 @@ void CApplication::Update()
 	//コライダの描画
 	CCollisionManager::Instance()->Render();
 	mXEnemy.Render();
+	mpPaladin->Render();
 
 	//2D描画開始
 	CCamera::Start(0, 800, 0, 600);

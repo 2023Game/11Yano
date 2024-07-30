@@ -83,13 +83,7 @@ void CPlayer::Update()
 	}
 	CTransform::Update();//•ÏŠ·s—ñ‚ÌXV
 
-	//UIÝ’è
-	CApplication::Ui()->PosY(mPosition.Y());
-	CApplication::Ui()->PosX(mPosition.X());
-	CApplication::Ui()->PosZ(mPosition.Z());
-	CApplication::Ui()->RotY(mRotation.Y());
-	CApplication::Ui()->RotX(mRotation.X());
-	CApplication::Ui()->RotZ(mRotation.Z());
+	
 	if (Ground == false)
 	{
 		mPosition = mPosition + GLAVITY;

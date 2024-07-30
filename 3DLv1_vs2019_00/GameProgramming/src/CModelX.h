@@ -33,6 +33,8 @@ class CModelX {
 	friend CAnimationSet;
 	friend CAnimation;
 public:
+	void AddAnimationSet(const char* file);//アニメーションセットの追加
+	bool IsLoaded();
 	void CModelX::SeparateAnimationSet(int idx, int start, int end, char* name);
 	void AnimateVertex(CMatrix*);
 	std::vector<CMaterial*>& Material();
@@ -57,6 +59,7 @@ public:
 	//ファイル読み込み
 	void Load(char* file);
 private:
+	bool mLoaded;
 	std::vector<CMaterial*> mMaterial;//まれリアル配列
 	std::vector<CAnimationSet*> mAnimationSet;//兄イメーションの配列
 	std::vector<CModelXFrame*> mFrame;//フレームの配列

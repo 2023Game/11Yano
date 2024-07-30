@@ -14,10 +14,12 @@
 #include "CColliderMesh.h"
 #include "CUi.h"
 #include "CGame.h"
+#include "Stage1.h"
 
 class CApplication
 {
 private:
+	Stage1* mpStage1;
 	bool Clear;
 	CGame* mpGame;
 	int mTime;
@@ -38,6 +40,7 @@ private:
 		EPLAY,	//ゲーム中
 		ECLEAR,	//ゲームクリア
 		EOVER,	//ゲームオーバー
+		ESTAGE1,
 	};
 	EState mState;
 	CPlayer* mpPlayer;

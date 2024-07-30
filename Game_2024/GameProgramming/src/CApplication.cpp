@@ -57,7 +57,7 @@ void CApplication::Update()
 
 
 	CVector e, c, u; //視点、注意点、上方向
-	e = mPlayer.Position() + CVector(6.0f, 3.0f, 0.0f); 
+	e = mPlayer.Position() + CVector(6.0f, 3.0f, 0.0f);
 	c = mPlayer.Position();
 	u = CVector(0.0f, 1.0f, 0.0f);
 	//カメラ設定
@@ -79,7 +79,7 @@ void CApplication::Update()
 	{
 		spUi->Time(mTime++);
 	}
-	
+
 	spUi->Render();//UIの描画
 
 	//落ちたらリスタート
@@ -87,7 +87,7 @@ void CApplication::Update()
 	{
 		mPlayer.Position(CVector(0.0f, 1.5f, 0.0f));
 	}
-	if (mPlayer.Position().Y() <= -8.0f && mPlayer.Position().X()<-32.0f && mPlayer.Position().X() > -33.0f)
+	if (mPlayer.Position().Y() <= -8.0f && mPlayer.Position().X() < -32.0f && mPlayer.Position().X() > -33.0f)
 	{
 		Clear = true;
 		spUi->Clear();

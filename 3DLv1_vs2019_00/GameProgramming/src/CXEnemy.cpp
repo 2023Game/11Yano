@@ -1,11 +1,11 @@
 #include "CXEnemy.h"
 
 CXEnemy::CXEnemy()
-    :mColSphereBody(this, nullptr, CVector(0.5f,-1.0f,0.0f), 1.0f, CCollider::ETag::EBODY)
-    , mColSphereHead(this, nullptr, CVector(0.0f, 1.0f, 0.0f), 1.5f)
-    , mColSphereSword0(this, nullptr, CVector(0.7f, 3.5f, -0.2f), 0.5f, CCollider::ETag::ESWORD)
-	, mColSphereSword1(this, nullptr, CVector(0.5f, 2.5f, -0.2f), 0.5f, CCollider::ETag::ESWORD)
-	, mColSphereSword2(this, nullptr, CVector(0.3f, 1.5f, -0.2f), 0.5f, CCollider::ETag::ESWORD)
+	: mColSphereBody(this, nullptr, CVector(0.5f, -1.0f, 0.0f), 1.0f)
+	, mColSphereHead(this, nullptr, CVector(0.0f, 1.f, 0.0f), 1.5f)
+	, mColSphereSword0(this, nullptr, CVector(0.7f, 3.5f, -0.2f), 0.5f)
+	, mColSphereSword1(this, nullptr, CVector(0.5f, 2.5f, -0.2f), 0.5f)
+	, mColSphereSword2(this, nullptr, CVector(0.3f, 1.5f, -0.2f), 0.5f)
 {
 
 }

@@ -39,6 +39,7 @@
     <ClCompile Include="src\CUi.cpp" />
     <ClCompile Include="src\CVector.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Stage1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CAngle.h" />
@@ -72,6 +73,7 @@
     <ClInclude Include="src\CVector.h" />
     <ClInclude Include="src\CVertex.h" />
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\Stage1.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8802AF2F-2920-4700-89F2-CA6778727283}</ProjectGuid>
