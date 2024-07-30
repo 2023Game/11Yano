@@ -2,11 +2,13 @@
 #include "CTexture.h"
 #include "CVertex.h"
 #include "CModelX.h"
+#include "CMyShader.h"
 #ifndef CMATERIAL_H
 #define CMATERIAL_H
 #define MATERIAL_NAME_LEN 64 //–¼‘O‚Ì’·‚³
 
 class CMaterial {
+	friend CMyShader;
 public:
 	CMaterial(CModelX *model);
 	~CMaterial();
