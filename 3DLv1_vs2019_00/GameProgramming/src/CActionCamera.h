@@ -9,6 +9,10 @@
 
 class CActionCamera : public CTransform {
 public:
+	//カメラのX軸取得
+	CVector VectorX();
+	//カメラのZ軸取得
+	CVector VectorZ();
 	CActionCamera();
 	static CActionCamera* Instance();//インスタンスの取得
 	void Set(float distance, float xaxis, float yaxis);//設定メソッド(距離, X回転,Y回転)
