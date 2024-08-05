@@ -1,7 +1,5 @@
-﻿  CBillBoard.cpp
-  CPlayer.cpp
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CPlayer.cpp(5,9): warning C4005: 'VELOCITY': マクロが再定義されました。
-  コードを生成中...
-LINK : warning LNK4098: defaultlib 'MSVCRT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
-LINK : warning LNK4098: defaultlib 'LIBCMT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
+﻿  CMatrix.cpp
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(53,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(61,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(70,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
   GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\Debug\GameProgramming.exe

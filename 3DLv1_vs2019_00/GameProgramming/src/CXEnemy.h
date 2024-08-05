@@ -4,13 +4,16 @@
 
 #include "CXCharacter.h"
 #include "CCollider.h"
+#include "CColliderCapsule.h"
 
 class CXEnemy :public CXCharacter {
 public:
+	void Update();
 	void Collision(CCollider* m, CCollider* o);
 	CXEnemy();
 	void Init(CModelX* model);
 private:
+	CColliderCapsule mColBody;//‘Ì
 	CCollider mColSphereBody;//‘Ì
 	CCollider mColSphereHead;//“ª
 	CCollider mColSphereSword0;//Œ•

@@ -78,10 +78,12 @@ void CXPlayer::Update() {
         }
     }
     CXCharacter::Update();
+    mColBody.Update();
 }
 
 CXPlayer::CXPlayer() 
-    :mColSphereBody(this,nullptr,CVector(),0.5f,CCollider::ETag::EBODY)
+    :mColBody(this, nullptr, CVector(0.0f, 25.0f, 0.0f), CVector(0.0f, 150.0f, 0.0f), 0.5f)
+    ,mColSphereBody(this,nullptr,CVector(),0.5f,CCollider::ETag::EBODY)
     ,mColSphereHead(this, nullptr, CVector(0.0f,5.0f,-3.0f), 0.5f)
     ,mColSphereSword(this, nullptr, CVector(-10.0f,10.0f,50.0f), 0.3f,CCollider::ETag::ESWORD)
 {
@@ -91,7 +93,26 @@ CXPlayer::CXPlayer()
 void CXPlayer::Init(CModelX* model) {
     CXCharacter::Init(model);
     //‡¬s—ñ‚ÌÝ’è
+    mColBody.Matrix(&mpCombinedMatrix[1]);
     mColSphereBody.Matrix(&mpCombinedMatrix[9]);
     mColSphereHead.Matrix(&mpCombinedMatrix[12]);
     mColSphereSword.Matrix(&mpCombinedMatrix[22]);
+}
+
+void CXPlayer::Collision(CCollider* m, CCollider* o)
+{
+    switch (m->Type())
+    {
+    case CCollider::EType::ECAPSULE:
+        if (o->Type() == CCollider::EType::ECAPSULE)
+        {
+            CVector adjust;
+            if (CCollider::CollisionCapsuleCapsule(m, o, &adjust))
+            {
+                mPosition = mPosition + adjust;
+                CTransform::Update();
+            }
+        }
+        break;
+    }
 }

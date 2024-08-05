@@ -1,2 +1,16 @@
-﻿  CXPlayer.cpp
-  GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\Debug\GameProgramming.exe
+﻿  CActionCamera.cpp
+  CCollider.cpp
+  CCollisionManager.cpp
+  CMyShader.cpp
+  CPaladin.cpp
+  CPlayer.cpp
+  CShader.cpp
+  CSound.cpp
+  CTaskManager.cpp
+  CTexture.cpp
+  CInput.cpp
+  CTransform.cpp
+  CXCharacter.cpp
+  main.cpp
+  コードを生成中...
+C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\src\CSound.cpp(1,1): error C1090: PDB API の呼び出しに失敗しました。エラー コード '3': C:\Users\shiori_0620\Desktop\いぬ\11Yano\3DLv1_vs2019_00\GameProgramming\Debug\vc143.pdb

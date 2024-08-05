@@ -70,8 +70,8 @@ CMatrix CMatrix::RotateX(float degree) {
 	float rad = degree / 180.0f * M_PI;
 	Identity();
 	mM[1][1] = mM[2][2] = cosf(rad);
-	mM[2][1] = sinf(rad);
-	mM[1][2] = -mM[2][1];
+	mM[1][2] = sinf(rad);
+	mM[2][1] = -mM[1][2];
 	return *this;
 }
 
