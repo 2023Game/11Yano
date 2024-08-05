@@ -18,7 +18,7 @@ CVector CVector::operator-(const CVector &v) const
 	return CVector(mX - v.mX, mY - v.mY, mZ - v.mZ);
 }
 
-CVector CVector::operator*(const CMatrix& m)
+CVector CVector::operator*(const CMatrix& m) const
 {
 	return CVector(
 		mX * m.M(0, 0) + mY * m.M(1, 0) + mZ * m.M(2, 0) + m.M(3, 0),

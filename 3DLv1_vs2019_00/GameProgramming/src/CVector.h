@@ -15,7 +15,7 @@ public:
 	CVector operator*(const float& f) const;//*演算子のオーバーロード
 	float Dot(const CVector& v) const;//内積
 	float Length() const;
-	CVector operator*(const CMatrix &m);
+	CVector operator*(const CMatrix &m) const;
 	CVector operator+(const CVector &v) const; //+演算子のオーバーロード
 	CVector operator-(const CVector &v) const; //-演算子のオーバーロード
 	CVector(); //デフォルトコンストラクタ
