@@ -1,5 +1,0 @@
-﻿  CMatrix.cpp
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(53,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(61,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
-C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\GameProgramming\src\CMatrix.cpp(70,12): warning C4244: '初期化中': 'double' から 'float' への変換です。データが失われる可能性があります。
-  GameProgramming.vcxproj -> C:\Users\shiori_0620\Desktop\いぬ\11Yano\Game_2024\Debug\GameProgramming.exe
