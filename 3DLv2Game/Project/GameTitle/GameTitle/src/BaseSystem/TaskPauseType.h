@@ -28,5 +28,7 @@ enum class ETaskPauseType
 	//（システム関連のTaskは常に動かすのでポーズしない）
 	eSystem = eNone,
 
+	eHack = PAUSE_GAME,
+
 	Num
 };

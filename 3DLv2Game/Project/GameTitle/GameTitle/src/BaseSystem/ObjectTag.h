@@ -8,6 +8,7 @@ enum class ETag
 
 	eField,	// フィールドを構成するオブジェクト
 	eRideableObject,	// 乗ることができるオブジェクト
+	eInteractObject, 
 	eItem,	// アイテムのオブジェクト
 
 	ePlayer,// プレイヤー
@@ -18,6 +19,8 @@ enum class ETag
 	eSlash,	// 斬撃
 
 	eCamera,// カメラ
+
+	eDebug,// デバッグ用のオブジェクト
 
 	Num
 };

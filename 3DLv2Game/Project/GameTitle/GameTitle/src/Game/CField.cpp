@@ -3,20 +3,44 @@
 #include "CMoveFloor.h"
 #include "CRotateFloor.h"
 #include "CLineEffect.h"
+#include "CWall.h"
+#include "CIntercom.h"
+#include <assert.h>
+#include "CNavManager.h"
+#include "CNavNode.h"
+#include "CDoor.h"
+
+// フィールドのインスタンス
+CField* CField::spInstanse = nullptr;
+
+// フィールドのインスタンスを返す
+CField* CField::Instanse()
+{
+	return spInstanse;
+}
 
 CField::CField()
 	: CObjectBase(ETag::eField, ETaskPriority::eBackground)
 	, mEffectAnimData(1, 11, true, 11, 0.03f)
 {
+	assert(spInstanse == nullptr);
+	spInstanse = this;
+
 	mpModel = CResourceManager::Get<CModel>("Field");
 
 	mpColliderMesh = new CColliderMesh(this, ELayer::eField, mpModel, true);
+
+	CreateWalls();
+	CreateIntercoms();
+	CreateNavNodes();
 
 	CreateFieldObjects();
 }
 
 CField::~CField()
 {
+	spInstanse = nullptr;
+
 	if (mpColliderMesh != nullptr)
 	{
 		delete mpColliderMesh;
@@ -24,92 +48,131 @@ CField::~CField()
 	}
 }
 
+void CField::CreateWalls()
+{
+	//CWall* wall = new CWall
+	//(
+	//	CVector(20.0f, 0.0f, 0.0f),
+	//	CVector(0.0f, 90.0f, 0.0f),
+	//	CVector(5.0f, 5.0f, 5.0f)
+	//);
+	//mWalls.push_back(wall); // 生成した壁を壁のリストに追加
+
+	//// 壁②生成
+	//wall = new CWall
+	//(
+	//	CVector(-50.0f, 0.0f, -50.0f),
+	//	CVector(0.0f, 0.0f, 0.0f),
+	//	CVector(5.0f, 5.0f, 5.0f)
+	//);
+	//mWalls.push_back(wall);
+}
+
+void CField::CreateIntercoms()
+{
+	
+}
+
 void CField::CreateFieldObjects()
 {
-	mpCubeModel = CResourceManager::Get<CModel>("FieldCube");
-	mpCylinderModel = CResourceManager::Get<CModel>("FieldCylinder");
 
-	new CMoveFloor
+	CIntercom* intercom = new CIntercom
 	(
-		mpCubeModel,
-		CVector(0.0f, 10.0f, -50.0f), CVector(1.0f, 1.0f, 1.0f),
-		CVector(50.0f, 0.0f, 0.0f), 10.0f
+		CVector(200.5f, 25.0f, 126.0f),
+		CVector(0.0f, 270.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
 	);
-	new CRotateFloor
+#if _DEBUG
+	intercom->SetDebugName("Intercom1");
+#endif
+	CIntercom* intercom2 = new CIntercom
 	(
-		mpCylinderModel,
-		CVector(-40.0f, 15.0f, 20.0f), CVector(1.0f, 1.0f, 1.0f),
-		1.0f
+		CVector(-123.0f, 25.0f, -23.0f),
+		CVector(0.0f, 180.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
 	);
+#if _DEBUG
+	intercom2->SetDebugName("Intercom2");
+#endif
+	CIntercom* intercom3 = new CIntercom
+	(
+		CVector(-221.0f, 25.0f, -125.0f),
+		CVector(0.0f, 270.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
+	);
+#if _DEBUG
+	intercom3->SetDebugName("Intercom3");
+#endif
 
-	// 動かない床①
-	new CMoveFloor
+	CDoor* door = new CDoor
 	(
-		mpCubeModel,
-		CVector(20.0f, 10.0f, 0.0f), CVector(0.5f, 1.0f, 0.25f),
-		CVector(0.0f, 0.0f, 0.0f), 5.0f
+		CVector(210.5f, 25.0f, 125.0f),
+		CVector(0.0f, 0.0f, 0.0f),
+		CVector(1.0f, 1.0f, 1.0f)
 	);
-	// 動く床①
-	new CMoveFloor
+	door->SetAnimPos
 	(
-		mpCubeModel,
-		CVector(60.0f, 20.0f, 0.0f), CVector(0.25f, 1.0f, 0.25f),
-		CVector(20.0f, 0.0f, 0.0f), 5.0f
+		CVector(-30.0f, 1.0f, -50.0f),
+		CVector(-50.0f, 1.0f, -50.0f)
 	);
-	// 動かない床②
-	new CMoveFloor
-	(
-		mpCubeModel,
-		CVector(100.0f, 20.0f, 0.0f), CVector(0.25f, 1.0f, 0.25f),
-		CVector(0.0f, 0.0f, 0.0f), 5.0f
-	);
-	// 回転する床①
-	new CRotateFloor
-	(
-		mpCubeModel,
-		CVector(135.0f, 20.0f, 0.0f), CVector(1.0f, 1.0f, 0.25f),
-		0.5f
-	);
-	// 動かない床②
-	new CMoveFloor
-	(
-		mpCubeModel,
-		CVector(135.0f, 20.0f, -35.0f), CVector(0.25f, 1.0f, 0.25f),
-		CVector(0.0f, 0.0f, 0.0f), 5.0f
-	);
-	// 動かない床②
-	new CMoveFloor
-	(
-		mpCubeModel,
-		CVector(135.0f, 70.0f, -52.5f), CVector(0.25f, 1.0f, 0.25f),
-		CVector(0.0f, 50.0f, 0.0f), 5.0f
-	);
-	// 動かない床③（坂道）
-	CMoveFloor* mf = new CMoveFloor
-	(
-		mpCubeModel,
-		CVector(0.0f, 20.0f, 200.5f), CVector(4.0f, 1.0f, 2.0f),
-		CVector(0.0f, 0.0f, 0.0f), 5.0f
-	);
-	mf->Rotate(0.0f, 0.0f, 30.0f);
+	door->AddIntercom(intercom);
+}
 
-	// 電撃エフェクト
-	CLineEffect* le = new CLineEffect(ETag::eField);
-	le->SetTexture("LightningBolt");
-	le->SetBaseUV(CRect(0.0f, 0.0f, 128.0f, 1024.0f));
-	le->SetAnimData(&mEffectAnimData);
-
-	CVector startPos = CVector(50.0f, 10.0f, 0.0f);
-	CVector endPos = CVector(50.0f, 10.0f, 150.0f);
-	int div = 3;
-	float width = 5.0f;
-	le->AddPoint(startPos, width, width);
-	for (int i = 0; i < div; i++)
+void CField::CreateNavNodes()
+{
+	CNavManager* navMgr = CNavManager::Instance();
+	if (navMgr != nullptr)
 	{
-		float alpha = (float)(i + 1) / div;
-		CVector pos = CVector::Lerp(startPos, endPos, alpha);
-		le->AddPoint(pos, width, width);
+		// 壁①の周りの経路探索ノード
+		new CNavNode(CVector(144.5f, 0.0f, 87.0f));
+		new CNavNode(CVector(221.5f, 0.0f, 87.0f));
+		new CNavNode(CVector(221.5f, 0.0f, -94.0f));
+		new CNavNode(CVector(144.5f, 0.0f, -94.0f));
+
+		// 壁にの経路探索ノード
+		new CNavNode(CVector(29.0f, 0.0f, 87.0f));
+		new CNavNode(CVector(108.0f, 0.0f, 87.0f));
+		new CNavNode(CVector(108.0f, 0.0f, -94.0f));
+		new CNavNode(CVector(29.0f, 0.0f, -94.0f));
+
+		// 壁③の経路探索ノード
+		new CNavNode(CVector(-90.0f, 0.0f, 87.0f));
+		new CNavNode(CVector(-12.5f, 0.0f, 87.0f));
+		new CNavNode(CVector(-12.5f, 0.0f, -94.0f));
+		new CNavNode(CVector(-90.0f, 0.0f, -94.0f));
 	}
+}
+
+bool CField::CollisionRay(const CVector& start, const CVector& end, CHitInfo* hit)
+{
+	// 衝突情報保存用
+	CHitInfo tHit;
+	// 衝突したかどうかのフラグ
+	bool isHit = false;
+
+	// フィールドオブジェクトとの衝突判定
+	if (CCollider::CollisionRay(mpColliderMesh, start, end, &tHit))
+	{
+		*hit = tHit;
+		isHit = true;
+	}
+
+	// 壁との衝突判定
+	for (CWall* wall : mWalls)
+	{
+		if (wall->CollisionRay(start, end, &tHit))
+		{
+			// まだ衝突していないかすでに衝突しているコライダより近い場合
+			if (!isHit || tHit.dist < hit->dist)
+			{
+				// 衝突情報更新
+				*hit = tHit;
+				isHit = true;
+			}
+		}
+	}
+
+	return isHit;
 }
 
 void CField::Update()

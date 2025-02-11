@@ -2,17 +2,21 @@
 #include "CSceneManager.h"
 #include "CField.h"
 #include "CPlayer.h"
+#include "CRobot.h"
 #include "CGameCamera.h"
 #include "CGameCamera2.h"
 #include "CInput.h"
 #include "CGameMenu.h"
+#include "CHackGame.h"
 #include "CBGMManager.h"
 #include "CLineEffect.h"
+#include "CNavManager.h"
 
 //コンストラクタ
 CGameScene::CGameScene()
 	: CSceneBase(EScene::eGame)
 	, mpGameMenu(nullptr)
+	, mpHackGame(nullptr)
 {
 }
 
@@ -32,22 +36,63 @@ void CGameScene::Load()
 	//ここでゲーム中に必要な
 	//リソースの読み込みやクラスの生成を行う
 
-	CResourceManager::Load<CModel>("Field", "Field\\field.obj");
-	CResourceManager::Load<CModel>("FieldCube", "Field\\Object\\cube.obj");
+	CResourceManager::Load<CModel>("Field", "Field\\Company.mini.obj");
+	CResourceManager::Load<CModel>("Door", "Field\\Object\\door\\scifi_door.obj");
+	CResourceManager::Load<CModel>("Intercom", "Field\\Object\\door\\intercom\\intercom.obj");
 	CResourceManager::Load<CModel>("FieldCylinder", "Field\\Object\\cylinder.obj");
+	CResourceManager::Load<CModel>("Wall", "Field\\Object\\wall\\Wall.obj");
+	CResourceManager::Load<CModel>("WallCol", "Field\\Object\\wall\\WallCol.obj");
 	CResourceManager::Load<CModelX>("Player", "Character\\Mryotaisu\\Mryotaisu.x");
+	CResourceManager::Load<CModelX>("Robot", "Character\\Robot\\Robot_Blue.x");
 	CResourceManager::Load<CTexture>("Laser", "Effect\\laser.png");
 	CResourceManager::Load<CTexture>("LightningBolt", "Effect\\lightning_bolt.png");
 	CResourceManager::Load<CModel>("Slash", "Effect\\slash.obj");
 	CResourceManager::Load<CSound>("SlashSound", "Sound\\SE\\slash.wav");
 
 	// ゲームBGMを読み込み
-	CBGMManager::Instance()->Play(EBGMType::eGame);
+	//CBGMManager::Instance()->Play(EBGMType::eGame);
+
+	// 経路探索管理クラスを作成
+	new CNavManager();
 
 	new CField();
 
 	CPlayer* player = new CPlayer();
 	player->Scale(1.0f, 1.0f, 1.0f);
+	player->Position(216.0f, 10.30f, 192.0f);
+
+	CRobot* robot = new CRobot
+	(
+		{
+			CVector(233.0f, 10.0f, -105.0f),
+			CVector(233.0f, 10.0f, 102.0f),
+			CVector(129.0f, 10.0f, 102.0f),
+			CVector(129.0f, 10.0f, -105.0f),
+		}
+	);
+	robot->Position(233.0f, 10.30f, -105.0f);
+
+	CRobot* robot2 = new CRobot
+	(
+		{
+			CVector(122.0f, 10.0f, -105.0f),
+			CVector(122.0f, 10.0f, 102.0f),
+			CVector(12.0f, 10.0f, 102.0f),
+			CVector(12.0f, 10.0f, -105.0f),
+		}
+	);
+	robot2->Position(122.0f, 10.0f, 102.0f);
+
+	CRobot* robot3 = new CRobot
+	(
+		{
+			CVector(3.0f, 10.0f, -105.0f),
+			CVector(3.0f, 10.0f, 102.0f),
+			CVector(-100.0f, 10.0f, 102.0f),
+			CVector(-100.0f, 10.0f, -105.0f),
+		}
+	);
+	robot3->Position(3.0f, 10.0f, -105.0f);
 
 	// CGameCameraのテスト
 	//CGameCamera* mainCamera = new CGameCamera
@@ -69,6 +114,7 @@ void CGameScene::Load()
 
 	// ゲームメニューを作成
 	mpGameMenu = new CGameMenu();
+
 }
 
 //シーンの更新処理
@@ -83,14 +129,5 @@ void CGameScene::Update()
 	if (CInput::PushKey('H'))
 	{
 		CSceneManager::Instance()->LoadScene(EScene::eTitle);
-	}
-
-	// ゲームメニューを開いてなければ、[Ｍ]キーでメニューを開く
-	if (!mpGameMenu->IsOpened())
-	{
-		if (CInput::PushKey('M'))
-		{
-			mpGameMenu->Open();
-		}
 	}
 }

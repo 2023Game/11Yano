@@ -8,6 +8,7 @@ enum class EBGMType
 	eTitle,	// タイトル画面のBGM
 	eGame,	// ゲーム画面のBGM
 	eMenu,	// メニューを開いている時のBGM
+	eHack,  // ハッキング中のBGM
 
 	Num
 };

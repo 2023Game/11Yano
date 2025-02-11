@@ -4,8 +4,9 @@
 #include "CColliderLine.h"
 #include "CRideableObject.h"
 #include "CSound.h"
+#include "CColliderSphere.h"
 
-class CFlamethrower;
+class CInteractObject;
 
 /*
 プレイヤークラス
@@ -42,22 +43,10 @@ private:
 
 	// 待機状態
 	void UpdateIdle();
-	// 攻撃
-	void UpdateAttack();
-	// 攻撃終了待ち
-	void UpdateAttackWait();
-	// ジャンプ開始
-	void UpdateJumpStart();
-	// ジャンプ中
-	void UpdateJump();
-	// ジャンプ終了
-	void UpdateJumpEnd();
+
 
 	// 移動の更新処理
 	void UpdateMove();
-
-	// モーションブラーの更新処理
-	void UpdateMotionBlur();
 
 	// アニメーションの種類
 	enum class EAnimType
@@ -67,10 +56,8 @@ private:
 		eTPose,		// Tポーズ
 		eIdle,		// 待機
 		eWalk,		// 歩行
-		eAttack,	// 攻撃
-		eJumpStart,	// ジャンプ開始
-		eJump,		// ジャンプ中
-		eJumpEnd,	// ジャンプ終了
+		eSneak,     // しゃがみ
+
 
 		Num
 	};
@@ -94,30 +81,28 @@ private:
 	enum class EState
 	{
 		eIdle,		// 待機
-		eAttack,	// 攻撃
-		eAttackWait,// 攻撃終了待ち
-		eJumpStart,	// ジャンプ開始
-		eJump,		// ジャンプ中
-		eJumpEnd,	// ジャンプ終了
+		eSneak,     // しゃがみ
 	};
 	EState mState;	// プレイヤーの状態
 
 	CVector mMoveSpeed;	// 前後左右の移動速度
 	float mMoveSpeedY;	// 重力やジャンプによる上下の移動速度
 
+	bool mIsDash;
 	bool mIsGrounded;	// 接地しているかどうか
 	CVector mGroundNormal;	// 接地している地面の法線
 
-	CColliderLine* mpColliderLine;
+	CColliderLine* mpColliderLine; // 縦方向の線分コライダ
+	CColliderLine* mpColliderLineX; // 横方向(X)の線分コライダ
+	CColliderLine* mpColliderLineZ; // 横方向(Z)の線分コライダ
+	CColliderSphere* mpCollider;
 	CTransform* mpRideObject;
+
+	CInteractObject* GetNearInteractObj() const;
+	std::list<CInteractObject*> mNearInteractObjs;
 
 	CSound* mpSlashSE;
 	bool mIsPlayedSlashSE;
 	bool mIsSpawnedSlashEffect;
 
-	// 火炎放射エフェクト
-	CFlamethrower* mpFlamethrower;
-
-	// モーションブラーを掛ける残り時間
-	float mMotionBlurRemainTime;
 };

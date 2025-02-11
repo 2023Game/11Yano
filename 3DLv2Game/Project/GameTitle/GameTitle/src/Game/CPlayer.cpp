@@ -6,6 +6,10 @@
 #include "CFlamethrower.h"
 #include "CSlash.h"
 #include "Maths.h"
+#include "CNavNode.h"
+#include "CNavManager.h"
+#include "CColliderSphere.h"
+#include "CInteractObject.h"
 
 // プレイヤーのインスタンス
 CPlayer* CPlayer::spInstance = nullptr;
@@ -14,26 +18,23 @@ CPlayer* CPlayer::spInstance = nullptr;
 const CPlayer::AnimData CPlayer::ANIM_DATA[] =
 {
 	{ "",										true,	0.0f	},	// Tポーズ
-	{ "Character\\Mryotaisu\\anim\\idle.x",		true,	418.0f	},	// 待機
-	//{ "Character\\Player\\anim\\walk.x",		true,	66.0f	},	// 歩行
-	//{ "Character\\Player\\anim\\attack.x",		false,	91.0f	},	// 攻撃
+	{ "Character\\Mryotaisu\\anim\\idle.x",		true,	500.0f	},	// 待機
+	{ "Character\\Mryotaisu\\anim\\walk.x",		true,	62.0f	},	// 歩行
+	//{ "Character\\Mryotaisu\\anim\\sneak.x",		true,	54.0f	},	// しゃがみ歩行
 	//{ "Character\\Player\\anim\\jump_start.x",	false,	25.0f	},	// ジャンプ開始
 	//{ "Character\\Player\\anim\\jump.x",		true,	1.0f	},	// ジャンプ中
 	//{ "Character\\Player\\anim\\jump_end.x",	false,	26.0f	},	// ジャンプ終了
 };
 
-#define PLAYER_HEIGHT 16.0f
-#define MOVE_SPEED 0.375f * 2.0f
-#define JUMP_SPEED 1.5f
-#define GRAVITY 0.0625f
-#define JUMP_END_Y 1.0f
+#define PLAYER_HEIGHT	 16.0f
+#define PLAYER_WIDTH	  5.0f
+#define MOVE_SPEED		  0.375f * 2.0f
+#define MOVE_SPEED2		  0.475f * 2.0f
+#define JUMP_SPEED		  1.5f
+#define GRAVITY			  0.0625f
+#define JUMP_END_Y		  1.0f
 
-// モーションブラーを掛ける時間
-#define MOTION_BLUR_TIME 3.0f
-// モーションブラーの幅
-#define MOTION_BLUR_WIDTH 1.0f
-// モーションブラーの反復回数
-#define MOTION_BLUR_COUNT 5
+
 
 // コンストラクタ
 CPlayer::CPlayer()
@@ -44,7 +45,8 @@ CPlayer::CPlayer()
 	, mpRideObject(nullptr)
 	, mIsPlayedSlashSE(false)
 	, mIsSpawnedSlashEffect(false)
-	, mMotionBlurRemainTime(0.0f)
+	, mIsDash(false)
+	, mpCollider(nullptr)
 {
 	//インスタンスの設定
 	spInstance = this;
@@ -68,29 +70,61 @@ CPlayer::CPlayer()
 
 	mpColliderLine = new CColliderLine
 	(
-		this, ELayer::eField,
+		this, ELayer::ePlayer,
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(0.0f, PLAYER_HEIGHT, 0.0f)
 	);
 	mpColliderLine->SetCollisionLayers({ ELayer::eField });
 
+	float width = PLAYER_WIDTH * 0.5f;
+	float posY = PLAYER_HEIGHT * 0.5f;
+	mpColliderLineX = new CColliderLine
+	(
+		this, ELayer::ePlayer,
+		CVector(-width, posY, 0.0f),
+		CVector(width, posY, 0.0f)
+	);
+	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpColliderLineZ = new CColliderLine
+	(
+		this, ELayer::ePlayer,
+		CVector(0.0f, posY, -width),
+		CVector(0.0f, posY, width)
+	);
+	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpCollider = new CColliderSphere
+	(
+		this, ELayer::eInteractSearch,
+		20.0f
+	);
+	mpCollider->SetCollisionTags({ ETag::eInteractObject });
+	mpCollider->SetCollisionLayers({ ELayer::eInteractObj });
+
 	mpSlashSE = CResourceManager::Get<CSound>("SlashSound");
 
-	mpFlamethrower = new CFlamethrower
-	(
-		this, nullptr,
-		CVector(0.0f, 14.0f, -1.0f),
-		CQuaternion(0.0f, 90.0f, 0.0f).Matrix()
-	);
+
+
+	// 経路探索用ノードを作成
+	mpNavNode = new CNavNode(Position(), true);
+	mpNavNode->SetColor(CColor::red);
+
 }
 
 CPlayer::~CPlayer()
 {
-	if (mpColliderLine != nullptr)
+	SAFE_DELETE(mpColliderLine);
+	SAFE_DELETE(mpColliderLineX);
+	SAFE_DELETE(mpColliderLineZ);
+	SAFE_DELETE(mpCollider);
+
+	// 経路探索用ノードの破棄
+	CNavManager* navMgr = CNavManager::Instance();
+	if (navMgr != nullptr)
 	{
-		delete mpColliderLine;
-		mpColliderLine = nullptr;
+		SAFE_DELETE(mpNavNode);
 	}
+
+	spInstance = nullptr;
 }
 
 CPlayer* CPlayer::Instance()
@@ -106,108 +140,42 @@ void CPlayer::ChangeAnimation(EAnimType type)
 	CXCharacter::ChangeAnimation((int)type, data.loop, data.frameLength);
 }
 
+CInteractObject* CPlayer::GetNearInteractObj() const
+{
+	CInteractObject* nearObj = nullptr;
+	float nearDist = 0.0f;
+	CVector pos = Position();
+	for (CInteractObject* obj : mNearInteractObjs)
+	{
+		if (!obj->CanInteract()) continue;
+
+		float dist = (obj->Position() - pos).LengthSqr();
+		if (nearObj == nullptr || dist < nearDist)
+		{
+			nearObj = obj;
+			nearDist = dist;
+		}
+	}
+	return nearObj;
+}
+
 // 待機
 void CPlayer::UpdateIdle()
 {
 	// 接地していれば、
 	if (mIsGrounded)
 	{
-		// 左クリックで攻撃状態へ移行
-		if (CInput::PushKey(VK_LBUTTON))
+		CInteractObject* obj = GetNearInteractObj();
+		if (obj != nullptr)
 		{
-			mMoveSpeed = CVector::zero;
-			mState = EState::eAttack;
-		}
-		// SPACEキーでジャンプ開始へ移行
-		else if (CInput::PushKey(VK_SPACE))
-		{
-			mState = EState::eJumpStart;
+			if (CInput::PushKey('F'))
+			{
+				obj->Interact();
+			}
 		}
 	}
 }
 
-// 攻撃
-void CPlayer::UpdateAttack()
-{
-	// 攻撃アニメーションを開始
-	ChangeAnimation(EAnimType::eAttack);
-	// 攻撃終了待ち状態へ移行
-	mState = EState::eAttackWait;
-
-	// 斬撃SEの再生済みフラグを初期化
-	mIsPlayedSlashSE = false;
-	// 斬撃エフェクトの生成済みフラグを初期化
-	mIsSpawnedSlashEffect = false;
-}
-
-// 攻撃終了待ち
-void CPlayer::UpdateAttackWait()
-{
-	// 斬撃SEを再生していないかつ、アニメーションが25%以上進行したら、
-	if (!mIsPlayedSlashSE && GetAnimationFrameRatio() >= 0.25f)
-	{
-		// 斬撃SEを再生
-		mpSlashSE->Play();
-		mIsPlayedSlashSE = true;
-	}
-
-	// 斬撃エフェクトを生成していないかつ、アニメーションが35%以上進行したら、
-	if (!mIsSpawnedSlashEffect && GetAnimationFrameRatio() >= 0.35f)
-	{
-		// 斬撃エフェクトを生成して、正面方向へ飛ばす
-		CSlash* slash = new CSlash
-		(
-			this,
-			Position() + CVector(0.0f, 10.0f, 0.0f),
-			VectorZ(),
-			300.0f,
-			100.0f
-		);
-		// 斬撃エフェクトの色設定
-		slash->SetColor(CColor(0.15f, 0.5f, 0.5f));
-
-		mIsSpawnedSlashEffect = true;
-	}
-
-	// 攻撃アニメーションが終了したら、
-	if (IsAnimationFinished())
-	{
-		// 待機状態へ移行
-		mState = EState::eIdle;
-		ChangeAnimation(EAnimType::eIdle);
-	}
-}
-
-// ジャンプ開始
-void CPlayer::UpdateJumpStart()
-{
-	ChangeAnimation(EAnimType::eJumpStart);
-	mState = EState::eJump;
-
-	mMoveSpeedY += JUMP_SPEED;
-	mIsGrounded = false;
-}
-
-// ジャンプ中
-void CPlayer::UpdateJump()
-{
-	if (mMoveSpeedY <= 0.0f)
-	{
-		ChangeAnimation(EAnimType::eJumpEnd);
-		mState = EState::eJumpEnd;
-	}
-}
-
-// ジャンプ終了
-void CPlayer::UpdateJumpEnd()
-{
-	// ジャンプアニメーションが終了かつ、
-	// 地面に接地したら、待機状態へ戻す
-	if (IsAnimationFinished() && mIsGrounded)
-	{
-		mState = EState::eIdle;
-	}
-}
 
 // キーの入力情報から移動ベクトルを求める
 CVector CPlayer::CalcMoveVec() const
@@ -257,7 +225,15 @@ void CPlayer::UpdateMove()
 	// 求めた移動ベクトルの長さで入力されているか判定
 	if (move.LengthSqr() > 0.0f)
 	{
-		mMoveSpeed += move * MOVE_SPEED;
+		if (mIsDash == true)
+		{
+			mMoveSpeed += move * MOVE_SPEED2;
+		}
+		else
+		{
+			mMoveSpeed += move * MOVE_SPEED;
+		}
+
 
 		// 待機状態であれば、歩行アニメーションに切り替え
 		if (mState == EState::eIdle)
@@ -276,42 +252,10 @@ void CPlayer::UpdateMove()
 	}
 }
 
-// モーションブラーの更新処理
-void CPlayer::UpdateMotionBlur()
-{
-	// モーションブラーの残り時間が残っていなければ、処理しない
-	if (mMotionBlurRemainTime <= 0.0f) return;
-	// 現在のカメラを取得し、存在しなければ処理しない
-	CCamera* currentCamera = CCamera::CurrentCamera();
-	if (currentCamera == nullptr) return;
-
-	// カメラの向きと反対方向へブラーを掛けるため、
-	// 反転したカメラの向きを取得
-	CVector camDir = -currentCamera->VectorZ();
-
-	// 残り時間から経過時間の割合を取得（経過時間の割合 = 1 - 残り時間の割合）
-	float percent = 1.0f - mMotionBlurRemainTime / MOTION_BLUR_TIME;
-	// ブラーの幅をサインカーブで経過時間に合わせて増減させる
-	float ratio = sinf(M_PI * percent);
-	float width = MOTION_BLUR_WIDTH * ratio;
-
-	// モーションブラーのパラメータを設定
-	System::SetMotionBlur(camDir, width, MOTION_BLUR_COUNT);
-
-	// 残り時間を経過時間分減少させる
-	mMotionBlurRemainTime -= Times::DeltaTime();
-	// 残り時間がなくなれば、
-	if (mMotionBlurRemainTime <= 0.0f)
-	{
-		// モーションブラーをオフにする
-		System::SetEnableMotionBlur(false);
-		mMotionBlurRemainTime = 0.0f;
-	}
-}
-
 // 更新
 void CPlayer::Update()
 {
+
 	SetParent(mpRideObject);
 	mpRideObject = nullptr;
 
@@ -322,33 +266,10 @@ void CPlayer::Update()
 		case EState::eIdle:
 			UpdateIdle();
 			break;
-		// 攻撃
-		case EState::eAttack:
-			UpdateAttack();
-			break;
-		// 攻撃終了待ち
-		case EState::eAttackWait:
-			UpdateAttackWait();
-			break;
-		// ジャンプ開始
-		case EState::eJumpStart:
-			UpdateJumpStart();
-			break;
-		// ジャンプ中
-		case EState::eJump:
-			UpdateJump();
-			break;
-		// ジャンプ終了
-		case EState::eJumpEnd:
-			UpdateJumpEnd();
-			break;
 	}
 
 	// 待機中とジャンプ中は、移動処理を行う
-	if (mState == EState::eIdle
-		|| mState == EState::eJumpStart
-		|| mState == EState::eJump
-		|| mState == EState::eJumpEnd)
+	if (mState == EState::eIdle)
 	{
 		UpdateMove();
 	}
@@ -367,32 +288,30 @@ void CPlayer::Update()
 	CVector forward = CVector::Slerp(current, target, 0.125f);
 	Rotation(CQuaternion::LookRotation(forward));
 
-	// 右クリックで弾丸発射
-	if (CInput::PushKey(VK_RBUTTON))
+	if (CInput::Key(VK_SHIFT))
 	{
-		// 弾丸を生成
-		new CBullet
-		(
-			// 発射位置
-			Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
-			VectorZ(),	// 発射方向
-			1000.0f,	// 移動距離
-			1000.0f		// 飛距離
-		);
+		mIsDash=true;
+	}
+	else
+	{
+		mIsDash = false;
 	}
 
-	// 「E」キーで炎の発射をオンオフする
-	if (CInput::PushKey('E'))
-	{
-		if (!mpFlamethrower->IsThrowing())
-		{
-			mpFlamethrower->Start();
-		}
-		else
-		{
-			mpFlamethrower->Stop();
-		}
-	}
+	//// 右クリックで弾丸発射
+	//if (CInput::PushKey(VK_RBUTTON))
+	//{
+	//	// 弾丸を生成
+	//	new CBullet
+	//	(
+	//		// 発射位置
+	//		Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
+	//		VectorZ(),	// 発射方向
+	//		1000.0f,	// 移動距離
+	//		1000.0f		// 飛距離
+	//	);
+	//}
+
+	
 
 	// 「P」キーを押したら、ゲームを終了
 	if (CInput::PushKey('P'))
@@ -400,23 +319,14 @@ void CPlayer::Update()
 		System::ExitGame();
 	}
 
-	// 「B」キーを押したら、モーションブラー開始
-	if (CInput::PushKey('B'))
-	{
-		// モーションブラーを掛けている最中であれば、
-		// 新しくモーションブラーを掛け直さない
-		if (mMotionBlurRemainTime <= 0.0f)
-		{
-			System::SetEnableMotionBlur(true);
-			mMotionBlurRemainTime = MOTION_BLUR_TIME;
-		}
-	}
-
-	// モーションブラーの更新処理
-	UpdateMotionBlur();
-
 	// キャラクターの更新
 	CXCharacter::Update();
+
+	// 経路探索用ノードが存在したら座標更新
+	if (mpNavNode != nullptr)
+	{
+		mpNavNode->SetPos(Position());
+	}
 
 	CDebugPrint::Print("Grounded:%s\n", mIsGrounded ? "true" : "false");
 	CDebugPrint::Print("State:%d\n", mState);
@@ -424,6 +334,8 @@ void CPlayer::Update()
 	mIsGrounded = false;
 
 	CDebugPrint::Print("FPS:%f\n", Times::FPS());
+
+	mNearInteractObjs.clear();
 }
 
 // 衝突処理
@@ -473,6 +385,31 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 					mMoveSpeedY = 0.0f;
 				}
 			}
+		}
+	}
+	else if (self == mpColliderLineX || self == mpColliderLineZ)
+	{
+		if (other->Layer() == ELayer::eField)
+		{
+			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
+			CVector adjust = hit.adjust;
+			adjust.Y(0.0f);
+
+			// 押し戻しベクトルの分座標を移動
+			Position(Position() + adjust * hit.weight);
+		}
+	}
+	else if (self == mpCollider)
+	{
+		CInteractObject* obj = dynamic_cast<CInteractObject*>(other->Owner());
+		if (obj != nullptr)
+		{
+			mNearInteractObjs.push_back(obj);
+#if _DEBUG
+			CDebugPrint::Print("%s:%s\n",
+				obj->GetDebugName().c_str(),
+				obj->GetInteractStr().c_str());
+#endif
 		}
 	}
 }

@@ -8,6 +8,9 @@ enum class ELayer
 	eTest,
 	eField,
 	ePlayer,
+	eAction,
+	eInteractObj,
+	eInteractSearch,
 
 	eAttackCol,
 };
