@@ -112,6 +112,7 @@ CNavNode* CObjectBase::GetNavNode() const
 	return mpNavNode;
 }
 
+
 // 攻撃がヒットしたオブジェクトを追加
 void CObjectBase::AddAttackHitObj(CObjectBase* obj)
 {

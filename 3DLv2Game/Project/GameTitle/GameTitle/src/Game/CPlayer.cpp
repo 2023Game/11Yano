@@ -100,6 +100,8 @@ CPlayer::CPlayer()
 	mpCollider->SetCollisionTags({ ETag::eInteractObject });
 	mpCollider->SetCollisionLayers({ ELayer::eInteractObj });
 
+
+
 	mpSlashSE = CResourceManager::Get<CSound>("SlashSound");
 
 

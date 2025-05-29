@@ -4,7 +4,7 @@ CInteractObject::CInteractObject(
 	ETaskPriority prio,
 	int sortOrder,
 	ETaskPauseType pause)
-	: CObjectBase(ETag::eInteractObject, prio, sortOrder, pause)
+	: CXCharacter(ETag::eInteractObject, prio, sortOrder, pause)
 	, mInteractStr("’²‚×‚é")
 #if _DEBUG
 	, mDebugName("mInteractObj")

@@ -498,3 +498,91 @@ void Primitive::DrawWireBox(const CVector& center, const CVector& size, const CC
 	// 描画前の行列に戻す
 	glPopMatrix();
 }
+
+//void Primitive::DrawCone(const CVector& sp, const CVector& ep, float rad, const CColor& color, EBlend blend = EBlend::eAlpha)
+//{
+//	glPushMatrix();
+//
+//	float height = CVector::Distance(sp, ep);
+//
+//	// ブレンド処理有効化
+//	Blend::EnableBlend(blend);
+//	glDisable(GL_LIGHTING);
+//
+//	// 色設定
+//	float col[] = { color.R(), color.G(), color.B(), color.A() };
+//	glMaterialfv(GL_FRONT, GL_DIFFUSE, col);
+//	glColor4fv(col);
+//
+//	const int cut = 32;
+//	int vtxCnt = cut * 3 + cut; // 側面用三角形 + 底面用ファン
+//	CVector* vertex = new CVector[vtxCnt];
+//
+//	// 単位円の座標テーブル
+//	float* s = new float[cut + 1];
+//	float* c = new float[cut + 1];
+//	for (int i = 0; i <= cut; ++i) {
+//		s[i] = sinf((float)M_PI * 2 * i / cut);
+//		c[i] = cosf((float)M_PI * 2 * i / cut);
+//	}
+//
+//	// up = 頂点方向
+//	CVector up = (ep - sp).Normalized();
+//	CVector sd = CVector::Cross(up, CVector::up).Normalized();
+//	if (sd.LengthSqr() == 0.0f) {
+//		sd = CVector::Cross(up, CVector::forward).Normalized();
+//	}
+//	CVector fw = CVector::Cross(sd, up).Normalized();
+//
+//	int idx = 0;
+//
+//	// ----------- 側面（三角形ファン風） -----------
+//	for (int i = 0; i < cut; ++i) {
+//		float si0 = s[i];
+//		float ci0 = c[i];
+//		float si1 = s[(i + 1) % cut];
+//		float ci1 = c[(i + 1) % cut];
+//
+//		// 底面の2点（円周）
+//		CVector p0 = sp + (sd * si0 + fw * ci0) * rad;
+//		CVector p1 = sp + (sd * si1 + fw * ci1) * rad;
+//
+//		// 三角形（円周2点 → 頂点）
+//		vertex[idx++] = p0;
+//		vertex[idx++] = p1;
+//		vertex[idx++] = ep;
+//	}
+//
+//	// ----------- 底面（円形） -----------
+//	for (int i = 0; i < cut; ++i) {
+//		float si0 = s[i];
+//		float ci0 = c[i];
+//
+//		vertex[idx++] = sp + (sd * si0 + fw * ci0) * rad;
+//	}
+//
+//	glEnableClientState(GL_VERTEX_ARRAY);
+//	glVertexPointer(3, GL_FLOAT, 0, vertex);
+//
+//	// 側面の三角形群
+//	glDrawArrays(GL_TRIANGLES, 0, cut * 3);
+//
+//	// 底面（三角ファン）
+//	glBegin(GL_TRIANGLE_FAN);
+//	glVertex3f(sp.x, sp.y, sp.z); // 中心
+//	for (int i = 0; i < cut; ++i) {
+//		CVector v = vertex[cut * 3 + i];
+//		glVertex3f(v.x, v.y, v.z);
+//	}
+//	glEnd();
+//
+//	glDisableClientState(GL_VERTEX_ARRAY);
+//
+//	delete[] vertex;
+//	delete[] s;
+//	delete[] c;
+//
+//	glEnable(GL_LIGHTING);
+//	Blend::DisableBlend();
+//	glPopMatrix();
+//}

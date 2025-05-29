@@ -382,6 +382,27 @@
     <ClCompile Include="src\Game\CIntercom.cpp">
       <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\AlertLevel.cpp">
+      <Filter>ソース ファイル\Game\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CInteractRobot.cpp">
+      <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CDrone.cpp">
+      <Filter>ソース ファイル\Game\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CHackGame2.cpp">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CPlayer2D.cpp">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CEnemy2D.cpp">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CBullet2D.cpp">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BaseSystem\CCollider.h">
@@ -686,6 +707,27 @@
     </ClInclude>
     <ClInclude Include="src\Game\CIntercom.h">
       <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\AlertLevel.h">
+      <Filter>ソース ファイル\Game\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CInteractRobot.h">
+      <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CDrone.h">
+      <Filter>ソース ファイル\Game\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CHackGame2.h">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CPlayer2D.h">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CEnemy2D.h">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CBullet2D.h">
+      <Filter>ソース ファイル\Game\UI\Hack</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

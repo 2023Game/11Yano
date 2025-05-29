@@ -119,4 +119,15 @@ namespace Primitive
 	/// <param name="blend">ブレンドタイプ</param>
 	void DrawWireBox(const CVector& center, const CVector& size,
 		const CColor& color, EBlend blend = EBlend::eAlpha);
+
+	/// <summary>
+	/// 円錐を描画
+	/// </summary>
+	/// <param name="sp">円錐の底面中心</param>
+	/// <param name="ep">円錐の頂点</param>
+	/// <param name="rad">底面の半径</param>
+	/// <param name="color">色</param>
+	/// <param name="blend">ブレンドタイプ</param>
+	void DrawCone(const CVector& sp, const CVector& ep, float rad, 
+		const CColor& color, EBlend blend = EBlend::eAlpha);
 };

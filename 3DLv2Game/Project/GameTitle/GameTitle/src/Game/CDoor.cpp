@@ -90,7 +90,7 @@ void CDoor::Update()
 
 void CDoor::Render()
 {
-	mpModel->Render();
+	mpModel->Render(Matrix());
 }
 
 bool CDoor::IsOpen() const

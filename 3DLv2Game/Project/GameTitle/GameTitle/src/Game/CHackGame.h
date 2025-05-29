@@ -9,6 +9,7 @@ class CFont;
 class CHackGame : public CTask
 {
 public:
+	void Start();
 	CHackGame();
 	~CHackGame();
 
@@ -19,7 +20,8 @@ public:
 	void Update() override;
 	void Render() override;
 
-	bool mIsClear;
+	bool IsClear() const;
+	
 private:
 	CImage* mpBackground;
 	bool mIsOpened;
@@ -27,6 +29,10 @@ private:
 
 	CFont* mpLogoFont;	// ロゴのフォント
 	CText* mpTypeLogo;	// タイピングロゴ
+	char mText; // タイピングゲームのテキスト
 
 	int mInputNum;
+
+	bool mIsClear;
+	CImage* mpPlayer;//後で消す
 };

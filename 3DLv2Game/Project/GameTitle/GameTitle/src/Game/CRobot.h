@@ -28,6 +28,7 @@ private:
 	{
 		None = -1,
 
+		eTpose,
 		eIdle,
 		eWalk,
 		eRun,
@@ -107,6 +108,8 @@ private:
 
 	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
 	int mNextMoveIndex; // 次に移動するノードのインデックス値
+
+	float mTime;
 };
 
 #endif

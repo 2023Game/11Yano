@@ -1,5 +1,8 @@
 #pragma once
 #include "CSceneBase.h"
+#include "CPlayer.h"
+#include "CInteractRobot.h"
+#include "CGameCamera2.h"
 class CGameMenu;
 class CSound;
 class CHackGame;
@@ -18,6 +21,9 @@ public:
 	void Update();
 
 private:
+	CPlayer* player;
+	CInteractRobot* irobot;
+	CGameCamera2* maincamera;
 	CGameMenu* mpGameMenu;
 	CHackGame* mpHackGame;
 };

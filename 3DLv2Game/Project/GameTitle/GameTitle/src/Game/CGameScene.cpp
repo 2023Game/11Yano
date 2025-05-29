@@ -11,6 +11,7 @@
 #include "CBGMManager.h"
 #include "CLineEffect.h"
 #include "CNavManager.h"
+#include "CInteractRobot.h"
 
 //コンストラクタ
 CGameScene::CGameScene()
@@ -43,7 +44,9 @@ void CGameScene::Load()
 	CResourceManager::Load<CModel>("Wall", "Field\\Object\\wall\\Wall.obj");
 	CResourceManager::Load<CModel>("WallCol", "Field\\Object\\wall\\WallCol.obj");
 	CResourceManager::Load<CModelX>("Player", "Character\\Mryotaisu\\Mryotaisu.x");
-	CResourceManager::Load<CModelX>("Robot", "Character\\Robot\\Robot_Blue.x");
+	CResourceManager::Load<CModelX>("Enemy", "Character\\Enemy\\Soldier.x");
+	CResourceManager::Load<CModelX>("Robot", "Character\\Robot\\Robot.x");
+	CResourceManager::Load<CModel>("Drone", "Field\\Object\\Cube_mini.obj");
 	CResourceManager::Load<CTexture>("Laser", "Effect\\laser.png");
 	CResourceManager::Load<CTexture>("LightningBolt", "Effect\\lightning_bolt.png");
 	CResourceManager::Load<CModel>("Slash", "Effect\\slash.obj");
@@ -61,6 +64,10 @@ void CGameScene::Load()
 	player->Scale(1.0f, 1.0f, 1.0f);
 	player->Position(216.0f, 10.30f, 192.0f);
 
+	CInteractRobot* irobot = new CInteractRobot();
+	irobot->Scale(1.0f, 1.0f, 1.0f);
+	irobot->Position(216.0f, 10.30f, 220.0f);
+
 	CRobot* robot = new CRobot
 	(
 		{
@@ -71,6 +78,9 @@ void CGameScene::Load()
 		}
 	);
 	robot->Position(233.0f, 10.30f, -105.0f);
+//#if _DEBUG
+//	robot->SetDebugName("Robot");
+//#endif
 
 	CRobot* robot2 = new CRobot
 	(
@@ -82,6 +92,9 @@ void CGameScene::Load()
 		}
 	);
 	robot2->Position(122.0f, 10.0f, 102.0f);
+//#if _DEBUG
+//	robot2->SetDebugName("Robot2");
+//#endif
 
 	CRobot* robot3 = new CRobot
 	(
@@ -93,6 +106,9 @@ void CGameScene::Load()
 		}
 	);
 	robot3->Position(3.0f, 10.0f, -105.0f);
+//#if _DEBUG
+//	robot3->SetDebugName("Robot3");
+//#endif
 
 	// CGameCameraのテスト
 	//CGameCamera* mainCamera = new CGameCamera
@@ -106,11 +122,18 @@ void CGameScene::Load()
 	CVector atPos = player->Position() + CVector(0.0f, 10.0f, 0.0f);
 	CGameCamera2* mainCamera = new CGameCamera2
 	(
-		atPos + CVector(0.0f, 0.0f, 40.0f),
+		atPos + CVector(0.0f, 0.0f, 20.0f),
 		atPos
 	);
-
-	mainCamera->SetFollowTargetTf(player);
+	if (irobot->IsClear())
+	{
+		mainCamera->SetFollowTargetTf(irobot);
+	}
+	else
+	{
+		mainCamera->SetFollowTargetTf(player);
+	}
+	
 
 	// ゲームメニューを作成
 	mpGameMenu = new CGameMenu();

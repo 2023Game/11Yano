@@ -1,7 +1,7 @@
 #pragma once
 #include "CObjectBase.h"
 #include "CModel.h"
-#include "CColliderSphere.h"
+#include "CColliderLine.h"
 #include "CInteractObject.h"
 
 class CHackGame;
@@ -21,7 +21,7 @@ public:
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
 private:
 	CModel* mpModel;
-	CColliderSphere* mpColliderSphere;
+	CColliderLine* mpColliderLine;
 
 	CHackGame* mpHackGame;
 	bool mIsHack;

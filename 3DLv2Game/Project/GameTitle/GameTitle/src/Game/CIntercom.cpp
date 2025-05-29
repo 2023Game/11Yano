@@ -9,13 +9,14 @@ CIntercom::CIntercom(const CVector& pos, const CVector& angle, const CVector& si
 {
 	mpModel = CResourceManager::Get<CModel>("Intercom");
 
-	mpColliderSphere = new CColliderSphere
+	mpColliderLine = new CColliderLine
 	(
 		this, ELayer::eInteractObj,
-		5.0f, true
-	);
-	mpColliderSphere->SetCollisionTags({ ETag::ePlayer });
-	mpColliderSphere->SetCollisionLayers({ ELayer::ePlayer, ELayer::eInteractSearch });
+		CVector(0.0f, -3.0f, 0.0f),
+		CVector(0.0f, 3.0f, 0.0f), true
+	); 
+	mpColliderLine->SetCollisionTags({ ETag::ePlayer });
+	mpColliderLine->SetCollisionLayers({ ELayer::ePlayer, ELayer::eInteractSearch });
 
 	// 位置と向きとサイズを設定
 	Position(pos);
@@ -43,7 +44,7 @@ void CIntercom::Interact()
 
 void CIntercom::Update()
 {
-	if (mpHackGame->mIsClear == true)
+	if (mpHackGame->IsClear())
 	{
 		mIsClear = true;
 

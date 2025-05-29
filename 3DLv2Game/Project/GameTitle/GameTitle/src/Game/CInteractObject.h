@@ -1,7 +1,7 @@
 #pragma once
-#include "CObjectBase.h"
+#include "CXCharacter.h"
 
-class CInteractObject : public CObjectBase
+class CInteractObject : public CXCharacter
 {
 public: 
 	CInteractObject(

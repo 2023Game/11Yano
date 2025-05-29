@@ -7,6 +7,7 @@
 #include "CField.h"
 #include "CNavNode.h"
 #include "CNavManager.h"
+#include "CBullet.h"
 
 #define ROBOT_HEIGHT 16.0f
 #define ROBOT_WIDTH 10.0f
@@ -26,10 +27,10 @@
 const CRobot::AnimData CRobot::ANIM_DATA[] =
 {
 	{ "",										true,	0.0f	},	// Tポーズ
-	{ "Character\\Robot\\anim\\idle.x",		true,	460.0f	},	// 待機
+	{ "Character\\Robot\\anim\\idle.x",		true,	110.0f	},	// 待機
 	{ "Character\\Robot\\anim\\walk.x",		true,	78.0f	},	// 歩行
 	{ "Character\\Robot\\anim\\run.x",		true,	44.0f	},	// 走行
-	{ "Character\\Robot\\anim\\attack.x",		true,	186.0f	},	// 攻撃
+	{ "Character\\Robot\\anim\\attack.x",		true,	86.0f	},	// 攻撃
 
 };
 
@@ -44,6 +45,7 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 	, mpDebugFov(nullptr)
 	, mNextPatrolIndex(-1)
 	, mNextMoveIndex(0)
+	, mTime(5.0f)
 {
 	// モデルデータ取得
 	CModelX* model = CResourceManager::Get<CModelX>("Robot");
@@ -64,28 +66,28 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 
 	mpColliderLine = new CColliderLine
 	(
-		this, ELayer::ePlayer,
+		this, ELayer::eInteractObj,
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(0.0f, ROBOT_HEIGHT, 0.0f)
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpColliderLine->SetCollisionLayers({ ELayer::eInteractSearch });
 
 	float width = ROBOT_WIDTH * 0.5f;
 	float posY = ROBOT_HEIGHT * 0.5f;
 	mpColliderLineX = new CColliderLine
 	(
-		this, ELayer::ePlayer,
+		this, ELayer::eInteractObj,
 		CVector(-width, posY, 0.0f),
 		CVector(width, posY, 0.0f)
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpColliderLineX->SetCollisionLayers({ ELayer::eInteractSearch });
 	mpColliderLineZ = new CColliderLine
 	(
-		this, ELayer::ePlayer,
+		this, ELayer::eInteractObj,
 		CVector(0.0f, posY, -width),
 		CVector(0.0f, posY, width)
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpColliderLineZ->SetCollisionLayers({ ELayer::eInteractSearch });
 
 	// 視野範囲のデバッグ表示クラスを作成
 	mpDebugFov = new CDebugFieldOfView(this, mFovAngle, mFovLength);
@@ -619,6 +621,27 @@ void CRobot::UpdateLost()
 void CRobot::UpdateAttack()
 {
 	ChangeAnimation(EAnimType::eAttack);
+	mTime = mTime - 1.0f;
+	CPlayer* player = CPlayer::Instance();
+	// プレイヤー座標取得
+	CVector playerPos = player->Position();
+	// 自分自身の座標を取得
+	CVector pos = Position();
+	// 自身からプレイヤーまでのベクトルを求める
+	CVector vec = playerPos - pos;
+	if(mTime<=0)
+	{ 
+		// 弾丸を生成
+		new CBullet
+		(
+			// 発射位置
+			Position() + CVector(0.0f, 10.0f, 0.0f),
+			vec,	// 発射方向
+			1000.0f,	// 移動距離
+			1000.0f		// 飛距離
+		);
+		mTime = 5.0f;
+	}
 	if (!CanAttackPlayer())
 	{
 		if (!IsFoundPlayer())
