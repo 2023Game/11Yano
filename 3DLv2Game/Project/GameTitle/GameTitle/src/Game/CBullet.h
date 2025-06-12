@@ -1,6 +1,7 @@
 #pragma once
 #include "CObjectBase.h"
 #include "CModel.h"
+#include "CColliderLine.h"
 class CTrailEffect;
 
 // 弾丸クラス
@@ -26,8 +27,10 @@ public:
 	void Render() override;
 
 private:
+	CColliderLine* mpColliderLine;
 	CTrailEffect* mpTrailEffect;	// 弾丸の軌跡のエフェクト
 	float mMoveSpeed;				// 移動速度
 	float mFlyingDistance;			// 飛距離
 	float mCurrentFlyingDistance;	// 現在の飛距離
+	CVector mMoveDir; // 発射方向
 };

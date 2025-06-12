@@ -5,7 +5,7 @@
 #include "CFont.h"
 #include "CText.h"
 
-#define MENU_ALPHA 0.8f
+#define MENU_ALPHA 0.5f
 
 void CHackGame::Start()
 {
@@ -21,7 +21,7 @@ CHackGame::CHackGame()
 	// îwåiê∂ê¨
 	mpBackground = new CImage
 	(
-		"UI/2D_back_Type.png",
+		"UI/menu_back.png",
 		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
 		false, false
 	);

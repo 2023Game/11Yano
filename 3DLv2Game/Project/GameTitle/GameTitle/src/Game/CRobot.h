@@ -1,6 +1,7 @@
 #ifndef CROBOT_H
 #define CROBOT_H
 #include "CXCharacter.h"
+#include "CColliderCapsule.h"
 
 // 視野範囲のデバッグ表示クラスの前宣言
 class CDebugFieldOfView;
@@ -33,6 +34,7 @@ private:
 		eWalk,
 		eRun,
 		eAttack,
+		eDie,
 
 		Num
 	};
@@ -56,6 +58,7 @@ private:
 		eChase,     // プレイヤーを追いかける
 		eLost,      // プレイヤーを見失う
 		eAttack,	// 攻撃
+		eDie,       // 死
 	};
 	// 状態切り替え
 	void ChangeState(EState state);
@@ -70,7 +73,7 @@ private:
 	// 指定した位置まで移動する
 	bool MoveTo(const CVector& targetPos, float speed);
 	// 次に巡回するポイントを変更
-	void CHangePatrolPoint();
+	void ChangePatrolPoint();
 
 	// 待機状態時の更新処理
 	void UpdateIdle();
@@ -102,14 +105,16 @@ private:
 	std::vector<CNavNode*> mPatrolPoints;
 	int mNextPatrolIndex; // 次に巡回するポイントの番号
 
-	CColliderLine* mpColliderLine; // 縦方向の線分コライダ
-	CColliderLine* mpColliderLineX; // 横方向(X)の線分コライダ
-	CColliderLine* mpColliderLineZ; // 横方向(Z)の線分コライダ
+	CColliderCapsule* mpColliderCapsule; // 縦方向の線分コライダ
+	//CColliderLine* mpColliderLineX; // 横方向(X)の線分コライダ
+	//CColliderLine* mpColliderLineZ; // 横方向(Z)の線分コライダ
 
 	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
 	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
-	float mTime;
+	float mBulletTime;
+
+	bool mDie;
 };
 
 #endif

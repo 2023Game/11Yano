@@ -11,7 +11,16 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 	, mCurrentFlyingDistance(0.0f)
 {
 	Position(pos);
-	Rotation(CQuaternion::LookRotation(dir, CVector::up));
+	mMoveDir = dir.Normalized();
+	Rotation(CQuaternion::LookRotation(mMoveDir, CVector::up));
+
+	mpColliderLine = new CColliderLine
+	(
+		this, ELayer::eAttackCol,
+		CVector(0.0f, 0.0f, 0.0f),
+		CVector(0.0f, 0.0f, 50.0f)
+	);
+	//mpColliderLine->SetCollisionTags({ ETag::eBullet });
 
 	// 軌跡のエフェクトを作成
 	mpTrailEffect = new CTrailEffect
@@ -21,7 +30,7 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 		nullptr,
 		CVector(0.0f, 0.0f, 0.0f),
 		0.01f,			// 更新間隔（時間）
-		30.0f,			// 更新間隔（距離）
+		10.0f,			// 更新間隔（距離）
 		2.0f,			// 開始時の軌跡の幅
 		0.0f,			// 終了時の軌跡の幅
 		0.0625f			// 表示時間
@@ -34,6 +43,7 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 CBullet::~CBullet()
 {
 	mpTrailEffect->SetOwner(nullptr);
+	SAFE_DELETE(mpColliderLine);
 }
 
 // 更新
@@ -59,7 +69,7 @@ void CBullet::Update()
 	}
 
 	// 弾丸を正面方向に移動
-	Position(Position() + VectorZ() * moveSpeed);
+	Position(Position() + mMoveDir * moveSpeed);
 	// 現在の飛距離を更新
 	mCurrentFlyingDistance += abs(moveSpeed);
 }

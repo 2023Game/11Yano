@@ -9,7 +9,6 @@
 #include "CNavManager.h"
 #include "CNavNode.h"
 #include "CDoor.h"
-#include "CDrone.h"
 
 // フィールドのインスタンス
 CField* CField::spInstanse = nullptr;
@@ -111,19 +110,12 @@ void CField::CreateFieldObjects()
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(1.0f, 1.0f, 1.0f)
 	);
-	/*door->SetAnimPos
+	door->SetAnimPos
 	(
-		CVector(210.5f, 5.0f, 125.0f),
-		CVector(-50.0f, 1.0f, -50.0f)
-	);*/
-	door->AddIntercom(intercom);
-
-	CDrone* drone = new CDrone
-	(
-		CVector(233.0f, 40.0f, 90.0f),
-		CVector(0.0f, 0.0f, 0.0f),
-		CVector(1.0f, 1.0f, 1.0f)
+		CVector(223.0f, 12.0f, 125.5f),
+		CVector(211.0f, 12.0f, 125.5f)
 	);
+	door->AddIntercom(intercom);
 }
 
 void CField::CreateNavNodes()

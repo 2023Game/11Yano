@@ -1,13 +1,14 @@
 #pragma once
 //キャラクタクラスのインクルード
 #include "CXCharacter.h"
-#include "CColliderLine.h"
+#include "CColliderCapsule.h"
 #include "CRideableObject.h"
 #include "CSound.h"
 #include "CColliderSphere.h"
+#include "CImage.h"
 
 class CInteractObject;
-
+class CGameScene;
 /*
 プレイヤークラス
 キャラクタクラスを継承
@@ -23,6 +24,7 @@ public:
 	// デストラクタ
 	~CPlayer();
 
+	void SetScene(CGameScene* scene) { mpScene = scene; }
 	// 更新
 	void Update();
 
@@ -36,6 +38,8 @@ public:
 
 	// 描画
 	void Render();
+
+	bool IsPlaying() const;
 
 private:
 	// キーの入力情報から移動ベクトルを求める
@@ -89,12 +93,9 @@ private:
 	float mMoveSpeedY;	// 重力やジャンプによる上下の移動速度
 
 	bool mIsDash;
-	bool mIsGrounded;	// 接地しているかどうか
-	CVector mGroundNormal;	// 接地している地面の法線
+	
 
-	CColliderLine* mpColliderLine; // 縦方向の線分コライダ
-	CColliderLine* mpColliderLineX; // 横方向(X)の線分コライダ
-	CColliderLine* mpColliderLineZ; // 横方向(Z)の線分コライダ
+	CColliderCapsule* mpColliderCapsule; // プレイヤーのコライダ
 	CColliderSphere* mpCollider;
 	CTransform* mpRideObject;
 
@@ -104,5 +105,11 @@ private:
 	CSound* mpSlashSE;
 	bool mIsPlayedSlashSE;
 	bool mIsSpawnedSlashEffect;
+
+	CImage* mpUIHack;
+
+	bool mIsPlaying;
+
+	CGameScene* mpScene;
 
 };

@@ -10,7 +10,7 @@ CDoor::CDoor(const CVector& pos, const CVector& angle, const CVector& size)
 	mpModel = CResourceManager::Get<CModel>("Door");
 	// コライダー作成
 	mpColliderMesh = new CColliderMesh(this, ELayer::eField, mpModel, true);
-	mpColliderMesh->SetCollisionTags({ ETag::ePlayer });
+	mpColliderMesh->SetCollisionTags({ ETag::ePlayer, ETag::eEnemy });
 
 	// 位置と向きとサイズを設定
 	Position(pos);

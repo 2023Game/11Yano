@@ -8,8 +8,9 @@
 #include "CNavNode.h"
 #include "CNavManager.h"
 #include "CBullet.h"
+#include "CColliderCapsule.h"
 
-#define ROBOT_HEIGHT 16.0f
+#define ROBOT_HEIGHT 13.0f
 #define ROBOT_WIDTH 10.0f
 #define FOV_ANGLE 45.0f // 視野範囲の角度
 #define FOV_LENGTH 100.0f // 視野範囲の距離
@@ -21,6 +22,7 @@
 #define PATROL_INTERVAL 3.0f // 次の巡回ポイントに移動開始するまでの時間
 #define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
 #define IDLE_TIME 5.0f // 待機状態の時間
+#define BULLET_TIME 7.0f // 弾の発射間隔
 
 
 // プレイヤーのアニメーションデータのテーブル
@@ -31,6 +33,7 @@ const CRobot::AnimData CRobot::ANIM_DATA[] =
 	{ "Character\\Robot\\anim\\walk.x",		true,	78.0f	},	// 歩行
 	{ "Character\\Robot\\anim\\run.x",		true,	44.0f	},	// 走行
 	{ "Character\\Robot\\anim\\attack.x",		true,	86.0f	},	// 攻撃
+	{ "Character\\Robot\\anim\\down.x",		false,	59.0f	},	// 死
 
 };
 
@@ -45,7 +48,8 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 	, mpDebugFov(nullptr)
 	, mNextPatrolIndex(-1)
 	, mNextMoveIndex(0)
-	, mTime(5.0f)
+	, mBulletTime(0.0f)
+	, mDie(false)
 {
 	// モデルデータ取得
 	CModelX* model = CResourceManager::Get<CModelX>("Robot");
@@ -64,33 +68,17 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 	// 最初は待機アニメーションを再生
 	ChangeAnimation(EAnimType::eIdle);
 
-	mpColliderLine = new CColliderLine
+	mpColliderCapsule = new CColliderCapsule
 	(
 		this, ELayer::eInteractObj,
-		CVector(0.0f, 0.0f, 0.0f),
-		CVector(0.0f, ROBOT_HEIGHT, 0.0f)
+		CVector(0.0f, 3.0f, 0.0f),
+		CVector(0.0f, ROBOT_HEIGHT, 0.0f),
+		3.0f
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eInteractSearch });
-
-	float width = ROBOT_WIDTH * 0.5f;
-	float posY = ROBOT_HEIGHT * 0.5f;
-	mpColliderLineX = new CColliderLine
-	(
-		this, ELayer::eInteractObj,
-		CVector(-width, posY, 0.0f),
-		CVector(width, posY, 0.0f)
-	);
-	mpColliderLineX->SetCollisionLayers({ ELayer::eInteractSearch });
-	mpColliderLineZ = new CColliderLine
-	(
-		this, ELayer::eInteractObj,
-		CVector(0.0f, posY, -width),
-		CVector(0.0f, posY, width)
-	);
-	mpColliderLineZ->SetCollisionLayers({ ELayer::eInteractSearch });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eInteractSearch });
 
 	// 視野範囲のデバッグ表示クラスを作成
-	mpDebugFov = new CDebugFieldOfView(this, mFovAngle, mFovLength);
+	mpDebugFov = new CDebugFieldOfView(this, mFovAngle, mFovLength, CDebugFieldOfView::EType::eSector);
 
 	// 経路探索用ノードを作成
 	mpNavNode = new CNavNode(Position(), true);
@@ -108,9 +96,9 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 
 CRobot::~CRobot()
 {
-	SAFE_DELETE(mpColliderLine);
-	SAFE_DELETE(mpColliderLineX);
-	SAFE_DELETE(mpColliderLineZ);
+	SAFE_DELETE(mpColliderCapsule);
+	/*SAFE_DELETE(mpColliderLineX);
+	SAFE_DELETE(mpColliderLineZ);*/
 
 	// 視野範囲のデバッグ表示が存在したら一緒に削除
 	if (mpDebugFov != nullptr)
@@ -161,6 +149,12 @@ void CRobot::Update()
 	case EState::eAttack: UpdateAttack(); break;
 	}
 
+	if (mDie == true)
+	{
+		mState = EState::eDie;
+		ChangeAnimation(EAnimType::eDie);
+	}
+
 	CXCharacter::Update();
 
 	// 経路探索用ノードが存在したら座標更新
@@ -169,8 +163,11 @@ void CRobot::Update()
 		mpNavNode->SetPos(Position());
 	}
 
-	//現在の状態に合わせて視野範囲の色を変更
-	mpDebugFov->SetColor(GetStateColor(mState));
+	if (mpDebugFov != nullptr)
+	{
+		//現在の状態に合わせて視野範囲の色を変更
+		mpDebugFov->SetColor(GetStateColor(mState));
+	}
 
 	CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
 }
@@ -237,7 +234,7 @@ void CRobot::Render()
 
 void CRobot::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 {
-	if (self == mpColliderLine)
+	if (self == mpColliderCapsule)
 	{
 		if (other->Layer() == ELayer::eField)
 		{
@@ -248,17 +245,10 @@ void CRobot::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 
 			Position(Position() + adjust * hit.weight);
 		}
-	}
-	else if (self == mpColliderLineX || self == mpColliderLineZ)
-	{
-		if (other->Layer() == ELayer::eField)
+		if (other->Layer() == ELayer::eAttackCol)
 		{
-			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
-			CVector adjust = hit.adjust;
-			adjust.Y(0.0f);
-
-			// 押し戻しベクトルの分座標を移動
-			Position(Position() + adjust * hit.weight);
+			CDebugPrint::Print("Die:%s\n", "死んだ");
+			mDie = true;
 		}
 	}
 }
@@ -397,7 +387,7 @@ bool CRobot::MoveTo(const CVector& targetPos, float speed)
 	return false;
 }
 
-void CRobot::CHangePatrolPoint()
+void CRobot::ChangePatrolPoint()
 {
 	// 巡回ポイント後設定されていない場合処理しない
 	int size = mPatrolPoints.size();
@@ -491,7 +481,7 @@ void CRobot::UpdatePatrol()
 		// 巡回開始時の巡回ポイントを求める
 	case 0:
 		mNextPatrolIndex = -1;
-		CHangePatrolPoint();
+		ChangePatrolPoint();
 		mStateStep++;
 		break;
 		// 巡回ポイントまで移動
@@ -520,7 +510,7 @@ void CRobot::UpdatePatrol()
 		}
 		else
 		{
-			CHangePatrolPoint();
+			ChangePatrolPoint();
 			mStateStep = 1;
 			mElapsedTime = 0.0f;
 		}
@@ -621,7 +611,7 @@ void CRobot::UpdateLost()
 void CRobot::UpdateAttack()
 {
 	ChangeAnimation(EAnimType::eAttack);
-	mTime = mTime - 1.0f;
+	mBulletTime -= 1.0f;
 	CPlayer* player = CPlayer::Instance();
 	// プレイヤー座標取得
 	CVector playerPos = player->Position();
@@ -629,7 +619,7 @@ void CRobot::UpdateAttack()
 	CVector pos = Position();
 	// 自身からプレイヤーまでのベクトルを求める
 	CVector vec = playerPos - pos;
-	if(mTime<=0)
+	if(mBulletTime<=0)
 	{ 
 		// 弾丸を生成
 		new CBullet
@@ -637,10 +627,10 @@ void CRobot::UpdateAttack()
 			// 発射位置
 			Position() + CVector(0.0f, 10.0f, 0.0f),
 			vec,	// 発射方向
-			1000.0f,	// 移動距離
-			1000.0f		// 飛距離
+			200.0f,	// 移動距離
+			200.0f		// 飛距離
 		);
-		mTime = 5.0f;
+		mBulletTime = BULLET_TIME;
 	}
 	if (!CanAttackPlayer())
 	{

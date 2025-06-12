@@ -9,8 +9,9 @@
 #include "CNavManager.h"
 #include "CHackGame.h"
 #include "CBullet.h"
+#include "CGameScene.h"
 
-#define ROBOT_HEIGHT 16.0f
+#define ROBOT_HEIGHT 13.0f
 #define ROBOT_WIDTH 10.0f
 #define MOVE_SPEED	  0.375f * 2.0f // 移動速度
 #define GRAVITY	  0.0625f // 重力
@@ -24,24 +25,25 @@
 #define PATROL_INTERVAL 3.0f // 次の巡回ポイントに移動開始するまでの時間
 #define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
 #define IDLE_TIME 5.0f // 待機状態の時間
+#define BULLET_TIME 5.0f // 弾の発射間隔
 
 
 // プレイヤーのアニメーションデータのテーブル
 const CInteractRobot::AnimData CInteractRobot::ANIM_DATA[] =
 {
 	{ "",										true,	0.0f	},	// Tポーズ
-	{ "Character\\Robot\\anim\\idle.x",		true,	460.0f	},	// 待機
+	{ "Character\\Robot\\anim\\idle.x",		true,	110.0f	},	// 待機
 	{ "Character\\Robot\\anim\\walk.x",		true,	78.0f	},	// 歩行
 	{ "Character\\Robot\\anim\\run.x",		true,	44.0f	},	// 走行
-	{ "Character\\Robot\\anim\\attack.x",		true,	186.0f	},	// 攻撃
-	{ "Character\\Robot\\anim\\down.x",		false,	59.0f	},	// 倒れる
+	{ "Character\\Robot\\anim\\attack.x",		true,	86.0f	},	// 攻撃
+	{ "Character\\Robot\\anim\\down.x",		false,	59.0f	},	// 死
 	{ "Character\\Robot\\anim\\sit.x",		false,	0.0f	},	// 座る
 
 };
 
 // コンストラクタ
 CInteractRobot::CInteractRobot()
-	: mState(EState::eIdle)
+	: mState(EState::eWait)
 	, mMoveSpeedY(0.0f)
 	, mIsGrounded(false)
 	, mStateStep(0)
@@ -54,6 +56,7 @@ CInteractRobot::CInteractRobot()
 	, mpHackGame(nullptr)
 	, mIsHack(false)
 	, mIsClear(false)
+	, mBulletTime(0.0f)
 {
 	// モデルデータ取得
 	CModelX* model = CResourceManager::Get<CModelX>("Robot");
@@ -72,30 +75,14 @@ CInteractRobot::CInteractRobot()
 	// 最初は待機アニメーションを再生
 	ChangeAnimation(EAnimType::eIdle);
 
-	mpColliderLine = new CColliderLine
+	mpColliderCapsule = new CColliderCapsule
 	(
 		this, ELayer::eInteractObj,
-		CVector(0.0f, 0.0f, 0.0f),
-		CVector(0.0f, ROBOT_HEIGHT, 0.0f)
+		CVector(0.0f, 3.0f, 0.0f),
+		CVector(0.0f, ROBOT_HEIGHT, 0.0f),
+		3.0f
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eInteractSearch });
-
-	float width = ROBOT_WIDTH * 0.5f;
-	float posY = ROBOT_HEIGHT * 0.5f;
-	mpColliderLineX = new CColliderLine
-	(
-		this, ELayer::eField,
-		CVector(-width, posY, 0.0f),
-		CVector(width, posY, 0.0f)
-	);
-	mpColliderLineX->SetCollisionLayers({ ELayer::eField });
-	mpColliderLineZ = new CColliderLine
-	(
-		this, ELayer::eField,
-		CVector(0.0f, posY, -width),
-		CVector(0.0f, posY, width)
-	);
-	mpColliderLineZ->SetCollisionLayers({ ELayer::eField });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eInteractSearch });
 
 	mpHackGame = new CHackGame();
 	mInteractStr = "オンにする";
@@ -103,9 +90,7 @@ CInteractRobot::CInteractRobot()
 
 CInteractRobot::~CInteractRobot()
 {
-	SAFE_DELETE(mpColliderLine);
-	SAFE_DELETE(mpColliderLineX);
-	SAFE_DELETE(mpColliderLineZ);
+	SAFE_DELETE(mpColliderCapsule);
 
 	// 視野範囲のデバッグ表示が存在したら一緒に削除
 	if (mpDebugFov != nullptr)
@@ -146,55 +131,51 @@ void CInteractRobot::DeleteObject(CObjectBase* obj)
 void CInteractRobot::Update()
 {
 
-	mMoveSpeedY -= GRAVITY;
-	CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
-
-	// 移動
-	Position(Position() + moveSpeed);
-
-	// プレイヤーを移動方向へ向ける
-	CVector current = VectorZ();
-	CVector target = moveSpeed;
-	target.Y(0.0f);
-	target.Normalize();
-	CVector forward = CVector::Slerp(current, target, 0.125f);
-	Rotation(CQuaternion::LookRotation(forward));
-
-	// 右クリックで弾丸発射
-	if (CInput::PushKey(VK_RBUTTON))
+	//mMoveSpeedY -= GRAVITY;
+	
+	switch (mState)
 	{
-		// 弾丸を生成
-		new CBullet
-		(
-			// 発射位置
-			Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
-			VectorZ(),	// 発射方向
-			1000.0f,	// 移動距離
-			1000.0f		// 飛距離
-		);
+	case EState::eWait:
+		ChangeAnimation(EAnimType::eWait);
+		break;
+		// 操作可能状態
+	case EState::ePlay:
+		UpdateIdle();
+		UpdateMove();
+		break;
 	}
 
-	if (!IsClear())
+	CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
+
+	if (mpScene->CameraTarget() != this)
 	{
-		//// 現在の状態に合わせて更新処理を切替
-		//switch (mState)
-		//{
-		//
-		//case EState::ePatrol: UpdatePatrol(); break;
-		//case EState::eChase: UpdateChase(); break;
-		//case EState::eLost: UpdateLost(); break;
-		//case EState::eAttack: UpdateAttack(); break;
-		//}
-		mState = EState::eIdle;
+		mState = EState::eWait;
 
-		CXCharacter::Update();
 
-		CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
 	}
-	else if (IsClear())
+	else if (mpScene->CameraTarget() == this)
 	{
+		CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
 		mIsClear = true;
-		mState = EState::eIdle;
+		mState = EState::ePlay;
+
+		// 移動
+		Position(Position() + moveSpeed);
+
+		// プレイヤーを移動方向へ向ける
+		CVector current = VectorZ();
+		CVector target = moveSpeed;
+		target.Y(0.0f);
+		target.Normalize();
+		CVector forward = CVector::Slerp(current, target, 0.125f);
+		Rotation(CQuaternion::LookRotation(forward));
+
+		// 左クリックで弾丸発射
+		if (CInput::Key(VK_LBUTTON))
+		{
+			UpdateAttack();
+			
+		}
 	}
 
 	// キャラクターの更新
@@ -208,7 +189,7 @@ void CInteractRobot::Render()
 
 void CInteractRobot::Interact()
 {
-	mIsHack = mIsHack;
+	mIsHack = !mIsHack;
 	mInteractStr = mIsHack ? "オフにする" : "オンにする";
 	if (CInput::PushKey('F'))
 	{
@@ -264,28 +245,31 @@ CVector CInteractRobot::CalcMoveVec() const
 // 移動の更新処理
 void CInteractRobot::UpdateMove()
 {
-	mMoveSpeed = CVector::zero;
-
-	// プレイヤーの移動ベクトルを求める
-	CVector move = CalcMoveVec();
-	// 求めた移動ベクトルの長さで入力されているか判定
-	if (move.LengthSqr() > 0.0f)
+	if (IsClear())
 	{
-		mMoveSpeed += move * MOVE_SPEED;
+		mMoveSpeed = CVector::zero;
 
-		// 待機状態であれば、歩行アニメーションに切り替え
-		if (mState == EState::eIdle)
+		// プレイヤーの移動ベクトルを求める
+		CVector move = CalcMoveVec();
+		// 求めた移動ベクトルの長さで入力されているか判定
+		if (move.LengthSqr() > 0.0f)
 		{
-			ChangeAnimation(EAnimType::eWalk);
+			mMoveSpeed += move * MOVE_SPEED;
+
+			// 操作状態であれば、歩行アニメーションに切り替え
+			if (mState == EState::ePlay)
+			{
+				ChangeAnimation(EAnimType::eWalk);
+			}
 		}
-	}
-	// 移動キーを入力していない
-	else
-	{
-		// 待機状態であれば、待機アニメーションに切り替え
-		if (mState == EState::eIdle)
+		// 移動キーを入力していない
+		else
 		{
-			ChangeAnimation(EAnimType::eIdle);
+			// 操作状態であれば、待機アニメーションに切り替え
+			if (mState == EState::ePlay)
+			{
+				ChangeAnimation(EAnimType::eIdle);
+			}
 		}
 	}
 }
@@ -293,7 +277,7 @@ void CInteractRobot::UpdateMove()
 
 void CInteractRobot::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 {
-	if (self == mpColliderLine)
+	if (self == mpColliderCapsule)
 	{
 		if (other->Layer() == ELayer::eField)
 		{
@@ -302,18 +286,6 @@ void CInteractRobot::Collision(CCollider* self, CCollider* other, const CHitInfo
 			adjust.X(0.0f);
 			adjust.Z(0.0f);
 
-			Position(Position() + adjust * hit.weight);
-		}
-	}
-	else if (self == mpColliderLineX || self == mpColliderLineZ)
-	{
-		if (other->Layer() == ELayer::eField)
-		{
-			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
-			CVector adjust = hit.adjust;
-			adjust.Y(0.0f);
-
-			// 押し戻しベクトルの分座標を移動
 			Position(Position() + adjust * hit.weight);
 		}
 	}
@@ -337,15 +309,36 @@ void CInteractRobot::ChangeState(EState state)
 	mElapsedTime = 0.0f;
 }
 
+void CInteractRobot::UpdateIdle()
+{
+}
+
+void CInteractRobot::UpdateAttack()
+{
+	ChangeAnimation(EAnimType::eAttack);
+	mBulletTime -= 1.0f;
+
+	if (mBulletTime <= 0)
+	{
+		// 弾丸を生成
+		new CBullet
+		(
+			// 発射位置
+			Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
+			VectorZ(),	// 発射方向
+			200.0f,	// 移動距離
+			200.0f		// 飛距離
+		);
+		mBulletTime = BULLET_TIME;
+	}
+}
+
 std::string CInteractRobot::GetStateStr(EState state) const
 {
 	switch (mState)
 	{
-	case EState::eIdle: return "待機";
-	case EState::ePatrol: return "巡回";
-	case EState::eChase: return "追跡";
-	case EState::eLost: return "見失う";
-	case EState::eAttack: return "攻撃";
+	case EState::eWait: return "待機";
+	case EState::ePlay: return "操作中";
 	}
 	return std::string();
 }

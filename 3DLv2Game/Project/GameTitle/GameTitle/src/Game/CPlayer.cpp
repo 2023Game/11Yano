@@ -10,6 +10,7 @@
 #include "CNavManager.h"
 #include "CColliderSphere.h"
 #include "CInteractObject.h"
+#include "CGameScene.h"
 
 // プレイヤーのインスタンス
 CPlayer* CPlayer::spInstance = nullptr;
@@ -26,10 +27,10 @@ const CPlayer::AnimData CPlayer::ANIM_DATA[] =
 	//{ "Character\\Player\\anim\\jump_end.x",	false,	26.0f	},	// ジャンプ終了
 };
 
-#define PLAYER_HEIGHT	 16.0f
+#define PLAYER_HEIGHT	 12.0f
 #define PLAYER_WIDTH	  5.0f
 #define MOVE_SPEED		  0.375f * 2.0f
-#define MOVE_SPEED2		  0.475f * 2.0f
+#define MOVE_SPEED2		  0.775f * 2.0f
 #define JUMP_SPEED		  1.5f
 #define GRAVITY			  0.0625f
 #define JUMP_END_Y		  1.0f
@@ -41,12 +42,12 @@ CPlayer::CPlayer()
 	: CXCharacter(ETag::ePlayer, ETaskPriority::ePlayer)
 	, mState(EState::eIdle)
 	, mMoveSpeedY(0.0f)
-	, mIsGrounded(false)
 	, mpRideObject(nullptr)
 	, mIsPlayedSlashSE(false)
 	, mIsSpawnedSlashEffect(false)
 	, mIsDash(false)
 	, mpCollider(nullptr)
+	, mIsPlaying(true)
 {
 	//インスタンスの設定
 	spInstance = this;
@@ -68,30 +69,15 @@ CPlayer::CPlayer()
 	// 最初は待機アニメーションを再生
 	ChangeAnimation(EAnimType::eIdle);
 
-	mpColliderLine = new CColliderLine
+	mpColliderCapsule = new CColliderCapsule
 	(
-		this, ELayer::ePlayer,
-		CVector(0.0f, 0.0f, 0.0f),
-		CVector(0.0f, PLAYER_HEIGHT, 0.0f)
+		this, ELayer::eInteractObj,
+		CVector(0.0f, 2.0f, 0.0f),
+		CVector(0.0f, PLAYER_HEIGHT, 0.0f),
+		2.0f
 	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eInteractSearch });
 
-	float width = PLAYER_WIDTH * 0.5f;
-	float posY = PLAYER_HEIGHT * 0.5f;
-	mpColliderLineX = new CColliderLine
-	(
-		this, ELayer::ePlayer,
-		CVector(-width, posY, 0.0f),
-		CVector(width, posY, 0.0f)
-	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
-	mpColliderLineZ = new CColliderLine
-	(
-		this, ELayer::ePlayer,
-		CVector(0.0f, posY, -width),
-		CVector(0.0f, posY, width)
-	);
-	mpColliderLine->SetCollisionLayers({ ELayer::eField });
 	mpCollider = new CColliderSphere
 	(
 		this, ELayer::eInteractSearch,
@@ -114,9 +100,7 @@ CPlayer::CPlayer()
 
 CPlayer::~CPlayer()
 {
-	SAFE_DELETE(mpColliderLine);
-	SAFE_DELETE(mpColliderLineX);
-	SAFE_DELETE(mpColliderLineZ);
+	SAFE_DELETE(mpColliderCapsule);
 	SAFE_DELETE(mpCollider);
 
 	// 経路探索用ノードの破棄
@@ -164,16 +148,12 @@ CInteractObject* CPlayer::GetNearInteractObj() const
 // 待機
 void CPlayer::UpdateIdle()
 {
-	// 接地していれば、
-	if (mIsGrounded)
+	CInteractObject* obj = GetNearInteractObj();
+	if (obj != nullptr)
 	{
-		CInteractObject* obj = GetNearInteractObj();
-		if (obj != nullptr)
+		if (CInput::PushKey('F'))
 		{
-			if (CInput::PushKey('F'))
-			{
-				obj->Interact();
-			}
+			obj->Interact();
 		}
 	}
 }
@@ -195,7 +175,7 @@ CVector CPlayer::CalcMoveVec() const
 	if (input.LengthSqr() > 0.0f)
 	{
 		// 上方向ベクトル(設置している場合は、地面の法線)
-		CVector up = mIsGrounded ? mGroundNormal : CVector::up;
+		CVector up = CVector::up;
 		// カメラの向きに合わせた移動ベクトルに変換
 		CCamera* mainCamera = CCamera::MainCamera();
 		CVector camForward = mainCamera->VectorZ();
@@ -257,63 +237,50 @@ void CPlayer::UpdateMove()
 // 更新
 void CPlayer::Update()
 {
-
-	SetParent(mpRideObject);
-	mpRideObject = nullptr;
-
-	// 状態に合わせて、更新処理を切り替える
-	switch (mState)
+	if (mpScene->CameraTarget() == this)
 	{
-		// 待機状態
+		SetParent(mpRideObject);
+		mpRideObject = nullptr;
+
+		// 状態に合わせて、更新処理を切り替える
+		switch (mState)
+		{
+			// 待機状態
 		case EState::eIdle:
 			UpdateIdle();
 			break;
+		}
+
+		// 待機中とジャンプ中は、移動処理を行う
+		if (mState == EState::eIdle)
+		{
+			UpdateMove();
+		}
+
+		//mMoveSpeedY -= GRAVITY;
+		CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
+
+		// 移動
+		Position(Position() + moveSpeed);
+
+		// プレイヤーを移動方向へ向ける
+		CVector current = VectorZ();
+		CVector target = moveSpeed;
+		target.Y(0.0f);
+		target.Normalize();
+		CVector forward = CVector::Slerp(current, target, 0.125f);
+		Rotation(CQuaternion::LookRotation(forward));
+
+		if (CInput::Key(VK_SHIFT) || CInput::Key(VK_LBUTTON))
+		{
+			mIsDash = true;
+		}
+		else
+		{
+			mIsDash = false;
+		}
 	}
 
-	// 待機中とジャンプ中は、移動処理を行う
-	if (mState == EState::eIdle)
-	{
-		UpdateMove();
-	}
-
-	mMoveSpeedY -= GRAVITY;
-	CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
-
-	// 移動
-	Position(Position() + moveSpeed);
-
-	// プレイヤーを移動方向へ向ける
-	CVector current = VectorZ();
-	CVector target = moveSpeed;
-	target.Y(0.0f);
-	target.Normalize();
-	CVector forward = CVector::Slerp(current, target, 0.125f);
-	Rotation(CQuaternion::LookRotation(forward));
-
-	if (CInput::Key(VK_SHIFT))
-	{
-		mIsDash=true;
-	}
-	else
-	{
-		mIsDash = false;
-	}
-
-	//// 右クリックで弾丸発射
-	//if (CInput::PushKey(VK_RBUTTON))
-	//{
-	//	// 弾丸を生成
-	//	new CBullet
-	//	(
-	//		// 発射位置
-	//		Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
-	//		VectorZ(),	// 発射方向
-	//		1000.0f,	// 移動距離
-	//		1000.0f		// 飛距離
-	//	);
-	//}
-
-	
 
 	// 「P」キーを押したら、ゲームを終了
 	if (CInput::PushKey('P'))
@@ -330,10 +297,8 @@ void CPlayer::Update()
 		mpNavNode->SetPos(Position());
 	}
 
-	CDebugPrint::Print("Grounded:%s\n", mIsGrounded ? "true" : "false");
 	CDebugPrint::Print("State:%d\n", mState);
-
-	mIsGrounded = false;
+	CDebugPrint::Print("Position:%f:%f:%f\n", Position().X(), Position().Y(), Position().Z());
 
 	CDebugPrint::Print("FPS:%f\n", Times::FPS());
 
@@ -343,7 +308,7 @@ void CPlayer::Update()
 // 衝突処理
 void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 {
-	if (self == mpColliderLine)
+	if (self == mpColliderCapsule)
 	{
 		if (other->Layer() == ELayer::eField)
 		{
@@ -367,11 +332,6 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 					mMoveSpeedY = 0.0f;
 				}
 
-				// 接地した
-				mIsGrounded = true;
-				// 接地した地面の法線を記憶しておく
-				mGroundNormal = hit.adjust.Normalized();
-
 				if (other->Tag() == ETag::eRideableObject)
 				{
 					mpRideObject = other->Owner();
@@ -387,18 +347,6 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 					mMoveSpeedY = 0.0f;
 				}
 			}
-		}
-	}
-	else if (self == mpColliderLineX || self == mpColliderLineZ)
-	{
-		if (other->Layer() == ELayer::eField)
-		{
-			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
-			CVector adjust = hit.adjust;
-			adjust.Y(0.0f);
-
-			// 押し戻しベクトルの分座標を移動
-			Position(Position() + adjust * hit.weight);
 		}
 	}
 	else if (self == mpCollider)
@@ -420,4 +368,9 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 void CPlayer::Render()
 {
 	CXCharacter::Render();
+}
+
+bool CPlayer::IsPlaying() const
+{
+	return true;
 }
