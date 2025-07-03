@@ -57,10 +57,19 @@ void CTitleScene::Update()
 		{
 			CSceneManager::Instance()->LoadScene(EScene::eGame);
 		}
+		else if (mpTitleUI->IsStartGame2())
+		{
+			CSceneManager::Instance()->LoadScene(EScene::eGame2);
+		}
 		// ゲーム終了ならば、アプリを閉じる
 		else if (mpTitleUI->IsExitGame())
 		{
 			System::ExitGame();
 		}
 	}
+}
+
+CXCharacter* CTitleScene::CameraTarget() const
+{
+	return nullptr;
 }

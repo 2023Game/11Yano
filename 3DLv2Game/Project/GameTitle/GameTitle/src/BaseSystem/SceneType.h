@@ -7,6 +7,10 @@ enum class EScene
 
 	eTitle,	//タイトルシーン
 	eGame,	//ゲームシーン
+	eGame2,
+	eGame3,
+	eGameOver, // ゲームオーバー
+	eClear,    // クリアシーン
 
 	eBootMenu,	//起動時メニュー
 	eColTest,	//衝突判定テスト

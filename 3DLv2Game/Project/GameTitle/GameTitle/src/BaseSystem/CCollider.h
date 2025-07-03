@@ -5,6 +5,7 @@
 #include "CVertex.h"
 #include "ObjectTag.h"
 #include "CBounds.h"
+#include "CBounds2D.h"
 #include "CRect.h"
 
 class CObjectBase;
@@ -14,12 +15,14 @@ class CColliderSphere;
 class CColliderTriangle;
 class CColliderCapsule;
 class CColliderMesh;
+class CColliderCircle2D;
 
 struct STVertexData
 {
 	STVertex lv;
 	STVertex wv;
 	CBounds bounds;
+	CBounds2D bounds2D;
 };
 
 // ヒット情報
@@ -27,6 +30,7 @@ class CHitInfo
 {
 public:
 	CVector adjust;	// 押し戻しベクトル
+	CVector2 adjust2;
 	float weight;	// 押し戻し割合
 	CVector cross;	// 衝突位置
 	float dist;		// 衝突位置までの距離
@@ -52,6 +56,8 @@ public:
 
 	// 衝突判定レイヤーを取得
 	ELayer Layer() const;
+	// 衝突判定レイヤーを変更
+	void ChangeLayer(ELayer layer);
 	// コライダーの種類を取得
 	EColliderType Type() const;
 	// コライダーの持ち主を取得
@@ -145,6 +151,9 @@ public:
 
 	// バウンディングボックスを取得
 	CBounds Bounds() const;
+
+	// バウンディングボックスを取得
+	CBounds2D Bounds2D() const;
 
 	// コライダー更新
 	void Update();
@@ -256,6 +265,18 @@ public:
 	/// <returns>trueならば、衝突している</returns>
 	static bool CollisionSphere(const CVector& sp0, const float sr0,
 		const CVector& sp1, const float sr1, CHitInfo* hit);
+
+	/// <summary>
+	/// 円と円の衝突判定
+	/// </summary>
+	/// <param name="sp0">円1の座標</param>
+	/// <param name="sr0">円1の半径</param>
+	/// <param name="sp1">円2の座標</param>
+	/// <param name="sr1">円2の半径</param>
+	/// <param name="hit">衝突した時の情報</param>
+	/// <returns>trueならば、衝突している</returns>
+	static bool CollisionCircle(const CVector2& sp0, const float sr0,
+		const CVector2& sp1, const float sr1, CHitInfo* hit);
 
 	/// <summary>
 	/// 球と線分の衝突判定
@@ -438,6 +459,7 @@ protected:
 	void Set(CObjectBase* owner, ELayer layer);
 
 	CBounds mBounds;		// バウンディングボックス
+	CBounds2D mBounds2D;		// バウンディングボックス
 
 private:
 	ELayer mLayer;			// 衝突判定レイヤー

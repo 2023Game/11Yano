@@ -60,7 +60,7 @@ void CGamePause::Update()
 	if (!mIsPaused)
 	{
 		//「P」キーを押すと、ポーズ開始
-		if (CInput::PushKey('P'))
+		if (CInput::PushKey('0'))
 		{
 			//TaskManagerからポーズを設定する
 			CTaskManager::Instance()->Pause(PAUSE_GAME);

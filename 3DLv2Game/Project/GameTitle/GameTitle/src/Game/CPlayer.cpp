@@ -10,7 +10,8 @@
 #include "CNavManager.h"
 #include "CColliderSphere.h"
 #include "CInteractObject.h"
-#include "CGameScene.h"
+#include "CSceneBase.h"
+#include "CTaskManager.h"
 
 // プレイヤーのインスタンス
 CPlayer* CPlayer::spInstance = nullptr;
@@ -31,9 +32,7 @@ const CPlayer::AnimData CPlayer::ANIM_DATA[] =
 #define PLAYER_WIDTH	  5.0f
 #define MOVE_SPEED		  0.375f * 2.0f
 #define MOVE_SPEED2		  0.775f * 2.0f
-#define JUMP_SPEED		  1.5f
 #define GRAVITY			  0.0625f
-#define JUMP_END_Y		  1.0f
 
 
 
@@ -42,12 +41,11 @@ CPlayer::CPlayer()
 	: CXCharacter(ETag::ePlayer, ETaskPriority::ePlayer)
 	, mState(EState::eIdle)
 	, mMoveSpeedY(0.0f)
-	, mpRideObject(nullptr)
 	, mIsPlayedSlashSE(false)
 	, mIsSpawnedSlashEffect(false)
 	, mIsDash(false)
 	, mpCollider(nullptr)
-	, mIsPlaying(true)
+	, mIsGrounded(false)
 {
 	//インスタンスの設定
 	spInstance = this;
@@ -71,12 +69,12 @@ CPlayer::CPlayer()
 
 	mpColliderCapsule = new CColliderCapsule
 	(
-		this, ELayer::eInteractObj,
+		this, ELayer::ePlayer,
 		CVector(0.0f, 2.0f, 0.0f),
 		CVector(0.0f, PLAYER_HEIGHT, 0.0f),
 		2.0f
 	);
-	mpColliderCapsule->SetCollisionLayers({ ELayer::eInteractSearch });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eField, ELayer::eBullet });
 
 	mpCollider = new CColliderSphere
 	(
@@ -84,13 +82,22 @@ CPlayer::CPlayer()
 		20.0f
 	);
 	mpCollider->SetCollisionTags({ ETag::eInteractObject });
-	mpCollider->SetCollisionLayers({ ELayer::eInteractObj });
+	mpCollider->SetCollisionLayers({ ELayer::eInteractObj, ELayer::eNextStage, ELayer::eGoal, ELayer::ePlayer });
 
 
+	// UI
+	mpImage = new CImage
+	(
+		"UI/NextStage.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eDefault,
+		false
+	);
 
-	mpSlashSE = CResourceManager::Get<CSound>("SlashSound");
+	mpImage->SetCenter(mpImage->GetSize() * 0.5f);
+	mpImage->SetPos(CVector2(930.0f, 350.0f));
 
-
+	mpImage->SetEnable(false);
+	mpImage->SetShow(false);
 
 	// 経路探索用ノードを作成
 	mpNavNode = new CNavNode(Position(), true);
@@ -103,14 +110,14 @@ CPlayer::~CPlayer()
 	SAFE_DELETE(mpColliderCapsule);
 	SAFE_DELETE(mpCollider);
 
-	// 経路探索用ノードの破棄
-	CNavManager* navMgr = CNavManager::Instance();
-	if (navMgr != nullptr)
+	if (mpNavNode != nullptr)
 	{
-		SAFE_DELETE(mpNavNode);
+		mpNavNode = nullptr;
 	}
-
-	spInstance = nullptr;
+	if (spInstance != nullptr)
+	{
+		spInstance = nullptr;
+	}
 }
 
 CPlayer* CPlayer::Instance()
@@ -148,12 +155,16 @@ CInteractObject* CPlayer::GetNearInteractObj() const
 // 待機
 void CPlayer::UpdateIdle()
 {
-	CInteractObject* obj = GetNearInteractObj();
-	if (obj != nullptr)
+	// 接地していれば
+	if (mIsGrounded)
 	{
-		if (CInput::PushKey('F'))
+		CInteractObject* obj = GetNearInteractObj();
+		if (obj != nullptr)
 		{
-			obj->Interact();
+			if (CInput::PushKey('F'))
+			{
+				obj->Interact();
+			}
 		}
 	}
 }
@@ -175,7 +186,7 @@ CVector CPlayer::CalcMoveVec() const
 	if (input.LengthSqr() > 0.0f)
 	{
 		// 上方向ベクトル(設置している場合は、地面の法線)
-		CVector up = CVector::up;
+		CVector up = mIsGrounded ? mGroundNormal : CVector::up;
 		// カメラの向きに合わせた移動ベクトルに変換
 		CCamera* mainCamera = CCamera::MainCamera();
 		CVector camForward = mainCamera->VectorZ();
@@ -237,11 +248,9 @@ void CPlayer::UpdateMove()
 // 更新
 void CPlayer::Update()
 {
+
 	if (mpScene->CameraTarget() == this)
 	{
-		SetParent(mpRideObject);
-		mpRideObject = nullptr;
-
 		// 状態に合わせて、更新処理を切り替える
 		switch (mState)
 		{
@@ -257,7 +266,7 @@ void CPlayer::Update()
 			UpdateMove();
 		}
 
-		//mMoveSpeedY -= GRAVITY;
+		mMoveSpeedY -= GRAVITY;
 		CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
 
 		// 移動
@@ -268,7 +277,7 @@ void CPlayer::Update()
 		CVector target = moveSpeed;
 		target.Y(0.0f);
 		target.Normalize();
-		CVector forward = CVector::Slerp(current, target, 0.125f);
+		CVector forward = CVector::Slerp(current, target, 0.4f);
 		Rotation(CQuaternion::LookRotation(forward));
 
 		if (CInput::Key(VK_SHIFT) || CInput::Key(VK_LBUTTON))
@@ -280,8 +289,11 @@ void CPlayer::Update()
 			mIsDash = false;
 		}
 	}
-
-
+	else
+	{
+		ChangeAnimation(EAnimType::eIdle);
+		mState = EState::eIdle;
+	}
 	// 「P」キーを押したら、ゲームを終了
 	if (CInput::PushKey('P'))
 	{
@@ -291,14 +303,10 @@ void CPlayer::Update()
 	// キャラクターの更新
 	CXCharacter::Update();
 
-	// 経路探索用ノードが存在したら座標更新
-	if (mpNavNode != nullptr)
-	{
-		mpNavNode->SetPos(Position());
-	}
 
-	CDebugPrint::Print("State:%d\n", mState);
-	CDebugPrint::Print("Position:%f:%f:%f\n", Position().X(), Position().Y(), Position().Z());
+	mIsGrounded = false;
+
+	//CDebugPrint::Print("Position:%f:%f:%f\n", Position().X(), Position().Y(), Position().Z());
 
 	CDebugPrint::Print("FPS:%f\n", Times::FPS());
 
@@ -312,44 +320,39 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 	{
 		if (other->Layer() == ELayer::eField)
 		{
-			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
 			CVector adjust = hit.adjust;
-			adjust.X(0.0f);
-			adjust.Z(0.0f);
-
-			Position(Position() + adjust * hit.weight);
-
-			// 衝突した地面が床か天井かを内積で判定
-			CVector normal = hit.adjust.Normalized();
+			CVector normal = adjust.Normalized();
 			float dot = CVector::Dot(normal, CVector::up);
-			// 内積の結果がプラスであれば、床と衝突した
-			if (dot >= 0.0f)
+
+			// 床（または坂）と判定
+			if (dot > 0.7f)
 			{
-				// 落下などで床に上から衝突した時（下移動）のみ
-				// 上下の移動速度を0にする
+				// 上方向のみの押し戻し（X,Z方向は固定）
+				adjust.X(0.0f);
+				adjust.Z(0.0f);
+				Position(Position() + adjust * hit.weight);
+
 				if (mMoveSpeedY < 0.0f)
 				{
 					mMoveSpeedY = 0.0f;
 				}
-
-				if (other->Tag() == ETag::eRideableObject)
-				{
-					mpRideObject = other->Owner();
-				}
+				mIsGrounded = true;
+				mGroundNormal = normal;
 			}
-			// 内積の結果がマイナスであれば、天井と衝突した
+			// 壁と判定された
 			else
 			{
-				// ジャンプなどで天井に下から衝突した時（上移動）のみ
-				// 上下の移動速度を0にする
-				if (mMoveSpeedY > 0.0f)
-				{
-					mMoveSpeedY = 0.0f;
-				}
+				// 横方向（X,Z）だけ押し戻す
+				adjust.Y(0.0f);
+				Position(Position() + adjust * hit.weight);
 			}
 		}
+		if (other->Layer() == ELayer::eBullet)
+		{
+			// 死亡処理
+		}
 	}
-	else if (self == mpCollider)
+	if (self == mpCollider)
 	{
 		CInteractObject* obj = dynamic_cast<CInteractObject*>(other->Owner());
 		if (obj != nullptr)
@@ -361,6 +364,34 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 				obj->GetInteractStr().c_str());
 #endif
 		}
+
+		if (other->Layer() == ELayer::eNextStage)
+		{
+			mpImage->Load("UI/NextStage.png", false);
+
+			mpImage->SetEnable(true);
+			mpImage->SetShow(true);
+		}
+		if (other->Layer() == ELayer::eGoal)
+		{
+			mpImage->Load("UI/exit.png", false);
+
+			mpImage->SetEnable(true);
+			mpImage->SetShow(true);
+		}
+		if(other->Layer() == ELayer::eInteractObj)
+		{
+			mpImage->Load("UI/hacking.png", false);
+
+			mpImage->SetEnable(true);
+			mpImage->SetShow(true);
+		}
+		
+	}
+	else
+	{
+		mpImage->SetEnable(false);
+		mpImage->SetShow(false);
 	}
 }
 
@@ -368,9 +399,6 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 void CPlayer::Render()
 {
 	CXCharacter::Render();
+	mpImage->Render();
 }
 
-bool CPlayer::IsPlaying() const
-{
-	return true;
-}

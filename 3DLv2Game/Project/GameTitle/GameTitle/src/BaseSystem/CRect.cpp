@@ -132,3 +132,38 @@ float CRect::Bottom() const
 {
 	return mPosition.Y() + mSize.Y();
 }
+
+bool CRect::Collision(CRect* r, float* ax, float* ay)
+{
+	if (X() < r->X())
+		*ax = r->X() - X() - W() - r->W();
+	else
+		*ax = X() - r->X() - W() - r->W();
+	//0ˆÈã‚ÍÕ“Ë‚µ‚È‚¢
+	if (*ax >= 0.0f)
+		return false;
+	if (Y() < r->Y())
+		*ay = r->Y() - Y() - H() - r->H();
+	else
+		*ay = Y() - r->Y() - H() - r->H();
+	//0ˆÈã‚ÍÕ“Ë‚µ‚È‚¢
+	if (*ay >= 0.0f)
+		return false;
+
+	//Y‚ª’Z‚¢‚©”»’è
+	if (*ax < *ay)
+	{//YC³AX‚Í0
+		*ax = 0.0f;
+		//ã‚ÌŽž
+		if (Y() > r->Y())
+			*ay = -*ay;
+	}
+	else
+	{//XC³AY‚Í0
+		*ay = 0.0f;
+		//ã‚ÌŽž
+		if (X() > r->X())
+			*ax = -*ax;
+	}
+	return true;
+}

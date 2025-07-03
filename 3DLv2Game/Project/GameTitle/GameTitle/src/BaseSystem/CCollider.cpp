@@ -5,6 +5,7 @@
 #include "CColliderTriangle.h"
 #include "CColliderCapsule.h"
 #include "CColliderMesh.h"
+#include "CColliderCircle2D.h"
 #include "CObjectBase.h"
 #include "Maths.h"
 
@@ -36,6 +37,11 @@ CCollider::~CCollider()
 ELayer CCollider::Layer() const
 {
 	return mLayer;
+}
+
+void CCollider::ChangeLayer(ELayer layer)
+{
+	mLayer = layer;
 }
 
 // コライダーの種類を取得
@@ -197,6 +203,12 @@ CMatrix CCollider::Matrix() const
 CBounds CCollider::Bounds() const
 {
 	return mBounds;
+}
+
+// バウンディングボックスを取得
+CBounds2D CCollider::Bounds2D() const
+{
+	return mBounds2D;
 }
 
 // コライダー更新
@@ -506,6 +518,24 @@ bool CCollider::CollisionSphere(const CVector& sp0, const float sr0,
 	}
 
 	hit->adjust = CVector(0.0f, 0.0f, 0.0f);
+	//衝突していない
+	return false;
+}
+
+bool CCollider::CollisionCircle(const CVector2& sp0, const float sr0, const CVector2& sp1, const float sr1, CHitInfo* hit)
+{
+	//中心から中心へのベクトルを求める
+	CVector2 vec = sp0 - sp1;
+	float length = vec.Length();
+	//中心の距離が半径の合計より小さいと衝突
+	float sum = sr0 + sr1;
+	if (sum > length) {
+		hit->adjust2 = vec.Normalized() * (sum - length);
+		//衝突している
+		return  true;
+	}
+
+	hit->adjust2 = CVector2(0.0f, 0.0f);
 	//衝突していない
 	return false;
 }
@@ -1004,6 +1034,26 @@ bool CCollider::Collision(CCollider* c0, CCollider* c1, CHitInfo* hit)
 			CColliderMesh* mesh = dynamic_cast<CColliderMesh*>(c1);
 			auto tris = mesh->Get();
 			return CollisionMeshLine(tris, ls0, le0, line0->Bounds(), hit, false);
+		}
+		}
+		break;
+	}
+	case EColliderType::eCircle:
+	{
+		CColliderCircle2D* circle0 = dynamic_cast<CColliderCircle2D*>(c0);
+		CVector2 sp0;
+		float sr0;
+		circle0->Get(&sp0, &sr0);
+
+		switch (c1->Type())
+		{
+		case EColliderType::eCircle:
+		{
+			CColliderCircle2D* circle1 = dynamic_cast<CColliderCircle2D*>(c1);
+			CVector2 sp1;
+			float sr1;
+			circle1->Get(&sp1, &sr1);
+			return CollisionCircle(sp0, sr0, sp1, sr1, hit);
 		}
 		}
 		break;

@@ -1,6 +1,9 @@
 #include "CDebugFieldOfView.h"
 #include "Primitive.h"
 #include "glut.h"
+#include "CInput.h"
+
+#define SHOW_TIME 6.0f
 
 CDebugFieldOfView::CDebugFieldOfView(CObjectBase* owner,
 	float fovAngle, float fovLength, EType type)
@@ -9,7 +12,22 @@ CDebugFieldOfView::CDebugFieldOfView(CObjectBase* owner,
 	, mFovAngle(fovAngle)
 	, mFovLength(fovLength)
 	, mType(type)
+	, mIsRender(false)
+	, mTime(SHOW_TIME)
 {
+	// 背景生成
+	mpImage = new CImage
+	(
+		"UI/black_back.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
+		false, false
+	);
+	mpImage->SetCenter(mpImage->GetSize() * 0.5f);
+	mpImage->SetPos(WINDOW_WIDTH, WINDOW_HEIGHT);
+	mpImage->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
+	mpImage->SetEnable(true);
+	mpImage->SetShow(false);
+	SetShow(false);
 }
 
 CDebugFieldOfView::~CDebugFieldOfView()
@@ -35,10 +53,30 @@ void CDebugFieldOfView::Set(float angle, float length, EType type)
 
 void CDebugFieldOfView::Update()
 {
+	if (CInput::PushKey('R'))
+	{
+		mIsRender = true;
+	}
+	if (mIsRender)
+	{
+		mpImage->SetShow(true);
+		SetShow(true);
+		mTime -= Times::DeltaTime();
+		if (mTime <= 0.0f)
+		{
+			mIsRender = false;
+		}
+	}
+	else if(!mIsRender)
+	{
+		SetShow(false);
+		mTime = SHOW_TIME;
+	}
 }
 
 void CDebugFieldOfView::Render()
 {
+
 	switch (mType)
 	{
 	case EType::eSector:
@@ -81,5 +119,8 @@ void CDebugFieldOfView::Render()
 		// デプステストの状態を戻す
 		glEnable(GL_DEPTH_TEST);
 		break;
+	case EType::eNone:
+		break;
 	}
+
 }

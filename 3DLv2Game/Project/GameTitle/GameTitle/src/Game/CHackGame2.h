@@ -1,8 +1,11 @@
 #pragma once
 #include "CTask.h"
 #include "CImage.h"
+#include "CPlayer2D.h"
+#include "CEnemy2D.h"
 #include <vector>
 #include <string>
+#include "CSound.h"
 
 class CFont;
 
@@ -20,15 +23,22 @@ public:
 	void Update() override;
 	void Render() override;
 
-	bool mIsClear;
+	bool IsClear() const;
 private:
 	CImage* mpBackground;
 	bool mIsOpened;
 
+	CPlayer2D* mpPlayer;
+	CEnemy2D* mpEnemy;
+	CEnemy2D* mpEnemy2;
+	CEnemy2D* mpEnemy3;
 
-	CFont* mpLogoFont;	// ロゴのフォント
-	CText* mpTypeLogo;	// タイピングロゴ
-	char mText; // タイピングゲームのテキスト
+	CFont* mpFont;	// フォント
+	CText* mpLogos;	// テキスト
+
+	CSound* mpSE;
 
 	int mInputNum;
+
+	bool mIsClear;
 };

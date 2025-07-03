@@ -28,3 +28,4 @@ void CSceneBase::AddTask(CTask* task)
 	if (task == nullptr) return;
 	task->SetSceneType(mSceneType);
 }
+

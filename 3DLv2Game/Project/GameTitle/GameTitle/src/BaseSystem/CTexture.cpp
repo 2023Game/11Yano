@@ -13,6 +13,12 @@ CTexture::CTexture()
 {
 }
 
+CTexture::CTexture(char* file)
+	: CTexture()
+{
+	Load(file, false);
+}
+
 CTexture::~CTexture() {
 	Destory();
 }

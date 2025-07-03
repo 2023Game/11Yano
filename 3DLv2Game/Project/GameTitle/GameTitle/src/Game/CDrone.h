@@ -2,6 +2,7 @@
 #define CDRONE_H
 #include "CXCharacter.h"
 #include "CModel.h"
+#include "CColliderMesh.h"
 
 class CDebugFieldOfView;
 class CNavNode;
@@ -14,6 +15,9 @@ public:
 	void DeleteObject(CObjectBase* obj);
 	void Update() override;
 	void Render() override;
+
+	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
+	void Stop();
 private:
 	// “G‚Ìó‘Ô
 	enum class EState
@@ -50,6 +54,9 @@ private:
 	// UŒ‚‚ÌXVˆ—
 	void UpdateAttack();
 
+	
+	CColliderMesh* mpColliderMesh;
+
 	// ó‘Ô‚Ì•¶š—ñ‚ğæ“¾
 	std::string GetStateStr(EState state) const;
 	//ó‘Ô‚ÌF‚ğæ“¾
@@ -75,6 +82,7 @@ private:
 
 	CModel* mpModel;
 	float mBulletTime;
+	bool mStop;
 };
 
 #endif

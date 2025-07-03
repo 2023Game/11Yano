@@ -133,3 +133,8 @@ void CCollisionTestScene::Update()
 	}
 #endif
 }
+
+CXCharacter* CCollisionTestScene::CameraTarget() const
+{
+	return nullptr;
+}

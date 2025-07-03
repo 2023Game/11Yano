@@ -85,6 +85,8 @@ private:
 	void UpdateLost();
 	// 攻撃時の更新処理
 	void UpdateAttack();
+	// 死亡時の更新処理
+	void UpdateDie();
 
 	// 状態の文字列を取得
 	std::string GetStateStr(EState state) const;
@@ -106,15 +108,12 @@ private:
 	int mNextPatrolIndex; // 次に巡回するポイントの番号
 
 	CColliderCapsule* mpColliderCapsule; // 縦方向の線分コライダ
-	//CColliderLine* mpColliderLineX; // 横方向(X)の線分コライダ
-	//CColliderLine* mpColliderLineZ; // 横方向(Z)の線分コライダ
+
 
 	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
 	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
 	float mBulletTime;
-
-	bool mDie;
 };
 
 #endif

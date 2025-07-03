@@ -33,6 +33,21 @@ public:
 	//行数列数の設定
 	//SetRowCol(行数, 列数)
 	void SetRowCol(int row = 1, int col = 1);
+	
+	/*
+	デフォルトコンストラクタ
+	*/
+	CTexture();
+	CTexture(char* file);
+	/*
+	デストラクタ（このインスタンスが破棄されるときに実行される）
+	*/
+	~CTexture();
+	/*
+	Load(ファイル名)
+	画像ファイルの読み込み（テクスチャファイルの読み込み）
+	*/
+	bool Load(std::string path, bool dontDelete) override;
 
 	/*
 	DrawImage(四角形左座標, 四角形右座標, 四角形下座標, 四角形上座標,
@@ -73,20 +88,7 @@ public:
 	CRect CalcUV(const CVector2& pos, const CVector2& size) const;
 
 private:
-	/*
-	デフォルトコンストラクタ
-	*/
-	CTexture();
-	CTexture(char* file);
-	/*
-	デストラクタ（このインスタンスが破棄されるときに実行される）
-	*/
-	~CTexture();
-	/*
-	Load(ファイル名)
-	画像ファイルの読み込み（テクスチャファイルの読み込み）
-	*/
-	bool Load(std::string path, bool dontDelete) override;
+	
 
 	//	static std::map<std::string, CTexture>mTexFile;
 		//ファイル名

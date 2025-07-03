@@ -1,12 +1,13 @@
 #pragma once
 #include "CObjectBase.h"
 #include "CColliderMesh.h"
+#include "CCollider.h"
+#include "CFieldBase.h"
 
-class CWall;
 class CDoor;
 class CIntercom;
 
-class CField : public CObjectBase
+class CField : public CObjectBase, public CFieldBase
 {
 public:
 	static CField* Instanse();
@@ -20,11 +21,11 @@ public:
 
 	void Update();
 	void Render();
-
+	//カメラとの当たり判定取得
+	CCollider* GetFieldCol() const;
+	std::list<CDoor*> GetDoors() const;
 private:
-	// 壁を生成
-	void CreateWalls();
-	void CreateIntercoms();
+
 	void CreateFieldObjects();
 	// 経路探索用ノードを作成
 	void CreateNavNodes();
@@ -34,13 +35,7 @@ private:
 	CModel* mpModel;
 	CColliderMesh* mpColliderMesh;
 
-	CModel* mpCubeModel;
-	CModel* mpCylinderModel;
-
 	TexAnimData mEffectAnimData;
-
-	// ぁべオブジェクトのリスト
-	std::list<CWall*> mWalls;
 
 	// ドアオブジェクトのリスト
 	std::list<CDoor*> mDoors;

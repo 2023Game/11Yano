@@ -15,6 +15,8 @@ public:
 	void Load() override;
 	// 更新
 	void Update() override;
+	//カメラターゲットの設定
+	CXCharacter* CameraTarget() const;
 
 private:
 	// 次の項目を選択

@@ -73,6 +73,39 @@ void CTransform::Position(float x, float y, float z)
 	Position(CVector(x, y, z));
 }
 
+const CVector2& CTransform::Position2D() const
+{
+	return mPosition2D;
+}
+
+void CTransform::Position2D(const CVector2& pos)
+{
+	// 親が存在する場合
+	if (mpParent != nullptr)
+	{
+		// ワールド位置はそのまま設定
+		mPosition2D = pos;
+		// 自身のワールド位置 - 親のワールド位置 で
+		// 自身のローカル位置を求める
+		mLocalPosition2D = mPosition2D - mpParent->Position2D();
+	}
+	// 親が存在しない場合
+	else
+	{
+		// ワールド位置、ローカル位置にそのまま設定
+		mPosition2D = pos;
+		mLocalPosition2D = pos;
+	}
+
+	// 変更を子に反映
+	ApplyChildren2D();
+}
+
+void CTransform::Position2D(float x, float y)
+{
+	Position2D(CVector2(x, y));
+}
+
 // ローカル位置を取得
 const CVector& CTransform::LocalPosition() const
 {
@@ -384,6 +417,7 @@ void CTransform::SetParent(CTransform* parent)
 		Position(mPosition);
 		Rotation(mRotation);
 		Scale(mScale);
+		Position2D(mPosition2D);
 	}
 }
 
@@ -416,6 +450,14 @@ void CTransform::ApplyChildren()
 	}
 }
 
+void CTransform::ApplyChildren2D()
+{
+	for (CTransform* child : mChildren)
+	{
+		child->Update2D();
+	}
+}
+
 // 更新
 void CTransform::Update()
 {
@@ -443,4 +485,30 @@ void CTransform::Update()
 
 	// 変更を子に反映
 	ApplyChildren();
+}
+
+void CTransform::Update2D()
+{
+	// 親が存在する場合
+	if (mpParent != nullptr)
+	{
+		// ワールド位置は、「親の位置 + ローカル位置」で求める
+		mPosition2D = mpParent->Position2D() + mLocalPosition2D;
+		// ワールドスケール値は、「親のスケール値 * ローカル回転値」で求める
+		/*CVector parentScale = mpParent->Scale();
+		mScale.X(parentScale.X() * mLocalScale.X());
+		mScale.Y(parentScale.Y() * mLocalScale.Y());
+		mScale.Z(parentScale.Z() * mLocalScale.Z());*/
+	}
+	// 親が存在しない場合
+	else
+	{
+		// ワールド空間での各値とローカル空間での各値と同じ
+		mPosition2D = mLocalPosition2D;
+		/*mRotation = mLocalRotation;
+		mScale = mLocalScale;*/
+	}
+
+	// 変更を子に反映
+	ApplyChildren2D();
 }

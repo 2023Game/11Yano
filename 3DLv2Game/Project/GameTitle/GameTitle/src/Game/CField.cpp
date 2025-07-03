@@ -3,12 +3,13 @@
 #include "CMoveFloor.h"
 #include "CRotateFloor.h"
 #include "CLineEffect.h"
-#include "CWall.h"
-#include "CIntercom.h"
-#include <assert.h>
 #include "CNavManager.h"
 #include "CNavNode.h"
+#include "CIntercom.h"
+#include <assert.h>
 #include "CDoor.h"
+#include "CSwitch.h"
+#include "CGoal.h"
 
 // フィールドのインスタンス
 CField* CField::spInstanse = nullptr;
@@ -21,6 +22,7 @@ CField* CField::Instanse()
 
 CField::CField()
 	: CObjectBase(ETag::eField, ETaskPriority::eBackground)
+	, CFieldBase()
 	, mEffectAnimData(1, 11, true, 11, 0.03f)
 {
 	assert(spInstanse == nullptr);
@@ -29,10 +31,6 @@ CField::CField()
 	mpModel = CResourceManager::Get<CModel>("Field");
 
 	mpColliderMesh = new CColliderMesh(this, ELayer::eField, mpModel, true);
-
-	CreateWalls();
-	CreateIntercoms();
-	CreateNavNodes();
 
 	CreateFieldObjects();
 }
@@ -46,31 +44,8 @@ CField::~CField()
 		delete mpColliderMesh;
 		mpColliderMesh = nullptr;
 	}
-}
 
-void CField::CreateWalls()
-{
-	//CWall* wall = new CWall
-	//(
-	//	CVector(20.0f, 0.0f, 0.0f),
-	//	CVector(0.0f, 90.0f, 0.0f),
-	//	CVector(5.0f, 5.0f, 5.0f)
-	//);
-	//mWalls.push_back(wall); // 生成した壁を壁のリストに追加
 
-	//// 壁②生成
-	//wall = new CWall
-	//(
-	//	CVector(-50.0f, 0.0f, -50.0f),
-	//	CVector(0.0f, 0.0f, 0.0f),
-	//	CVector(5.0f, 5.0f, 5.0f)
-	//);
-	//mWalls.push_back(wall);
-}
-
-void CField::CreateIntercoms()
-{
-	
 }
 
 void CField::CreateFieldObjects()
@@ -78,7 +53,7 @@ void CField::CreateFieldObjects()
 
 	CIntercom* intercom = new CIntercom
 	(
-		CVector(200.5f, 25.0f, 126.0f),
+		CVector(141.5f, 25.0f, 94.0f),
 		CVector(0.0f, 270.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
@@ -87,7 +62,7 @@ void CField::CreateFieldObjects()
 #endif
 	CIntercom* intercom2 = new CIntercom
 	(
-		CVector(-123.0f, 25.0f, -23.0f),
+		CVector(-93.0f, 25.0f, -97.0f),
 		CVector(0.0f, 180.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
@@ -96,7 +71,7 @@ void CField::CreateFieldObjects()
 #endif
 	CIntercom* intercom3 = new CIntercom
 	(
-		CVector(-221.0f, 25.0f, -125.0f),
+		CVector(36.0f, 25.0f, -44.0f),
 		CVector(0.0f, 270.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
@@ -104,18 +79,68 @@ void CField::CreateFieldObjects()
 	intercom3->SetDebugName("Intercom3");
 #endif
 
+	CSwitch* cswitch = new CSwitch
+	(
+		CVector(100.5f, 25.0f, -139.0f),
+		CVector(0.0f, 270.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
+	);
+#if _DEBUG
+	cswitch->SetDebugName("cswitch");
+#endif
+
 	CDoor* door = new CDoor
 	(
-		CVector(211.0f, 12.0f, 125.0f),
+		CVector(153.0f, 12.0f, 92.0f),
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(1.0f, 1.0f, 1.0f)
 	);
 	door->SetAnimPos
 	(
-		CVector(223.0f, 12.0f, 125.5f),
-		CVector(211.0f, 12.0f, 125.5f)
+		CVector(163.0f, 12.0f, 94.0f),
+		CVector(153.0f, 12.0f, 94.0f)
 	);
 	door->AddIntercom(intercom);
+	CDoor* door2 = new CDoor
+	(
+		CVector(-93.0f, 12.0f, -117.0f),
+		CVector(0.0f, 90.0f, 0.0f),
+		CVector(1.0f, 1.0f, 1.0f)
+	);
+	door2->SetAnimPos
+	(
+		CVector(-93.0f, 12.0f, -120.0f),
+		CVector(-93.0f, 12.0f, -107.0f)
+		
+	);
+	door2->AddIntercom(intercom2);
+	CDoor* door3 = new CDoor
+	(
+		CVector(153.0f, 12.0f, 92.0f),
+		CVector(0.0f, 0.0f, 0.0f),
+		CVector(1.0f, 1.0f, 1.0f)
+	);
+	door3->SetAnimPos
+	(
+		CVector(60.0f, 12.0f, -44.0f),
+		CVector(47.0f, 12.0f, -44.0f)
+	);
+	door3->AddIntercom(intercom3);
+	mDoors.push_back(door);
+	mDoors.push_back(door2);
+	mDoors.push_back(door3);
+
+
+	CGoal* goal = new CGoal
+	(
+		CVector(-145.0f, 10.30f, -112.0f),
+		CVector(0.0f, 0.0f, 0.0f),
+		CVector(0.6f, 0.6f, 0.6f),
+		ELayer::eNextStage
+	);
+#if _DEBUG
+	goal->SetDebugName("Goal");
+#endif
 }
 
 void CField::CreateNavNodes()
@@ -124,22 +149,10 @@ void CField::CreateNavNodes()
 	if (navMgr != nullptr)
 	{
 		// 壁①の周りの経路探索ノード
-		new CNavNode(CVector(144.5f, 0.0f, 87.0f));
-		new CNavNode(CVector(221.5f, 0.0f, 87.0f));
-		new CNavNode(CVector(221.5f, 0.0f, -94.0f));
-		new CNavNode(CVector(144.5f, 0.0f, -94.0f));
-
-		// 壁にの経路探索ノード
-		new CNavNode(CVector(29.0f, 0.0f, 87.0f));
-		new CNavNode(CVector(108.0f, 0.0f, 87.0f));
-		new CNavNode(CVector(108.0f, 0.0f, -94.0f));
-		new CNavNode(CVector(29.0f, 0.0f, -94.0f));
-
-		// 壁③の経路探索ノード
-		new CNavNode(CVector(-90.0f, 0.0f, 87.0f));
-		new CNavNode(CVector(-12.5f, 0.0f, 87.0f));
-		new CNavNode(CVector(-12.5f, 0.0f, -94.0f));
-		new CNavNode(CVector(-90.0f, 0.0f, -94.0f));
+		new CNavNode(CVector(129.0f, 0.0f, 15.0f));
+		new CNavNode(CVector(163.0f, 0.0f, 15.0f));
+		new CNavNode(CVector(163.0f, 0.0f, 28.0f));
+		new CNavNode(CVector(129.0f, 0.0f, 28.0f));
 	}
 }
 
@@ -157,10 +170,10 @@ bool CField::CollisionRay(const CVector& start, const CVector& end, CHitInfo* hi
 		isHit = true;
 	}
 
-	// 壁との衝突判定
-	for (CWall* wall : mWalls)
+	// ドアとの衝突判定
+	for (CDoor* door : mDoors)
 	{
-		if (wall->CollisionRay(start, end, &tHit))
+		if (door->CollisionRay(start, end, &tHit))
 		{
 			// まだ衝突していないかすでに衝突しているコライダより近い場合
 			if (!isHit || tHit.dist < hit->dist)
@@ -182,4 +195,14 @@ void CField::Update()
 void CField::Render()
 {
 	mpModel->Render(Matrix());
+}
+
+CCollider* CField::GetFieldCol() const
+{
+	return mpColliderMesh;
+}
+
+std::list<CDoor*> CField::GetDoors() const
+{
+	return mDoors;
 }

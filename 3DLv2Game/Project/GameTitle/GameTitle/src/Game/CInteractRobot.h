@@ -3,12 +3,15 @@
 #define CINTERACTROBOT_H
 #include "CInteractObject.h"
 #include "CColliderCapsule.h"
+#include "CImage.h"
+#include "CColliderSphere.h"
+#include "CCollider.h"
 
 // 視野範囲のデバッグ表示クラスの前宣言
 class CDebugFieldOfView;
 class CNavNode;
-class CHackGame;
-class CGameScene;
+class CHackGame2;
+class CSceneBase;
 
 /*
 エネミークラス
@@ -26,7 +29,7 @@ public:
 	void Render() override;
 	void Interact() override;
 	bool IsClear() const;
-	void SetScene(CGameScene* scene) { mpScene = scene; }
+	void SetScene(CSceneBase* scene) { mpScene = scene; }
 
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
 private:
@@ -113,17 +116,22 @@ private:
 	int mNextPatrolIndex; // 次に巡回するポイントの番号
 
 	CColliderCapsule* mpColliderCapsule;
+	CColliderSphere* mpColliderSphere;
+	CVector mpTargetPos;
+	bool mIsTarget;
+	CObjectBase* mpTarget;
 
 	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
 	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
-	CHackGame* mpHackGame;
+	CHackGame2* mpHackGame;
 	bool mIsHack;
 	bool mIsClear;
 
 	float mBulletTime;
 
-	CGameScene* mpScene;
+	CSceneBase* mpScene;
+	CImage* mpImage;
 };
 
 #endif

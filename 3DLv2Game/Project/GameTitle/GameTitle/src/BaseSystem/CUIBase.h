@@ -1,9 +1,10 @@
 #pragma once
 #include "CTask.h"
+#include "CTransform.h"
 #include "CVector.h"
 #include "CColor.h"
 
-class CUIBase : public CTask
+class CUIBase : public CTask, CTransform
 {
 public:
 	CUIBase(ETaskPriority prio = ETaskPriority::eUI, int sortOrder = 0,

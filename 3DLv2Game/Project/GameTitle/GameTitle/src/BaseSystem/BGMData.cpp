@@ -4,9 +4,9 @@
 const BGMData BGM_DATA[] =
 {
 	//BGMの種類			リソースパス				ベース音量	ループ	ループ開始	ループ終了
-	{ EBGMType::eTitle,	"Sound\\BGM\\title.wav",	0.0625f,		true,	0,			0		},
-	{ EBGMType::eGame,	"Sound\\BGM\\game.wav",		0.0625f,		true,	0,			2801203	},
-	{ EBGMType::eMenu,	"Sound\\BGM\\menu.wav",		0.0625f,		true,	0,			0		},
+	{ EBGMType::eTitle,	"Sound\\BGM\\kyuutai.wav",	0.0625f,		true,	0,			0		},
+	{ EBGMType::eGame,	"Sound\\BGM\\cyber08.wav",		0.0625f,		true,	0,			2801203	},
+	{ EBGMType::eMenu,	"Sound\\BGM\\cyber07.wav",		0.0625f,		true,	0,			0		},
 };
 
 // BGMデータ数

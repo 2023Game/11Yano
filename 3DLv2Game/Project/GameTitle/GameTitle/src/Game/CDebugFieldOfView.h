@@ -1,5 +1,6 @@
 #pragma once
 #include "CObjectBase.h"
+#include "CImage.h"
 
 //視野範囲を表示するデバッグ機能
 class CDebugFieldOfView : public CObjectBase
@@ -7,6 +8,7 @@ class CDebugFieldOfView : public CObjectBase
 public:
 	enum class EType
 	{
+		eNone,
 		eSector,
 		eCone,
 	};
@@ -21,7 +23,9 @@ public:
 	void Update() override;
 	void Render() override;
 private:
-	
+	CImage* mpImage;
+	float mTime;
+	bool mIsRender;
 	CObjectBase* mpOwner; // 表示する対象のポインタ
 	float mFovAngle; // 視野範囲の角度（ディグリー）
 	float mFovLength; // 視野範囲の距離

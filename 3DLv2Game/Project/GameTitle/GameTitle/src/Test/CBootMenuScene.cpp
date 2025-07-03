@@ -14,6 +14,8 @@ CBootMenuScene::CBootMenuScene()
 		{ "■メイン", EScene::eNone },
 		{ "タイトル画面", EScene::eTitle },
 		{ "ゲーム画面", EScene::eGame },
+		{ "ゲーム画面2", EScene::eGame2 },
+		{ "ゲーム画面3", EScene::eGame3 },
 		{ "", EScene::eNone },
 		{ "■デバッグ", EScene::eNone },
 		{ "衝突判定テスト", EScene::eColTest },
@@ -109,4 +111,9 @@ void CBootMenuScene::Update()
 		MenuInfo& select = mMenuInfoList[mSelectIndex];
 		CSceneManager::Instance()->LoadScene(select.scene);
 	}
+}
+
+CXCharacter* CBootMenuScene::CameraTarget() const
+{
+	return nullptr;
 }

@@ -46,6 +46,20 @@ public:
 	/// <param name="z">ワールド位置 Z座標</param>
 	void Position(float x, float y, float z);
 
+	// 2D位置を取得
+	const CVector2& Position2D() const;
+	/// <summary>
+	/// 2D位置を設定
+	/// </summary>
+	/// <param name="pos">2D位置</param>
+	void Position2D(const CVector2& pos);
+	/// <summary>
+	/// 2D位置を設定
+	/// </summary>
+	/// <param name="x">2D位置 X座標</param>
+	/// <param name="y">2D位置 Y座標</param>
+	void Position2D(float x, float y);
+
 	// ローカル位置を取得
 	const CVector& LocalPosition() const;
 	/// <summary>
@@ -212,12 +226,21 @@ private:
 	// 子に自身の変更を反映
 	void ApplyChildren();
 
+	// 子に自身の変更を反映
+	void ApplyChildren2D();
+
 	// 更新
 	void Update();
+
+	// 更新
+	void Update2D();
 
 	CVector mPosition;			// ワールド空間での位置
 	CQuaternion mRotation;		// ワールド空間での回転値
 	CVector mScale;				// ワールド空間でのスケール値
+
+	CVector2 mPosition2D;       // 2D空間での位置
+	CVector2 mLocalPosition2D;
 
 	CVector mLocalPosition;		// ローカル空間での位置
 	CQuaternion mLocalRotation;	// ローカル空間での回転値

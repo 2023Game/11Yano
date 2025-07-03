@@ -10,7 +10,7 @@
 #include <cmath>
 
 #define FOV_ANGLE 45.0f // 視野範囲の角度
-#define FOV_LENGTH 30.0f // 視野範囲の半径
+#define FOV_LENGTH 25.0f // 視野範囲の半径
 #define EYE_HEIGHT -40.0f // 視点の高さ
 #define WALK_SPEED 10.0f // 歩行速度
 #define RUN_SPEED 10.0f // 走行速度
@@ -19,7 +19,7 @@
 #define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
 #define IDLE_TIME 5.0f // 待機状態の時間
 #define ATTACK_LANGE 35.0f // 攻撃範囲
-#define BULLET_TIME 7.0f // 弾の発射間隔
+#define BULLET_TIME 1.0f // 弾の発射間隔
 
 CDrone::CDrone(std::vector<CVector> patrolPoints)
 	: CXCharacter(ETag::eEnemy, ETaskPriority::eDefault)
@@ -33,10 +33,12 @@ CDrone::CDrone(std::vector<CVector> patrolPoints)
 	, mNextPatrolIndex(-1)
 	, mNextMoveIndex(0)
 	, mBulletTime(0.0f)
+	, mStop(false)
 {
 	mpModel = CResourceManager::Get<CModel>("Drone");
-	// CXCharacterの初期化
-	//Init(model);
+
+	mpColliderMesh = new CColliderMesh(this, ELayer::eEnemy, mpModel, true);
+	mpColliderMesh->SetCollisionLayers({ ELayer::eAttackCol, ELayer::eRange });
 
 	// 視野範囲のデバッグ表示クラスを作成
 	mpDebugFov = new CDebugFieldOfView(this, mFovAngle, mFovLength, CDebugFieldOfView::EType::eCone);
@@ -57,6 +59,8 @@ CDrone::CDrone(std::vector<CVector> patrolPoints)
 
 CDrone::~CDrone()
 {
+	SAFE_DELETE(mpColliderMesh);
+
 	// 視野範囲のデバッグ表示が存在したら削除
 	if (mpDebugFov != nullptr)
 	{
@@ -68,18 +72,10 @@ CDrone::~CDrone()
 	CNavManager* navMgr = CNavManager::Instance();
 	if (navMgr != nullptr)
 	{
-		SAFE_DELETE(mpNavNode);
-		SAFE_DELETE(mpLostPlayerNode);
+		mpNavNode = nullptr;
+		mpLostPlayerNode = nullptr;
 
-		// 巡回ポイントに配置したノードをすべて削除
-		auto itr = mPatrolPoints.begin();
-		auto end = mPatrolPoints.end();
-		while (itr != end)
-		{
-			CNavNode* del = *itr;
-			itr = mPatrolPoints.erase(itr);
-			delete del;
-		}
+		mPatrolPoints.clear();
 	}
 }
 
@@ -94,6 +90,12 @@ void CDrone::DeleteObject(CObjectBase* obj)
 
 void CDrone::Update()
 {
+	if (IsKill()) return;
+
+	if (mStop)
+	{
+		return;
+	}
 	// 現在の状態に合わせて更新処理を切替
 	switch (mState)
 	{
@@ -104,7 +106,7 @@ void CDrone::Update()
 	case EState::eAttack: UpdateAttack(); break;
 	}
 
-	//CXCharacter::Update();
+
 
 	// 経路探索用ノードが存在したら座標更新
 	if (mpNavNode != nullptr)
@@ -123,60 +125,60 @@ void CDrone::Render()
 {
 	mpModel->Render(Matrix());
 
-	if (mState == EState::ePatrol)
-	{
-		float rad = 1.0f;
-		// 巡回ポイントを描画
-		int size = mPatrolPoints.size();
-		for (int i = 0; i < size; i++)
-		{
-			CMatrix m;
-			m.Translate(mPatrolPoints[i]->GetPos() + CVector(0.0f, rad * 2.0f, 0.0f));
-			CColor c = i == mNextPatrolIndex ? CColor::red : CColor::cyan;
-			Primitive::DrawSphere(m, rad, c);
-		}
-	}
+	//if (mState == EState::ePatrol)
+	//{
+	//	float rad = 1.0f;
+	//	// 巡回ポイントを描画
+	//	int size = mPatrolPoints.size();
+	//	for (int i = 0; i < size; i++)
+	//	{
+	//		CMatrix m;
+	//		m.Translate(mPatrolPoints[i]->GetPos() + CVector(0.0f, rad * 2.0f, 0.0f));
+	//		CColor c = i == mNextPatrolIndex ? CColor::red : CColor::cyan;
+	//		Primitive::DrawSphere(m, rad, c);
+	//	}
+	//}
 
-	// プレイヤーを見失った位置にデバッグ表示
-	if (mState == EState::eLost)
-	{
-		// プレイヤーを見失った位置にデバッグ表示
-		float rad = 2.0f;
-		CMatrix m;
-		m.Translate(mpLostPlayerNode->GetPos() + CVector(0.0f, rad, 0.0f));
-		Primitive::DrawWireSphere(m, rad, CColor::blue);
-	}
+	//// プレイヤーを見失った位置にデバッグ表示
+	//if (mState == EState::eLost)
+	//{
+	//	// プレイヤーを見失った位置にデバッグ表示
+	//	float rad = 2.0f;
+	//	CMatrix m;
+	//	m.Translate(mpLostPlayerNode->GetPos() + CVector(0.0f, rad, 0.0f));
+	//	Primitive::DrawWireSphere(m, rad, CColor::blue);
+	//}
 
-	CPlayer* player = CPlayer::Instance();
-	CField* field = CField::Instanse();
-	if (player != nullptr && field != nullptr)
-	{
-		CVector offsetPos = CVector(0.0f, EYE_HEIGHT, 0.0f);
-		CVector playerPos = player->Position() + offsetPos;
-		CVector selfPos = Position() + offsetPos;
+	//CPlayer* player = CPlayer::Instance();
+	//CField* field = CField::Instanse();
+	//if (player != nullptr && field != nullptr)
+	//{
+	//	CVector offsetPos = CVector(0.0f, EYE_HEIGHT, 0.0f);
+	//	CVector playerPos = player->Position() + offsetPos;
+	//	CVector selfPos = Position() + offsetPos;
 
-		// プレイヤーとの間に遮蔽物が存在する場合
-		CHitInfo hit;
-		if (field->CollisionRay(selfPos, playerPos, &hit))
-		{
-			// 衝突した位置まで赤線描画
-			Primitive::DrawLine
-			(
-				selfPos, hit.cross,
-				CColor::red,
-				2.0f
-			);
-		}
-		else
-		{
-			Primitive::DrawLine
-			(
-				selfPos, playerPos,
-				CColor::green,
-				2.0f
-			);
-		}
-	}
+	//	// プレイヤーとの間に遮蔽物が存在する場合
+	//	CHitInfo hit;
+	//	if (field->CollisionRay(selfPos, playerPos, &hit))
+	//	{
+	//		// 衝突した位置まで赤線描画
+	//		Primitive::DrawLine
+	//		(
+	//			selfPos, hit.cross,
+	//			CColor::red,
+	//			2.0f
+	//		);
+	//	}
+	//	else
+	//	{
+	//		Primitive::DrawLine
+	//		(
+	//			selfPos, playerPos,
+	//			CColor::green,
+	//			2.0f
+	//		);
+	//	}
+	//}
 }
 
 void CDrone::ChangeState(EState state)
@@ -334,7 +336,7 @@ void CDrone::ChangePatrolPoint()
 				nearDist = dist;
 			}
 		}
-		mNextPatrolIndex = nearIndex;
+		mNextPatrolIndex = (nearIndex >= 0) ? nearIndex : 0;
 	}
 	// 巡回中の場合次の巡回ポイントを指定する
 	else
@@ -371,14 +373,17 @@ void CDrone::UpdateIdle()
 		return;
 	}
 
-	if (mElapsedTime < IDLE_TIME)
+	if (mPatrolPoints.size() > 1)
 	{
-		mElapsedTime += Times::DeltaTime();
-	}
-	else
-	{
-		// 待機時間経過したら巡回状態へ移行
-		ChangeState(EState::ePatrol);
+		if (mElapsedTime < IDLE_TIME)
+		{
+			mElapsedTime += Times::DeltaTime();
+		}
+		else
+		{
+			// 待機時間経過したら巡回状態へ移行
+			ChangeState(EState::ePatrol);
+		}
 	}
 }
 
@@ -517,7 +522,7 @@ void CDrone::UpdateLost()
 
 void CDrone::UpdateAttack()
 {
-	mBulletTime -= 1.0f;
+	mBulletTime -= Times::DeltaTime();
 	CPlayer* player = CPlayer::Instance();
 	// プレイヤー座標取得
 	CVector playerPos = player->Position();
@@ -533,8 +538,9 @@ void CDrone::UpdateAttack()
 			// 発射位置
 			Position() + CVector(0.0f, 0.0f, 0.0f),
 			vec,	// 発射方向
-			200.0f,	// 移動距離
-			200.0f		// 飛距離
+			50.0f,	// 移動距離
+			100.0f,		// 飛距離
+			ELayer::eBullet
 		);
 		mBulletTime = BULLET_TIME;
 	}
@@ -548,6 +554,24 @@ void CDrone::UpdateAttack()
 		}
 		ChangeState(EState::eChase);
 	}
+}
+
+void CDrone::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
+{
+	if (self == mpColliderMesh)
+	{
+		if (other->Layer() == ELayer::eAttackCol)
+		{
+			Kill();
+
+		}
+	}
+}
+
+void CDrone::Stop()
+{
+	mpDebugFov->SetShow(false);
+	mStop = true;
 }
 
 std::string CDrone::GetStateStr(EState state) const
@@ -571,7 +595,7 @@ CColor CDrone::GetStateColor(EState state) const
 	case EState::ePatrol: return CColor::green;
 	case EState::eChase: return CColor::red;
 	case EState::eLost: return CColor::yellow;
-	case EState::eAttack: return CColor::magenta;
+	case EState::eAttack: return CColor::red;
 	}
 	return CColor::white;
 }

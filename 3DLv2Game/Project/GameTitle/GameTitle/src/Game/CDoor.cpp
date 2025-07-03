@@ -10,7 +10,7 @@ CDoor::CDoor(const CVector& pos, const CVector& angle, const CVector& size)
 	mpModel = CResourceManager::Get<CModel>("Door");
 	// コライダー作成
 	mpColliderMesh = new CColliderMesh(this, ELayer::eField, mpModel, true);
-	mpColliderMesh->SetCollisionTags({ ETag::ePlayer, ETag::eEnemy });
+	mpColliderMesh->SetCollisionLayers({ ELayer::ePlayer, ELayer::eEnemy });
 
 	// 位置と向きとサイズを設定
 	Position(pos);
@@ -26,7 +26,7 @@ CDoor::~CDoor()
 
 void CDoor::AddIntercom(CIntercom* intercom)
 {
-	mpIntercoms.push_back(intercom);
+	mpIntercom = intercom;
 }
 
 void CDoor::SetAnimPos(const CVector& openPos, const CVector& closePos)
@@ -38,10 +38,13 @@ void CDoor::SetAnimPos(const CVector& openPos, const CVector& closePos)
 
 void CDoor::Update()
 {
+	if (!mIsPlaying && IsOpen() == mIsOpened) return; // 状態変化しないなら処理スキップ
+
 	if (mIsPlaying)
 	{
 		if (mIsOpened)
 		{
+			// ドアを開くアニメーション
 			if (mElapsedTime < mAnimTime)
 			{
 				float per = mElapsedTime / mAnimTime;
@@ -58,6 +61,7 @@ void CDoor::Update()
 		}
 		else 
 		{
+			// ドアを閉じるアニメーション
 			if (mElapsedTime < mAnimTime)
 			{
 				float per = mElapsedTime / mAnimTime;
@@ -93,11 +97,21 @@ void CDoor::Render()
 	mpModel->Render(Matrix());
 }
 
+CCollider* CDoor::GetFieldCol() const
+{
+	return mpColliderMesh;
+}
+
 bool CDoor::IsOpen() const
 {
-	for (CIntercom* intercom : mpIntercoms)
-	{
-		if (!intercom->IsClear()) return false;
-	}
+	if (!mpIntercom->IsClear()) return false;
+	
 	return true;
+}
+
+bool CDoor::CollisionRay(const CVector& start, const CVector& end, CHitInfo* hit)
+{
+	// 壁のコライダが存在しなければ衝突していない
+	if (mpColliderMesh == nullptr)return false;
+	return CCollider::CollisionRay(mpColliderMesh, start, end, hit);
 }

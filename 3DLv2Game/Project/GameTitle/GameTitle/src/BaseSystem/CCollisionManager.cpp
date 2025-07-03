@@ -75,6 +75,8 @@ void CCollisionManager::Collision(CCollider* col0, CCollider* col1)
 	{
 		// バウンディングボックス同士が交差していない場合は、衝突判定を行わない
 		if (!CBounds::Intersect(col0->Bounds(), col1->Bounds())) return;
+
+		if (!CBounds2D::Intersect(col0->Bounds2D(), col1->Bounds2D())) return;
 	}
 
 	// 衝突判定を行う

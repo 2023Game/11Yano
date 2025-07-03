@@ -26,7 +26,7 @@ CTitleUI::CTitleUI()
 	, mIsEnd(false)
 {
 	// タイトルロゴのフォントデータを生成
-	mpLogoFont = new CFont("res\\Font\\toroman.ttf");
+	mpLogoFont = new CFont("res\\Font\\DonguriDuel.ttf");
 	mpLogoFont->SetFontSize(128);
 	mpLogoFont->SetAlignment(FTGL::TextAlignment::ALIGN_CENTER);
 	mpLogoFont->SetLineLength(WINDOW_WIDTH);
@@ -35,7 +35,7 @@ CTitleUI::CTitleUI()
 	mpTitleLogo = new CText
 	(
 		mpLogoFont, 128,
-		CVector2(0.0f, 32.0f),
+		CVector2(0.0f, 150.0f),
 		CVector2(WINDOW_WIDTH, WINDOW_HEIGHT),
 		CColor(0.11f, 0.1f, 0.1f),
 		ETaskPriority::eUI,
@@ -44,20 +44,21 @@ CTitleUI::CTitleUI()
 		false,
 		false
 	);
-	mpTitleLogo->SetText("タイトルロゴ");
+	mpTitleLogo->SetText("BLACK OUT");
 	mpTitleLogo->SetEnableOutline(true);
 	mpTitleLogo->SetOutlineColor(CColor(0.9f, 0.9f, 0.9f));
 
 	// タイトル画面の背景イメージを生成
 	mpTitleBg = new CImage
 	(
-		"UI/title_bg.png",
+		"UI/title_back.png",
 		ETaskPriority::eUI,
 		0,
 		ETaskPauseType::eDefault,
 		false,
 		false
 	);
+	mpTitleBg->SetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	// 「CLICK TO START」のテキストを生成
 	mpStartText = new CText
@@ -81,7 +82,7 @@ CTitleUI::CTitleUI()
 	mpStartText->SetOutlineColor(CColor(0.0f, 0.0f, 0.0f));
 
 	// [START]ボタンを生成
-	CExpandButton* btn1 = new CExpandButton
+	btn1 = new CExpandButton
 	(
 		CVector2(WINDOW_WIDTH * 0.5f, 450.0f),
 		CVector2(181.0f, 47.0f),
@@ -98,22 +99,22 @@ CTitleUI::CTitleUI()
 	// ボタンリストに追加
 	mButtons.push_back(btn1);
 
-	// [OPTION]ボタンを生成
-	CExpandButton* btn2 = new CExpandButton
+	// [SELECT]ボタンを生成
+	btn2 = new CExpandButton
 	(
 		CVector2(WINDOW_WIDTH * 0.5f, 550.0f),
 		CVector2(181.0f, 47.0f),
 		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
 		false, false
 	);
-	btn2->LoadButtonImage("UI/title_option0.png", "UI/title_option1.png");
-	btn2->SetOnClickFunc(std::bind(&CTitleUI::OnClickOption, this));
+	btn2->LoadButtonImage("UI/title_select0.png", "UI/title_select1.png");
+	btn2->SetOnClickFunc(std::bind(&CTitleUI::OnClickSelect, this));
 	btn2->SetEnable(false);
 	btn2->SetScale(0.0f);
 	mButtons.push_back(btn2);
 
 	// [QUIT]ボタンを生成
-	CExpandButton* btn3 = new CExpandButton
+	btn3 = new CExpandButton
 	(
 		CVector2(WINDOW_WIDTH * 0.5f, 650.0f),
 		CVector2(181.0f, 47.0f),
@@ -158,6 +159,16 @@ bool CTitleUI::IsStartGame() const
 	return mSelectIndex == 0;
 }
 
+bool CTitleUI::IsStartGame2() const
+{
+	return mSelectIndex == 3;
+}
+
+bool CTitleUI::IsStartGame3() const
+{
+	return mSelectIndex == 4;
+}
+
 // ゲームを終了するか
 bool CTitleUI::IsExitGame() const
 {
@@ -183,12 +194,65 @@ void CTitleUI::OnClickStart()
 	mIsEnd = true;
 }
 
-// [OPTION]クリック時のコールバック関数
-void CTitleUI::OnClickOption()
+// [SELECT]クリック時のコールバック関数
+void CTitleUI::OnClickSelect()
 {
 	if (mIsEnd) return;
 
-	mSelectIndex = 1;
+
+	for (CButton* btn : mButtons)
+	{
+		SAFE_DELETE(btn);
+	}
+	mButtons.clear();
+
+	// [stage1]ボタンを生成
+	CExpandButton* sbtn1 = new CExpandButton
+	(
+		CVector2(WINDOW_WIDTH * 0.5f, 450.0f),
+		CVector2(181.0f, 47.0f),
+		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
+		false, false
+	);
+	// ボタンの画像を読み込み
+	sbtn1->LoadButtonImage("UI/stage1_0.png", "UI/stage1_1.png");
+	// ボタンクリック時に呼び出されるコールバック関数を設定
+	sbtn1->SetOnClickFunc(std::bind(&CTitleUI::OnClickStage1, this));
+	// ボタンは最初は無効化して、スケール値を0にしておく
+	sbtn1->SetEnable(false);
+	sbtn1->SetScale(0.0f);
+	// ボタンリストに追加
+	mButtons.push_back(sbtn1);
+
+	// [stage2]ボタンを生成
+	CExpandButton* sbtn2 = new CExpandButton
+	(
+		CVector2(WINDOW_WIDTH * 0.5f, 550.0f),
+		CVector2(181.0f, 47.0f),
+		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
+		false, false
+	);
+	sbtn2->LoadButtonImage("UI/stage2_0.png", "UI/stage2_1.png");
+	sbtn2->SetOnClickFunc(std::bind(&CTitleUI::OnClickStage2, this));
+	sbtn2->SetEnable(false);
+	sbtn2->SetScale(0.0f);
+	mButtons.push_back(sbtn2);
+
+	//// [stage3]ボタンを生成
+	//CExpandButton* sbtn3 = new CExpandButton
+	//(
+	//	CVector2(WINDOW_WIDTH * 0.5f, 650.0f),
+	//	CVector2(181.0f, 47.0f),
+	//	ETaskPriority::eUI, 0, ETaskPauseType::eGame,
+	//	false, false
+	//);
+	//sbtn3->LoadButtonImage("UI/stage3_0.png", "UI/stage3_1.png");
+	//sbtn3->SetOnClickFunc(std::bind(&CTitleUI::OnClickStage3, this));
+	//sbtn3->SetEnable(false);
+	//sbtn3->SetScale(0.0f);
+	//mButtons.push_back(sbtn3);
+
+	ChangeState(EState::eOpen);
 }
 
 // [QUIT]クリック時のコールバック関数
@@ -197,6 +261,30 @@ void CTitleUI::OnClickQuit()
 	if (mIsEnd) return;
 
 	mSelectIndex = 2;
+	mIsEnd = true;
+}
+
+void CTitleUI::OnClickStage1()
+{
+	if (mIsEnd) return;
+
+	mSelectIndex = 0;
+	mIsEnd = true;
+}
+
+void CTitleUI::OnClickStage2()
+{
+	if (mIsEnd) return;
+
+	mSelectIndex = 3;
+	mIsEnd = true;
+}
+
+void CTitleUI::OnClickStage3()
+{
+	if (mIsEnd) return;
+
+	mSelectIndex = 4;
 	mIsEnd = true;
 }
 

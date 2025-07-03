@@ -77,6 +77,8 @@ public:
 	float Top() const;
 	float Bottom() const;
 
+	bool Collision(CRect* rect, float* ax, float* ay);
+
 private:
 	CVector2 mPosition;	// 矩形の開始位置
 	CVector2 mSize;		// 矩形のサイズ

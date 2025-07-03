@@ -18,6 +18,10 @@ enum class ETag
 	eFlame,	// 炎
 	eSlash,	// 斬撃
 
+	ePlayer2D,
+	eEnemy2D,
+	eBullet2D,
+
 	eCamera,// カメラ
 
 	eDebug,// デバッグ用のオブジェクト

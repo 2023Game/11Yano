@@ -15,6 +15,7 @@ public:
 	/// <param name="min">最小位置</param>
 	/// <param name="max">最大位置</param>
 	void SetRange(const CVector& min, const CVector& max);	/// <summary>
+
 	/// 中心位置とサイズで設定
 	/// </summary>
 	/// <param name="center">中心位置</param>
@@ -81,4 +82,5 @@ public:
 private:
 	CVector mMin;	// 最小位置
 	CVector mMax;	// 最大位置
+
 };

@@ -7,9 +7,9 @@
 #include "CField.h"
 #include "CNavNode.h"
 #include "CNavManager.h"
-#include "CHackGame.h"
+#include "CHackGame2.h"
 #include "CBullet.h"
-#include "CGameScene.h"
+#include "CSceneBase.h"
 
 #define ROBOT_HEIGHT 13.0f
 #define ROBOT_WIDTH 10.0f
@@ -25,7 +25,7 @@
 #define PATROL_INTERVAL 3.0f // 次の巡回ポイントに移動開始するまでの時間
 #define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
 #define IDLE_TIME 5.0f // 待機状態の時間
-#define BULLET_TIME 5.0f // 弾の発射間隔
+#define BULLET_TIME 0.5f // 弾の発射間隔
 
 
 // プレイヤーのアニメーションデータのテーブル
@@ -37,7 +37,7 @@ const CInteractRobot::AnimData CInteractRobot::ANIM_DATA[] =
 	{ "Character\\Robot\\anim\\run.x",		true,	44.0f	},	// 走行
 	{ "Character\\Robot\\anim\\attack.x",		true,	86.0f	},	// 攻撃
 	{ "Character\\Robot\\anim\\down.x",		false,	59.0f	},	// 死
-	{ "Character\\Robot\\anim\\sit.x",		false,	0.0f	},	// 座る
+	{ "Character\\Robot\\anim\\sit.x",		true,	0.0f	},	// 座る
 
 };
 
@@ -82,14 +82,23 @@ CInteractRobot::CInteractRobot()
 		CVector(0.0f, ROBOT_HEIGHT, 0.0f),
 		3.0f
 	);
-	mpColliderCapsule->SetCollisionLayers({ ELayer::eInteractSearch });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eField, ELayer::eInteractSearch });
 
-	mpHackGame = new CHackGame();
+	mpColliderSphere = new CColliderSphere
+	(
+		this, ELayer::eRange,
+		70.0f
+	);
+	mpColliderSphere->SetCollisionLayers({ ELayer::eEnemy, ELayer::eField });
+
+	mpHackGame = new CHackGame2();
 	mInteractStr = "オンにする";
+
 }
 
 CInteractRobot::~CInteractRobot()
 {
+	SAFE_DELETE(mpColliderSphere);
 	SAFE_DELETE(mpColliderCapsule);
 
 	// 視野範囲のデバッグ表示が存在したら一緒に削除
@@ -145,18 +154,22 @@ void CInteractRobot::Update()
 		break;
 	}
 
-	CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
+	//CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
+	if (mpHackGame->IsClear())
+	{
+		mIsClear = true;
+		mpColliderCapsule->ChangeLayer(ELayer::ePlayer);
+	}
 
 	if (mpScene->CameraTarget() != this)
 	{
 		mState = EState::eWait;
-
-
 	}
 	else if (mpScene->CameraTarget() == this)
 	{
+
 		CVector moveSpeed = mMoveSpeed + CVector(0.0f, mMoveSpeedY, 0.0f);
-		mIsClear = true;
+		
 		mState = EState::ePlay;
 
 		// 移動
@@ -167,11 +180,11 @@ void CInteractRobot::Update()
 		CVector target = moveSpeed;
 		target.Y(0.0f);
 		target.Normalize();
-		CVector forward = CVector::Slerp(current, target, 0.125f);
+		CVector forward = CVector::Slerp(current, target, 0.4f);
 		Rotation(CQuaternion::LookRotation(forward));
 
 		// 左クリックで弾丸発射
-		if (CInput::Key(VK_LBUTTON))
+		if (CInput::Key(VK_LBUTTON) || CInput::Key(VK_SPACE))
 		{
 			UpdateAttack();
 			
@@ -180,6 +193,8 @@ void CInteractRobot::Update()
 
 	// キャラクターの更新
 	CXCharacter::Update();
+
+	mIsGrounded = false;
 }
 
 void CInteractRobot::Render()
@@ -189,6 +204,7 @@ void CInteractRobot::Render()
 
 void CInteractRobot::Interact()
 {
+	if (mIsClear) return;
 	mIsHack = !mIsHack;
 	mInteractStr = mIsHack ? "オフにする" : "オンにする";
 	if (CInput::PushKey('F'))
@@ -281,12 +297,46 @@ void CInteractRobot::Collision(CCollider* self, CCollider* other, const CHitInfo
 	{
 		if (other->Layer() == ELayer::eField)
 		{
-			// 坂道で滑らないように、押し戻しベクトルのXとZの値を0にする
 			CVector adjust = hit.adjust;
-			adjust.X(0.0f);
-			adjust.Z(0.0f);
+			CVector normal = adjust.Normalized();
+			float dot = CVector::Dot(normal, CVector::up);
 
-			Position(Position() + adjust * hit.weight);
+			// 床（または坂）と判定
+			if (dot > 0.7f)
+			{
+				// 上方向のみの押し戻し（X,Z方向は固定）
+				adjust.X(0.0f);
+				adjust.Z(0.0f);
+				Position(Position() + adjust * hit.weight);
+
+				if (mMoveSpeedY < 0.0f)
+				{
+					mMoveSpeedY = 0.0f;
+				}
+				mIsGrounded = true;
+				mGroundNormal = normal;
+			}
+			// 壁と判定された
+			else
+			{
+				// 横方向（X,Z）だけ押し戻す
+				adjust.Y(0.0f);
+				Position(Position() + adjust * hit.weight);
+			}
+		}
+	}
+	if (self == mpColliderSphere)
+	{
+		if (other->Layer() == ELayer::eEnemy)
+		{
+			mIsTarget = true;
+			mpTargetPos = other->Position();
+			mpTarget = other->Owner();
+		}
+		else
+		{
+			mIsTarget = false;
+			mpTarget = nullptr;
 		}
 	}
 }
@@ -316,19 +366,32 @@ void CInteractRobot::UpdateIdle()
 void CInteractRobot::UpdateAttack()
 {
 	ChangeAnimation(EAnimType::eAttack);
-	mBulletTime -= 1.0f;
+	mBulletTime -= Times::DeltaTime();
 
 	if (mBulletTime <= 0)
 	{
-		// 弾丸を生成
-		new CBullet
-		(
-			// 発射位置
-			Position() + CVector(0.0f, 10.0f, 0.0f) + VectorZ() * 20.0f,
-			VectorZ(),	// 発射方向
-			200.0f,	// 移動距離
-			200.0f		// 飛距離
+		CVector shootPos = Position() + CVector(0.0f, 14.0f, 0.0f) + VectorZ() * 20.0f;
+		CVector direction;
+
+		if (mpTarget != nullptr)
+		{
+			CVector targetPos = mpTarget->Position(); // 毎回最新の位置を取得
+			direction = targetPos - shootPos;
+		}
+		else
+		{
+			direction = VectorZ(); // 前方に発射
+		}
+
+		// 弾を生成
+		new CBullet(
+			shootPos,
+			direction,
+			100.0f, // 移動距離
+			100.0f, // 飛距離
+			ELayer::eAttackCol
 		);
+
 		mBulletTime = BULLET_TIME;
 	}
 }

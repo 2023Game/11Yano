@@ -4,7 +4,7 @@
 
 // コンストラクタ
 CBullet::CBullet(const CVector& pos, const CVector& dir,
-	float speed, float distance)
+	float speed, float distance, ELayer layer)
 	: CObjectBase(ETag::eBullet, ETaskPriority::eDefault, 0, ETaskPauseType::eGame)
 	, mMoveSpeed(speed)
 	, mFlyingDistance(distance)
@@ -16,11 +16,11 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 
 	mpColliderLine = new CColliderLine
 	(
-		this, ELayer::eAttackCol,
+		this, layer,
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(0.0f, 0.0f, 50.0f)
 	);
-	//mpColliderLine->SetCollisionTags({ ETag::eBullet });
+	mpColliderLine->SetCollisionLayers({ ELayer::eEnemy, ELayer::ePlayer });
 
 	// 軌跡のエフェクトを作成
 	mpTrailEffect = new CTrailEffect
@@ -37,6 +37,9 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 	);
 	mpTrailEffect->SetTexture("Laser");
 	mpTrailEffect->SetColor(CColor(1.0f, 0.75f, 0.25f, 1.0f));
+
+	mpSE = CResourceManager::Get<CSound>("Shot");
+	mpSE->Play(0.3f, true);
 }
 
 // デストラクタ

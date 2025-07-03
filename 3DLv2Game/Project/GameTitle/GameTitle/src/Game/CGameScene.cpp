@@ -13,6 +13,14 @@
 #include "CNavManager.h"
 #include "CInteractRobot.h"
 #include "CDrone.h"
+#include "CDoor.h"
+
+CGameScene* CGameScene::spInstance = nullptr;
+
+CGameScene* CGameScene::Instance()
+{
+	return spInstance;
+}
 
 //コンストラクタ
 CGameScene::CGameScene()
@@ -21,11 +29,17 @@ CGameScene::CGameScene()
 	, mpHackGame(nullptr)
 	, mpTarget(nullptr)
 {
+	//インスタンスの設定
+	spInstance = this;
 }
 
 //デストラクタ
 CGameScene::~CGameScene()
 {
+	if (CNavManager::Instance())
+	{
+		delete CNavManager::Instance();
+	}
 }
 
 //シーン読み込み
@@ -34,95 +48,99 @@ void CGameScene::Load()
 	// ゲーム画面はカーソル非表示
 	CInput::ShowCursor(false);
 	// 背景色設定
-	System::SetClearColor(0.1921569f, 0.3019608f, 0.4745098f, 1.0f);
+	System::SetClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//ここでゲーム中に必要な
 	//リソースの読み込みやクラスの生成を行う
 
-	CResourceManager::Load<CModel>("Field", "Field\\Company.mini.obj");
-	CResourceManager::Load<CModel>("Door", "Field\\Object\\door\\scifi_door.obj");
+	CResourceManager::Load<CModel>("Field", "Field\\stage1.obj");
+	CResourceManager::Load<CModel>("Door", "Field\\Object\\door\\door.obj");
+	CResourceManager::Load<CModel>("Goal", "Field\\Object\\goal.obj");
 	CResourceManager::Load<CModel>("Intercom", "Field\\Object\\door\\intercom\\intercom.obj");
-	CResourceManager::Load<CModel>("FieldCylinder", "Field\\Object\\cylinder.obj");
-	CResourceManager::Load<CModel>("Wall", "Field\\Object\\wall\\Wall.obj");
-	CResourceManager::Load<CModel>("WallCol", "Field\\Object\\wall\\WallCol.obj");
 	CResourceManager::Load<CModelX>("Player", "Character\\Mryotaisu\\Mryotaisu.x");
-	CResourceManager::Load<CModelX>("Enemy", "Character\\Enemy\\Soldier.x");
 	CResourceManager::Load<CModelX>("Robot", "Character\\Robot\\Robot.x");
 	CResourceManager::Load<CModel>("Drone", "Field\\Object\\Cube.obj");
 	CResourceManager::Load<CTexture>("Laser", "Effect\\laser.png");
-	CResourceManager::Load<CTexture>("LightningBolt", "Effect\\lightning_bolt.png");
-	CResourceManager::Load<CModel>("Slash", "Effect\\slash.obj");
-	CResourceManager::Load<CSound>("SlashSound", "Sound\\SE\\slash.wav");
+	CResourceManager::Load<CSound>("Hack", "Sound\\SE\\hack.wav");
+	CResourceManager::Load<CSound>("Boot", "Sound\\SE\\boot.wav");
+	CResourceManager::Load<CSound>("Shot", "Sound\\SE\\shot.wav");
+
 
 	// ゲームBGMを読み込み
-	//CBGMManager::Instance()->Play(EBGMType::eGame);
+	CBGMManager::Instance()->Play(EBGMType::eGame);
 
 	// 経路探索管理クラスを作成
-	new CNavManager();
+	CNavManager* navMgr = new CNavManager();
 
-	new CField();
+	CField* field = new CField();
 
 	player = new CPlayer();
 	player->Scale(1.0f, 1.0f, 1.0f);
-	player->Position(216.0f, 10.30f, 192.0f);
+	player->Position(153.0f, 10.30f, 132.0f);
 	player->SetScene(this);
 
 	mpTarget = player;
 
-	irobot = new CInteractRobot();
-	irobot->Scale(1.0f, 1.0f, 1.0f);
-	irobot->Position(216.0f, 10.30f, 220.0f);
-	irobot->SetScene(this);
-
 	CRobot* robot = new CRobot
 	(
 		{
-			CVector(233.0f, 10.0f, -105.0f),
-			CVector(233.0f, 10.0f, 102.0f),
-			CVector(129.0f, 10.0f, 102.0f),
-			CVector(129.0f, 10.0f, -105.0f),
+			CVector(167.0f, 10.0f, 76.0f),
+			CVector(114.0f, 10.0f, 76.0f),
+			CVector(114.0f, 10.0f, -31.0f),
+			CVector(167.0f, 10.0f, -31.0f),
 		}
 	);
-	robot->Position(233.0f, 10.30f, -105.0f);
+	robot->Position(167.0f, 10.30f, 76.0f);
 
 	CRobot* robot2 = new CRobot
 	(
 		{
-			CVector(122.0f, 10.0f, -105.0f),
-			CVector(122.0f, 10.0f, 102.0f),
-			CVector(12.0f, 10.0f, 102.0f),
-			CVector(12.0f, 10.0f, -105.0f),
+			CVector(107.0f, 10.0f, -31.0f),
+			CVector(52.0f, 10.0f, -31.0f),
+			CVector(52.0f, 10.0f, 76.0f),
+			CVector(107.0f, 10.0f, 76.0f),
 		}
 	);
-	robot2->Position(122.0f, 10.0f, 102.0f);
+	robot2->Position(107.0f, 10.0f, -31.0f);
 
 	CRobot* robot3 = new CRobot
 	(
 		{
-			CVector(3.0f, 10.0f, -105.0f),
-			CVector(3.0f, 10.0f, 102.0f),
-			CVector(-100.0f, 10.0f, 102.0f),
-			CVector(-100.0f, 10.0f, -105.0f),
+			CVector(43.0f, 10.0f, 76.0f),
+			CVector(-15.0f, 10.0f, 76.0f),
+			CVector(-15.0f, 10.0f, -31.0f),
+			CVector(43.0f, 10.0f, -31.0f),
 		}
 	);
-	robot3->Position(3.0f, 10.0f, -105.0f);
+	robot3->Position(43.0f, 10.0f, 76.0f);
 
 	CDrone* drone = new CDrone
 	(
 		{
-			CVector(233.0f, 40.0f, 102.0f),
-			CVector(129.0f, 40.0f, 102.0f),
+			CVector(-15.0f, 40.0f, -94.0f),
 		}
 	);
-	drone->Position(233.0f, 40.0f, 90.0f);
+	drone->Position(-15.0f, 40.0f, -94.0f);
+	CDrone* drone2 = new CDrone
+	(
+		{
+			CVector(-75.0f, 40.0f, -121.0f),
+			CVector(-75.0f, 40.0f, -69.0f),
+		}
+	);
+	drone2->Position(-75.0f, 40.0f, -121.0f);
+	CDrone* drone3 = new CDrone
+	(
+		{
+			CVector(63.0f, 40.0f, -69.0f),
+			CVector(63.0f, 40.0f, -121.0f),
+		}
+	);
+	drone3->Position(68.0f, 40.0f, -69.0f);
 
-	// CGameCameraのテスト
-	//CGameCamera* mainCamera = new CGameCamera
-	//(
-	//	//CVector(5.0f, -15.0f, 180.0f),
-	//	CVector(0.0f, 50.0f, 75.0f),
-	//	player->Position()
-	//);
+	mDrones.push_back(drone);
+	mDrones.push_back(drone2);
+	mDrones.push_back(drone3);
 
 	// CGameCamera2のテスト
 	CVector atPos = mpTarget->Position() + CVector(0.0f, 10.0f, 0.0f);
@@ -131,6 +149,12 @@ void CGameScene::Load()
 		atPos + CVector(0.0f, 0.0f, 20.0f),
 		atPos
 	);
+	mainCamera->AddCollider(field->GetFieldCol());
+	std::list<CDoor*> doors = field->GetDoors();
+	for (CDoor* door : doors)
+	{
+		mainCamera->AddCollider(door->GetFieldCol());
+	}
 	mainCamera->SetFollowTargetTf(mpTarget);
 	mainCamera->SetCurrent(true);
 
@@ -145,46 +169,26 @@ void CGameScene::Load()
 	// ゲームメニューを作成
 	mpGameMenu = new CGameMenu();
 
+	// UI
+	mpImage = new CImage
+	(
+		"UI/fieldOfView.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eDefault,
+		false
+	);
+
+	mpImage->SetCenter(mpImage->GetSize() * 0.5f);
+	mpImage->SetPos(CVector2(1100.0f, 50.0f));
+
+	mpImage->SetEnable(true);
+	mpImage->SetShow(true);
+
 }
 
 //シーンの更新処理
 void CGameScene::Update()
 {
-	if (irobot->IsClear() && CInput::PushKey('F'))
-	{
-		ChangeCamera();
-	}
-	// BGM再生中でなければ、BGMを再生
-	//if (!mpGameBGM->IsPlaying())
-	//{
-	//	mpGameBGM->PlayLoop(-1, 1.0f, false, 1.0f);
-	//}
-
-	if (CInput::PushKey('H'))
-	{
-		CSceneManager::Instance()->LoadScene(EScene::eTitle);
-	}
-}
-
-void CGameScene::ChangeCamera()
-{
-	if (mpTarget == player)
-	{
-		mpTarget = irobot;
-	}
-	else if (mpTarget == irobot)
-	{
-		mpTarget = player;
-	}
-
-	CVector atPos = mpTarget->Position() + CVector(0.0f, 10.0f, 0.0f);
-	mainCamera->LookAt
-	(
-		atPos + CVector(0.0f, 0.0f, 30.0f),
-		atPos,
-		CVector::up
-	);
-	mainCamera->SetFollowTargetTf(mpTarget);
+	
 }
 
 CXCharacter* CGameScene::CameraTarget() const
@@ -192,3 +196,7 @@ CXCharacter* CGameScene::CameraTarget() const
 	return mpTarget;
 }
 
+std::list<CDrone*> CGameScene::GetDrones() const
+{
+	return mDrones;
+}

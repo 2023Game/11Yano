@@ -15,7 +15,6 @@ CIntercom::CIntercom(const CVector& pos, const CVector& angle, const CVector& si
 		CVector(0.0f, -3.0f, 0.0f),
 		CVector(0.0f, 3.0f, 0.0f), true
 	); 
-	mpColliderLine->SetCollisionTags({ ETag::ePlayer });
 	mpColliderLine->SetCollisionLayers({ ELayer::ePlayer, ELayer::eInteractSearch });
 
 	// 位置と向きとサイズを設定
@@ -29,12 +28,13 @@ CIntercom::CIntercom(const CVector& pos, const CVector& angle, const CVector& si
 
 CIntercom::~CIntercom()
 {
+	SAFE_DELETE(mpColliderLine);
 }
 
 void CIntercom::Interact()
 {
 
-	mIsHack = mIsHack;
+	mIsHack = !mIsHack;
 	mInteractStr = mIsHack ? "オフにする" : "オンにする";
 	if (CInput::PushKey('F'))
 	{
@@ -47,7 +47,7 @@ void CIntercom::Update()
 	if (mpHackGame->IsClear())
 	{
 		mIsClear = true;
-
+		mpColliderLine->SetCollisionLayers({ ELayer::eNone });
 	}
 }
 

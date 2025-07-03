@@ -24,6 +24,9 @@ public:
 	// 更新
 	void Update() override;
 
+	//カメラターゲットの設定
+	CXCharacter* CameraTarget() const;
+
 private:
 	CColBase* mpSelectCol;			// 選択しているコライダー
 	std::vector<CColBase*> mColList;// 生成済みのコライダーリスト

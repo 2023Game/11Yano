@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneType.h"
+#include "CXCharacter.h"
 class CTask;
 
 //シーンのベースクラス
@@ -19,6 +20,8 @@ public:
 	EScene GetSceneType() const;
 	//シーンに所属するタスクを追加
 	void AddTask(CTask* task);
+	//カメラターゲットの設定
+	virtual CXCharacter* CameraTarget() const = 0;
 
 private:
 	EScene mSceneType;	//シーンの種類

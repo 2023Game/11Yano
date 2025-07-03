@@ -2,13 +2,12 @@
 //キャラクタクラスのインクルード
 #include "CXCharacter.h"
 #include "CColliderCapsule.h"
-#include "CRideableObject.h"
 #include "CSound.h"
 #include "CColliderSphere.h"
 #include "CImage.h"
 
 class CInteractObject;
-class CGameScene;
+class CSceneBase;
 /*
 プレイヤークラス
 キャラクタクラスを継承
@@ -24,7 +23,7 @@ public:
 	// デストラクタ
 	~CPlayer();
 
-	void SetScene(CGameScene* scene) { mpScene = scene; }
+	void SetScene(CSceneBase* scene) { mpScene = scene; }
 	// 更新
 	void Update();
 
@@ -38,8 +37,6 @@ public:
 
 	// 描画
 	void Render();
-
-	bool IsPlaying() const;
 
 private:
 	// キーの入力情報から移動ベクトルを求める
@@ -97,7 +94,9 @@ private:
 
 	CColliderCapsule* mpColliderCapsule; // プレイヤーのコライダ
 	CColliderSphere* mpCollider;
-	CTransform* mpRideObject;
+
+	bool mIsGrounded;	// 接地しているかどうかAdd commentMore actions
+	CVector mGroundNormal;	// 接地している地面の法線
 
 	CInteractObject* GetNearInteractObj() const;
 	std::list<CInteractObject*> mNearInteractObjs;
@@ -106,10 +105,8 @@ private:
 	bool mIsPlayedSlashSE;
 	bool mIsSpawnedSlashEffect;
 
-	CImage* mpUIHack;
+	CImage* mpImage;
 
-	bool mIsPlaying;
-
-	CGameScene* mpScene;
+	CSceneBase* mpScene;
 
 };

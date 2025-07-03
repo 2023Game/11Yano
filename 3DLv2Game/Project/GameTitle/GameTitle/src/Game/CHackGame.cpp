@@ -4,64 +4,40 @@
 #include "CBGMManager.h"
 #include "CFont.h"
 #include "CText.h"
-
-#define MENU_ALPHA 0.5f
-
-void CHackGame::Start()
-{
-
-}
+#include <ctime>
 
 CHackGame::CHackGame()
 	: CTask(ETaskPriority::eUI, 0, ETaskPauseType::eMenu)
 	, mIsOpened(false)
 	, mIsClear(false)
-	, mInputNum(1)
+	, mInputNum(0)
 {
 	// 背景生成
 	mpBackground = new CImage
 	(
-		"UI/menu_back.png",
+		"UI/hack_back.png",
 		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
 		false, false
 	);
 	mpBackground->SetCenter(mpBackground->GetSize() * 0.5f);
 	mpBackground->SetPos(CVector2(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.5f);
-	mpBackground->SetColor(1.0f, 1.0f, 1.0f, MENU_ALPHA);
+	mpBackground->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	/*mpPlayer = new CImage
-	(
-		"UI/2D_idle.png",
-		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
-		false, false
-	);
-	mpPlayer->SetCenter(mpPlayer->GetSize() * 0.5f);
-	mpPlayer->SetPos(CVector2(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.5f);
-	mpPlayer->SetColor(1.0f, 1.0f, 1.0f, MENU_ALPHA);*/
+	
 
 	// タイピングロゴのフォントデータを生成
 	mpLogoFont = new CFont("res\\Font\\KH-Dot-Dougenzaka-12.ttf");
-	mpLogoFont->SetFontSize(256);
+	mpLogoFont->SetFontSize(100);
 	mpLogoFont->SetAlignment(FTGL::TextAlignment::ALIGN_CENTER);
 	mpLogoFont->SetLineLength(WINDOW_WIDTH);
 
-	// タイピングロゴのテキストを生成
-	mpTypeLogo = new CText
-	(
-		mpLogoFont, 256,
-		CVector2(0.0f, 0.0f),
-		CVector2(WINDOW_WIDTH, WINDOW_HEIGHT),
-		CColor(1.0f, 1.0f, 1.0f),
-		ETaskPriority::eUI,
-		0,
-		ETaskPauseType::eDefault,
-		false,
-		false
-	);
-	mpTypeLogo->SetText("TEST");
-	mpTypeLogo->SetTextAlignV(ETextAlignV::eMiddle);
-	mpTypeLogo->SetEnableOutline(true);
-	mpTypeLogo->SetOutlineColor(CColor(0.9f, 0.9f, 0.9f));
+	// タイピングロゴのフォントデータを生成
+	mpLogoFontBg = new CFont("res\\Font\\KH-Dot-Dougenzaka-12.ttf");
+	mpLogoFontBg->SetFontSize(200);
+	mpLogoFontBg->SetAlignment(FTGL::TextAlignment::ALIGN_CENTER);
+	mpLogoFontBg->SetLineLength(WINDOW_WIDTH);
+	
+	mpSE = CResourceManager::Get<CSound>("Hack");
 
 	SetEnable(false);
 	SetShow(false);
@@ -73,8 +49,48 @@ CHackGame::~CHackGame()
 
 void CHackGame::Open()
 {
+	mpSE->Play(0.3f, true);
 	SetEnable(true);
 	SetShow(true);
+
+	std::srand((unsigned int)std::time(nullptr));
+	int index = std::rand() % mWordList.size();
+	mCurrentWord = mWordList[index];
+
+	// タイピングロゴのテキストを生成
+	mpTypeLogo = new CText
+	(
+		mpLogoFont, 50,
+		CVector2(0.0f, 0.0f),
+		CVector2(WINDOW_WIDTH, WINDOW_HEIGHT),
+		CColor(0.0f, 0.0f, 0.0f),
+		ETaskPriority::eUI,
+		0,
+		ETaskPauseType::eDefault,
+		false,
+		false
+	);
+	mpTypeLogo->SetText(mCurrentWord.c_str());
+	mpTypeLogo->SetPos(0.0f, 200.0f);
+	mpTypeLogo->SetEnableOutline(true);
+	mpTypeLogo->SetOutlineColor(CColor(0.9f, 0.9f, 0.9f));
+
+	// 打っている文字
+	mpTypedLogo = new CText(
+		mpLogoFontBg, 256,
+		CVector2(0.0f, 0.0f),
+		CVector2(WINDOW_WIDTH, WINDOW_HEIGHT),
+		CColor(1.0f, 1.0f, 0.2f), // 黄色
+		ETaskPriority::eUI,
+		0,
+		ETaskPauseType::eDefault,
+		false,
+		false
+	);
+	mpTypedLogo->SetPos(0.0f, 0.0f);
+	mpTypedLogo->SetTextAlignV(ETextAlignV::eMiddle);
+	
+
 	CBGMManager::Instance()->Play(EBGMType::eMenu, false);
 	CTaskManager::Instance()->Pause(PAUSE_MENU_OPEN);
 }
@@ -94,33 +110,39 @@ bool CHackGame::IsOpened() const
 
 void CHackGame::Update()
 {
+	//mpPlayer->Update();
 	mpBackground->Update();
 	mpTypeLogo->Update();
 
-	char cord[] = "TEST";
-	char c = cord[mInputNum];
-	if (CInput::PushKey(c))
+	if (mInputNum < mCurrentWord.length())
 	{
-		mInputNum++;
+		char c = mCurrentWord[mInputNum];
+		if (CInput::PushKey(c))
+		{
+			mInputNum++;
+		}
 	}
-	if (c == '\0')
+	else
 	{
 		mIsClear = true;
 		Close();
 	}
+	std::string typedPart = mCurrentWord.substr(0, mInputNum);
+	mpTypedLogo->SetText(typedPart.c_str());
 }
 
 void CHackGame::Render()
 {
+	
 	// 背景描画
 	mpBackground->Render();
+	//mpPlayer->Render();
 	// タイピングロゴ描画
 	mpTypeLogo->Render();
+	mpTypedLogo->Render();
 }
 
 bool CHackGame::IsClear() const
 {
-	if (mIsClear == false) return false;
-
-	return true;
+	return mIsClear;
 }

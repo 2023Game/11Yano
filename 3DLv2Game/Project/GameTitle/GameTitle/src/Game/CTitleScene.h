@@ -17,6 +17,8 @@ public:
 	void Load();
 	//シーンの更新処理
 	void Update();
+	//カメラターゲットの設定
+	CXCharacter* CameraTarget() const;
 
 private:
 	CTitleUI* mpTitleUI;

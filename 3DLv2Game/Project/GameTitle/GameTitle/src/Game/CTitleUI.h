@@ -1,5 +1,6 @@
 #pragma once
 #include "CTask.h"
+#include "CExpandButton.h"
 
 class CFont;
 class CImage;
@@ -17,6 +18,11 @@ public:
 	bool IsEnd() const;
 	// ゲームを開始するか
 	bool IsStartGame() const;
+	// ゲーム2を開始するか
+	bool IsStartGame2() const;
+	// ゲーム3を開始するか
+	bool IsStartGame3() const;
+
 	// ゲームを終了するか
 	bool IsExitGame() const;
 
@@ -41,6 +47,7 @@ private:
 		eIdle,		// 待機状態
 		eOpen,		// メニューを開く
 		eSelect,	// メニュー選択
+		eStageSelect, // ステージセレクトメニュー
 		eFadeOut,	// フェードアウト
 	};
 	// 状態切り替え
@@ -48,10 +55,13 @@ private:
 
 	// [START]クリック時のコールバック関数
 	void OnClickStart();
-	// [OPTION]クリック時のコールバック関数
-	void OnClickOption();
+	// [SELECT]クリック時のコールバック関数
+	void OnClickSelect();
 	// [QUIT]クリック時のコールバック関数
 	void OnClickQuit();
+	void OnClickStage1();
+	void OnClickStage2();
+	void OnClickStage3();
 
 	EState mState;		// 現在の状態
 	int mStateStep;		// 状態内でのステップ管理用
@@ -63,5 +73,10 @@ private:
 	CText* mpTitleLogo;	// タイトルロゴ
 	CImage* mpTitleBg;	// タイトル背景イメージ
 	CText* mpStartText;	// 「CLICK TO START」のテキスト
+
+	CExpandButton* btn1;
+	CExpandButton* btn2;
+	CExpandButton* btn3;
+
 	std::vector<CExpandButton*> mButtons;
 };
