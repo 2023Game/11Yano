@@ -1,5 +1,6 @@
 #pragma once
 #include "CVector.h"
+#include "CMatrix2.h"
 
 class CQuaternion
 {
@@ -21,6 +22,7 @@ public:
 	void RotationAxis(const CVector& axis, float angle);
 
 	CMatrix Matrix() const;
+	float Matrix2() const;
 
 	float Length() const;
 	float LengthSqr() const;

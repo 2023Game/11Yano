@@ -46,7 +46,7 @@ void CBullet2D::Update()
     float remain = mFlyingDistance - mCurrentFlyingDistance;
     if (remain <= 0.0f)
     {
-        Kill();
+        CTask::Kill();
         return;
     }
 
@@ -62,7 +62,7 @@ void CBullet2D::Update()
 
     if (mpOwner->IsKill())
     {
-        Kill();
+        CTask::Kill();
         mpOwner = nullptr;
         return;
     }
@@ -79,7 +79,7 @@ void CBullet2D::Collision(CCollider* self, CCollider* other, const CHitInfo& hit
     {
         if (other->Tag() == ETag::ePlayer2D)
         {
-            Kill();
+            CTask::Kill();
             return;
         }
     }

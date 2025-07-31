@@ -27,6 +27,7 @@
     <ClCompile Include="src\BaseSystem\CColliderMesh.cpp" />
     <ClCompile Include="src\BaseSystem\CColliderSphere.cpp" />
     <ClCompile Include="src\BaseSystem\CColliderTriangle.cpp" />
+    <ClCompile Include="src\BaseSystem\CColliderTriangle2D.cpp" />
     <ClCompile Include="src\BaseSystem\CCollisionManager.cpp" />
     <ClCompile Include="src\BaseSystem\CColor.cpp" />
     <ClCompile Include="src\BaseSystem\CDebugCamera.cpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="src\BaseSystem\CLineEffect.cpp" />
     <ClCompile Include="src\BaseSystem\CMaterial.cpp" />
     <ClCompile Include="src\BaseSystem\CMatrix.cpp" />
+    <ClCompile Include="src\BaseSystem\CMatrix2.cpp" />
     <ClCompile Include="src\BaseSystem\CModel.cpp" />
     <ClCompile Include="src\BaseSystem\CModelX.cpp" />
     <ClCompile Include="src\BaseSystem\CMyShader.cpp" />
@@ -74,6 +76,7 @@
     <ClCompile Include="src\BaseSystem\Maths.cpp" />
     <ClCompile Include="src\BaseSystem\System.cpp" />
     <ClCompile Include="src\Game\CApplication.cpp" />
+    <ClCompile Include="src\Game\CBlackOut.cpp" />
     <ClCompile Include="src\Game\CBlock.cpp" />
     <ClCompile Include="src\Game\CBullet.cpp" />
     <ClCompile Include="src\Game\CBullet2D.cpp" />
@@ -83,18 +86,15 @@
     <ClCompile Include="src\Game\CDebugFieldOfView.cpp" />
     <ClCompile Include="src\Game\CDoor.cpp" />
     <ClCompile Include="src\Game\CDrone.cpp" />
-    <ClCompile Include="src\Game\CEnemy.cpp" />
     <ClCompile Include="src\Game\CEnemy2D.cpp" />
     <ClCompile Include="src\Game\CField.cpp" />
-    <ClCompile Include="src\Game\CField3.cpp" />
     <ClCompile Include="src\Game\CFlame.cpp" />
     <ClCompile Include="src\Game\CFlamethrower.cpp" />
     <ClCompile Include="src\Game\CGameCamera.cpp" />
     <ClCompile Include="src\Game\CGameCamera2.cpp" />
-    <ClCompile Include="src\Game\CGameMenu.cpp" />
+    <ClCompile Include="src\Game\CGameOver.cpp" />
     <ClCompile Include="src\Game\CGameScene.cpp" />
-    <ClCompile Include="src\Game\CGameScene2.cpp" />
-    <ClCompile Include="src\Game\CGameScene3.cpp" />
+    <ClCompile Include="src\Game\CGameUI.cpp" />
     <ClCompile Include="src\Game\CGoal.cpp" />
     <ClCompile Include="src\Game\CHackGame.cpp" />
     <ClCompile Include="src\Game\CHackGame2.cpp" />
@@ -103,8 +103,10 @@
     <ClCompile Include="src\Game\CInteractObject.cpp" />
     <ClCompile Include="src\Game\CInteractRobot.cpp" />
     <ClCompile Include="src\Game\CIntercom.cpp" />
+    <ClCompile Include="src\Game\CMryotaisu.cpp" />
     <ClCompile Include="src\Game\CNavManager.cpp" />
     <ClCompile Include="src\Game\CNavNode.cpp" />
+    <ClCompile Include="src\Game\COverUI.cpp" />
     <ClCompile Include="src\Game\CPlayer.cpp" />
     <ClCompile Include="src\Game\CPlayer2D.cpp" />
     <ClCompile Include="src\Game\CRobot.cpp" />
@@ -113,7 +115,6 @@
     <ClCompile Include="src\Game\CTitleScene.cpp" />
     <ClCompile Include="src\Game\CTitleUI.cpp" />
     <ClCompile Include="src\Game\CXCharacter.cpp" />
-    <ClCompile Include="src\Game\CField2.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Test\CBootMenuScene.cpp" />
     <ClCompile Include="src\Test\CColBase.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="src\BaseSystem\CColliderMesh.h" />
     <ClInclude Include="src\BaseSystem\CColliderSphere.h" />
     <ClInclude Include="src\BaseSystem\CColliderTriangle.h" />
+    <ClInclude Include="src\BaseSystem\CColliderTriangle2D.h" />
     <ClInclude Include="src\BaseSystem\CCollisionManager.h" />
     <ClInclude Include="src\BaseSystem\CColor.h" />
     <ClInclude Include="src\BaseSystem\CDebugCamera.h" />
@@ -160,6 +162,7 @@
     <ClInclude Include="src\BaseSystem\CLineEffect.h" />
     <ClInclude Include="src\BaseSystem\CMaterial.h" />
     <ClInclude Include="src\BaseSystem\CMatrix.h" />
+    <ClInclude Include="src\BaseSystem\CMatrix2.h" />
     <ClInclude Include="src\BaseSystem\CModel.h" />
     <ClInclude Include="src\BaseSystem\CModelX.h" />
     <ClInclude Include="src\BaseSystem\CMyShader.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="src\BaseSystem\Times.h" />
     <ClInclude Include="src\Define.h" />
     <ClInclude Include="src\Game\CApplication.h" />
+    <ClInclude Include="src\Game\CBlackOut.h" />
     <ClInclude Include="src\Game\CBlock.h" />
     <ClInclude Include="src\Game\CBullet.h" />
     <ClInclude Include="src\Game\CBullet2D.h" />
@@ -207,18 +211,15 @@
     <ClInclude Include="src\Game\CDebugFieldOfView.h" />
     <ClInclude Include="src\Game\CDoor.h" />
     <ClInclude Include="src\Game\CDrone.h" />
-    <ClInclude Include="src\Game\CEnemy.h" />
     <ClInclude Include="src\Game\CEnemy2D.h" />
     <ClInclude Include="src\Game\CField.h" />
-    <ClInclude Include="src\Game\CField3.h" />
     <ClInclude Include="src\Game\CFlame.h" />
     <ClInclude Include="src\Game\CFlamethrower.h" />
     <ClInclude Include="src\Game\CGameCamera.h" />
     <ClInclude Include="src\Game\CGameCamera2.h" />
-    <ClInclude Include="src\Game\CGameMenu.h" />
+    <ClInclude Include="src\Game\CGameOver.h" />
     <ClInclude Include="src\Game\CGameScene.h" />
-    <ClInclude Include="src\Game\CGameScene2.h" />
-    <ClInclude Include="src\Game\CGameScene3.h" />
+    <ClInclude Include="src\Game\CGameUI.h" />
     <ClInclude Include="src\Game\CGoal.h" />
     <ClInclude Include="src\Game\CHackGame.h" />
     <ClInclude Include="src\Game\CHackGame2.h" />
@@ -227,8 +228,10 @@
     <ClInclude Include="src\Game\CInteractObject.h" />
     <ClInclude Include="src\Game\CInteractRobot.h" />
     <ClInclude Include="src\Game\CIntercom.h" />
+    <ClInclude Include="src\Game\CMryotaisu.h" />
     <ClInclude Include="src\Game\CNavManager.h" />
     <ClInclude Include="src\Game\CNavNode.h" />
+    <ClInclude Include="src\Game\COverUI.h" />
     <ClInclude Include="src\Game\CPlayer.h" />
     <ClInclude Include="src\Game\CPlayer2D.h" />
     <ClInclude Include="src\Game\CRobot.h" />
@@ -237,7 +240,6 @@
     <ClInclude Include="src\Game\CTitleUI.h" />
     <ClInclude Include="src\Game\CTitleScene.h" />
     <ClInclude Include="src\Game\CXCharacter.h" />
-    <ClInclude Include="src\Game\CField2.h" />
     <ClInclude Include="src\Test\CBootMenuScene.h" />
     <ClInclude Include="src\Test\CColBase.h" />
     <ClInclude Include="src\Test\CColCapsule.h" />

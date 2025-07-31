@@ -21,6 +21,7 @@ enum class ETag
 	ePlayer2D,
 	eEnemy2D,
 	eBullet2D,
+	eClear,
 
 	eCamera,// ƒJƒƒ‰
 

@@ -16,6 +16,9 @@ public:
 	void Update() override;
 	void Render() override;
 
+	bool IsPlayerChase() const override;
+	bool IsPlayerLost() const override;
+
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
 	void Stop();
 private:
@@ -33,7 +36,7 @@ private:
 
 	// プレイヤーが視野範囲内に入ったかどうか
 	bool IsFoundPlayer() const;
-	// プレイヤーが見えているか
+	// プレイヤーが見えているか(障害物がないか)
 	bool IsLookPlayer() const;
 	// プレイヤーを攻撃できるか
 	bool CanAttackPlayer() const;
@@ -62,27 +65,30 @@ private:
 	//状態の色を取得
 	CColor GetStateColor(EState state) const;
 
+
+	/*　状態管理 */
 	EState mState;
 	int mStateStep; // 状態内のステップ管理
 	float mElapsedTime; // 経過時間計測用
-	CDebugFieldOfView* mpDebugFov; // 視野範囲のデバッグ表示
+	bool mStop; // 機能停止フラグ
 
+	/*　ノード系　*/
 	CNavNode* mpLostPlayerNode; // プレイヤーを見失った位置のノード
-
-	// 巡回ポイントのリスト
-	std::vector<CNavNode*> mPatrolPoints;
+	std::vector<CNavNode*> mPatrolPoints; // 巡回ポイントのリスト
 	int mNextPatrolIndex; // 次に巡回するポイントの番号
+	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
+	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
+	/*　視野範囲　*/
 	float mFovAngle; // 視野範囲の角度
 	float mFovLength; // 視野範囲の距離
 	float mFovHeight; // 視野範囲の高さ
 
-	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
-	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
 	CModel* mpModel;
-	float mBulletTime;
-	bool mStop;
+	CDebugFieldOfView* mpDebugFov; // 視野範囲のデバッグ表示
+	float mBulletTime; // 弾の発射間隔
+	
 };
 
 #endif

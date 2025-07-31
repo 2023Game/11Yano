@@ -3,6 +3,7 @@
 #include "CImage.h"
 #include <vector>
 #include <string>
+#include "CMryotaisu.h"
 
 class CFont;
 
@@ -23,6 +24,7 @@ public:
 
 private:
 	CImage* mpBackground;
+	CMryotaisu* mpTaisu;
 	bool mIsOpened;
 
 	bool mIsClear;

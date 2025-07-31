@@ -8,5 +8,6 @@ enum class EColliderType
 	eTriangle,	// 三角コライダー
 	eCapsule,	// カプセルコライダー
 	eMesh,		// メッシュコライダー
-	eCircle,    // 円コライダー
+	eCircle,    // 2D円コライダー
+	eTriangle2,	// 2D三角コライダー
 };

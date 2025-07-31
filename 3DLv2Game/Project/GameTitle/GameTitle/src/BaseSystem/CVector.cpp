@@ -394,6 +394,15 @@ void CVector2::operator*=(const float& f)
 //	);
 //}
 
+CVector2 CVector2::operator*(const CMatrix2& m)
+{
+	
+	return CVector2(
+		mX * m.Get(0, 0) + mY * m.Get(0, 1) + m.Get(0, 2),
+		mX * m.Get(1, 0) + mY * m.Get(1, 1) + m.Get(1, 2)
+	);
+}
+
 // Še²‚Ì’l‚ğİ’è
 void CVector2::Set(float x, float y)
 {

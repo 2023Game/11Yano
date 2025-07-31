@@ -18,7 +18,7 @@ CBullet::CBullet(const CVector& pos, const CVector& dir,
 	(
 		this, layer,
 		CVector(0.0f, 0.0f, 0.0f),
-		CVector(0.0f, 0.0f, 50.0f)
+		CVector(0.0f, 0.0f, 5.0f)
 	);
 	mpColliderLine->SetCollisionLayers({ ELayer::eEnemy, ELayer::ePlayer });
 
@@ -47,6 +47,19 @@ CBullet::~CBullet()
 {
 	mpTrailEffect->SetOwner(nullptr);
 	SAFE_DELETE(mpColliderLine);
+}
+
+void CBullet::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
+{
+	if (self == mpColliderLine)
+	{
+		
+		if (other->Layer() == ELayer::ePlayer)
+		{
+			Kill();
+			return;
+		}
+	}
 }
 
 // XV

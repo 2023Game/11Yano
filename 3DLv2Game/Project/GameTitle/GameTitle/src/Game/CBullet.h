@@ -23,6 +23,8 @@ public:
 	// デストラクタ
 	~CBullet();
 
+
+	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
 	// 更新
 	void Update() override;
 	// 描画

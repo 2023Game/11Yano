@@ -77,9 +77,6 @@
     <Filter Include="ソース ファイル\Game\UI">
       <UniqueIdentifier>{06415872-7a7a-4762-bcee-be700e41df19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Game\UI\Menu">
-      <UniqueIdentifier>{840bad1b-c529-4d3c-99b0-dc44602ad15a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\BaseSystem\Sound">
       <UniqueIdentifier>{669523f2-6f26-481f-b88a-02d59c66a795}</UniqueIdentifier>
     </Filter>
@@ -106,6 +103,12 @@
     </Filter>
     <Filter Include="ソース ファイル\Game\UI\Clear">
       <UniqueIdentifier>{550ca8fd-62d3-49cc-8dfb-6b4fb51280c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\UI\GameOver">
+      <UniqueIdentifier>{9c4353a7-96d9-42b9-8e52-74a632010a31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Game\UI\Game">
+      <UniqueIdentifier>{a29ad6b6-5f58-478e-83ab-cbfbeb72dcd6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +176,6 @@
       <Filter>ソース ファイル\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\CPlayer.cpp">
-      <Filter>ソース ファイル\Game\Character</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\CEnemy.cpp">
       <Filter>ソース ファイル\Game\Character</Filter>
     </ClCompile>
     <ClCompile Include="src\BaseSystem\CEffect.cpp">
@@ -307,9 +307,6 @@
     <ClCompile Include="src\Game\CBullet.cpp">
       <Filter>ソース ファイル\Game\Weapon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\CGameMenu.cpp">
-      <Filter>ソース ファイル\Game\UI\Menu</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\CGameCamera2.cpp">
       <Filter>ソース ファイル\Game\System</Filter>
     </ClCompile>
@@ -421,23 +418,11 @@
     <ClCompile Include="src\BaseSystem\CBounds2D.cpp">
       <Filter>ソース ファイル\BaseSystem\Math</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\CGameScene2.cpp">
-      <Filter>ソース ファイル\Game\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\CGameScene3.cpp">
-      <Filter>ソース ファイル\Game\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\CGoal.cpp">
       <Filter>ソース ファイル\Game\Field\Object</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\CSwitch.cpp">
       <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\CField2.cpp">
-      <Filter>ソース ファイル\Game\Field</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game\CField3.cpp">
-      <Filter>ソース ファイル\Game\Field</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\CClearScene.cpp">
       <Filter>ソース ファイル\Game\Scene</Filter>
@@ -447,6 +432,27 @@
     </ClCompile>
     <ClCompile Include="src\BaseSystem\CFieldBase.cpp">
       <Filter>ソース ファイル\BaseSystem\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CGameOver.cpp">
+      <Filter>ソース ファイル\Game\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\COverUI.cpp">
+      <Filter>ソース ファイル\Game\UI\GameOver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CGameUI.cpp">
+      <Filter>ソース ファイル\Game\UI\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CMryotaisu.cpp">
+      <Filter>ソース ファイル\Game\UI\Hack\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BaseSystem\CColliderTriangle2D.cpp">
+      <Filter>ソース ファイル\BaseSystem\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BaseSystem\CMatrix2.cpp">
+      <Filter>ソース ファイル\BaseSystem\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\CBlackOut.cpp">
+      <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -517,9 +523,6 @@
       <Filter>ソース ファイル\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\CPlayer.h">
-      <Filter>ソース ファイル\Game\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\CEnemy.h">
       <Filter>ソース ファイル\Game\Character</Filter>
     </ClInclude>
     <ClInclude Include="src\BaseSystem\CEffect.h">
@@ -669,9 +672,6 @@
     <ClInclude Include="src\Game\CBullet.h">
       <Filter>ソース ファイル\Game\Weapon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\CGameMenu.h">
-      <Filter>ソース ファイル\Game\UI\Menu</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\CGameCamera2.h">
       <Filter>ソース ファイル\Game\System</Filter>
     </ClInclude>
@@ -786,23 +786,11 @@
     <ClInclude Include="src\BaseSystem\CBounds2D.h">
       <Filter>ソース ファイル\BaseSystem\Math</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\CGameScene2.h">
-      <Filter>ソース ファイル\Game\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\CGameScene3.h">
-      <Filter>ソース ファイル\Game\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\CGoal.h">
       <Filter>ソース ファイル\Game\Field\Object</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\CSwitch.h">
       <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\CField2.h">
-      <Filter>ソース ファイル\Game\Field</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game\CField3.h">
-      <Filter>ソース ファイル\Game\Field</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\CClearScene.h">
       <Filter>ソース ファイル\Game\Scene</Filter>
@@ -812,6 +800,27 @@
     </ClInclude>
     <ClInclude Include="src\BaseSystem\CFieldBase.h">
       <Filter>ソース ファイル\BaseSystem\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CGameOver.h">
+      <Filter>ソース ファイル\Game\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\COverUI.h">
+      <Filter>ソース ファイル\Game\UI\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CGameUI.h">
+      <Filter>ソース ファイル\Game\UI\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CMryotaisu.h">
+      <Filter>ソース ファイル\Game\UI\Hack\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseSystem\CColliderTriangle2D.h">
+      <Filter>ソース ファイル\BaseSystem\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseSystem\CMatrix2.h">
+      <Filter>ソース ファイル\BaseSystem\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\CBlackOut.h">
+      <Filter>ソース ファイル\Game\Field\InteractObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

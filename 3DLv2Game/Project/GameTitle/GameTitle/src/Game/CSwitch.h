@@ -5,7 +5,7 @@
 #include "CSound.h"
 #include "CInteractObject.h"
 
-class CHackGame;
+class CHackGame2;
 
 class CSwitch : public CInteractObject
 {
@@ -27,7 +27,7 @@ private:
 
 	CSound* mpSE;
 
-	CHackGame* mpHackGame;
+	CHackGame2* mpHackGame;
 	bool mIsHack;
 	bool mIsClear;
 	bool mIsPlayed;

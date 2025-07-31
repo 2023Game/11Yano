@@ -1,5 +1,6 @@
 #pragma once
 #include "CMatrix.h"
+#include "CMatrix2.h"
 class CVector2;
 class CVector4;
 
@@ -212,6 +213,8 @@ public:
 	void operator *= (const float& f);
 	// CVector2 * CMatrix‚ÌŒ‹‰Ê‚ğCVector2‚Å•Ô‚·
 	CVector2 operator * (const CMatrix& m);
+	// CVector2 * CMatrix2‚ÌŒ‹‰Ê‚ğCVector2‚Å•Ô‚·
+	CVector2 operator * (const CMatrix2& m);
 
 	// Še²‚Ì’l‚ğİ’è
 	void Set(float x, float y);

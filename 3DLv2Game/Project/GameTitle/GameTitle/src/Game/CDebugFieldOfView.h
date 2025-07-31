@@ -1,6 +1,6 @@
 #pragma once
 #include "CObjectBase.h"
-#include "CImage.h"
+#include "CSound.h"
 
 //視野範囲を表示するデバッグ機能
 class CDebugFieldOfView : public CObjectBase
@@ -23,7 +23,7 @@ public:
 	void Update() override;
 	void Render() override;
 private:
-	CImage* mpImage;
+	CSound* mpSE;
 	float mTime;
 	bool mIsRender;
 	CObjectBase* mpOwner; // 表示する対象のポインタ

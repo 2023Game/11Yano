@@ -110,7 +110,7 @@ void CNavManager::CalcNextMoveCost(CNavNode* node, CNavNode* goal)
 {
 	// 指定されたノードまたは目的地ノードが空だった場合は、移動コスト計算不可
 	if (node == nullptr || goal == nullptr) return;
-
+	
 	// 接続している全てのノードへの移動コストを求める
 	for (CNavConnectData& connect : node->mConnectData)
 	{

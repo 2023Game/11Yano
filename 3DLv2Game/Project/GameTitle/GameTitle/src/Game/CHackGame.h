@@ -10,6 +10,7 @@ class CFont;
 class CHackGame : public CTask
 {
 public:
+	static CHackGame* Instance();
 	CHackGame();
 	~CHackGame();
 
@@ -23,9 +24,10 @@ public:
 	bool IsClear() const;
 	
 private:
+	static CHackGame* spInstance;
 	std::string mCurrentWord;
 	std::vector<std::string> mWordList = {
-		"HACK", "CODE", "INPUT", "DEBUG", "LOGIC", "VIRUS", "ARRAY", "LOOP"
+		"HACK", "CODE", "INPUT", "DEBUG", "LOGIC", "BREAK", "ARRAY", "LOOP"
 	};
 	CImage* mpBackground;
 	bool mIsOpened;

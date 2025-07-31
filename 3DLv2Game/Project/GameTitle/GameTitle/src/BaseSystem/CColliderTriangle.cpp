@@ -84,5 +84,5 @@ void CColliderTriangle::UpdateCol()
 	mWV[2] = mV[2] * m;
 
 	// バウンディングボックスを更新
-	mBounds = CBounds::GetTriangleBounds(mWV[0], mWV[1], mWV[2]);
+	mBounds2D = CBounds2D::GetTriangleBounds(mWV[0], mWV[1], mWV[2]);
 }

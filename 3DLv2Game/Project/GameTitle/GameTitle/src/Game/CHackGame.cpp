@@ -6,12 +6,20 @@
 #include "CText.h"
 #include <ctime>
 
+CHackGame* CHackGame::spInstance = nullptr;
+
+CHackGame* CHackGame::Instance()
+{
+	return spInstance;
+}
+
 CHackGame::CHackGame()
 	: CTask(ETaskPriority::eUI, 0, ETaskPauseType::eMenu)
 	, mIsOpened(false)
 	, mIsClear(false)
 	, mInputNum(0)
 {
+	spInstance = this;
 	// ”wŒi¶¬
 	mpBackground = new CImage
 	(
@@ -45,6 +53,10 @@ CHackGame::CHackGame()
 
 CHackGame::~CHackGame()
 {
+	if (spInstance != nullptr)
+	{
+		spInstance = nullptr;
+	}
 }
 
 void CHackGame::Open()
@@ -127,7 +139,20 @@ void CHackGame::Update()
 		mIsClear = true;
 		Close();
 	}
+	static float caretTimer = 0.0f;
+	static bool caretVisible = true;
+
+	caretTimer += Times::DeltaTime(); // Œo‰ßŽžŠÔ‚ÌŽæ“¾
+
+	if (caretTimer >= 0.5f) {  // 0.5•b‚²‚Æ‚É“_–Å
+		caretTimer = 0.0f;
+		caretVisible = !caretVisible;
+	}
+
 	std::string typedPart = mCurrentWord.substr(0, mInputNum);
+	if (caretVisible) {
+		typedPart += '|';
+	}
 	mpTypedLogo->SetText(typedPart.c_str());
 }
 
@@ -136,7 +161,6 @@ void CHackGame::Render()
 	
 	// ”wŒi•`‰æ
 	mpBackground->Render();
-	//mpPlayer->Render();
 	// ƒ^ƒCƒsƒ“ƒOƒƒS•`‰æ
 	mpTypeLogo->Render();
 	mpTypedLogo->Render();

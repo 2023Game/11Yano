@@ -6,6 +6,7 @@
 #include "CColliderCapsule.h"
 #include "CColliderMesh.h"
 #include "CColliderCircle2D.h"
+#include "CColliderTriangle2D.h"
 #include "CObjectBase.h"
 #include "Maths.h"
 
@@ -21,6 +22,7 @@ CCollider::CCollider(CObjectBase* owner, ELayer layer, EColliderType type,
 	, mCollisionLayers(~0)
 	, mCollisionTags(~0)
 	, mpAttachMtx(nullptr)
+	, mpAttachMtx2(nullptr)
 {
 	// コリジョンリストに追加
 	CCollisionManager::Instance()->Add(this);
@@ -196,6 +198,26 @@ CMatrix CCollider::Matrix() const
 		// 持ち主の行列に附属
 		m = mpOwner->Matrix() * m;
 	}
+	return m;
+}
+
+CMatrix2 CCollider::Matrix2() const
+{
+	CMatrix2 m = CTransform::Matrix2();  // 自身の2D変換行列
+
+	// 附属させる行列が設定されていれば
+	if (mpAttachMtx2 != nullptr)
+	{
+		CMatrix2 sm;
+		sm.Scale(100.0f, 100.0f);
+		m = sm * (*mpAttachMtx2) * m;
+	}
+	// 持ち主が設定されていれば
+	else if (mpOwner != nullptr)
+	{
+		m = mpOwner->Matrix2() * m;
+	}
+
 	return m;
 }
 
@@ -538,6 +560,77 @@ bool CCollider::CollisionCircle(const CVector2& sp0, const float sr0, const CVec
 	hit->adjust2 = CVector2(0.0f, 0.0f);
 	//衝突していない
 	return false;
+}
+
+bool CCollider::CollisionCircleTriangle(const CVector2& sp0, const float sr0, const CVector2& t0, const CVector2& t1, const CVector2& t2, CHitInfo* hit)
+{
+	// 三角形の法線を時計回りとして取得
+	CVector2 edge1 = t1 - t0;
+	CVector2 edge2 = t2 - t1;
+	CVector2 edge3 = t0 - t2;
+
+	CVector2 normal1(-edge1.Y(), edge1.X());
+	CVector2 normal2(-edge2.Y(), edge2.X());
+	CVector2 normal3(-edge3.Y(), edge3.X());
+
+	// 点が三角形の内側にあるかどうか（半径分はみ出しOKで接触を検出）
+	float d1 = CVector2::Dot(sp0 - t0, normal1.Normalized());
+	float d2 = CVector2::Dot(sp0 - t1, normal2.Normalized());
+	float d3 = CVector2::Dot(sp0 - t2, normal3.Normalized());
+
+	if (d1 <= sr0 && d2 <= sr0 && d3 <= sr0)
+	{
+		// 内部 or 辺近くにいる → 中心から三角形まで押し戻す
+		CVector2 center = (t0 + t1 + t2);
+		center = CVector2(center.X() / 3.0f, center.Y() / 3.0f);
+		CVector2 dir = (sp0 - center).Normalized();
+		float minD = std::min(std::min(d1, d2), d3);
+		hit->adjust = dir * (sr0 - minD);
+		return true;
+	}
+
+	// 各辺と円の最近接距離を見る（距離が半径以下なら当たり）
+	float dist;
+	dist = CalcDistancePointToLine2D(sp0, t0, t1);
+	if (dist <= sr0)
+	{
+		CVector2 edge = t1 - t0;
+		CVector2 n(-edge.Y(), edge.X());
+		hit->adjust = n.Normalized() * (sr0 - dist);
+		return true;
+	}
+
+	dist = CalcDistancePointToLine2D(sp0, t1, t2);
+	if (dist <= sr0)
+	{
+		CVector2 edge = t2 - t1;
+		CVector2 n(-edge.Y(), edge.X());
+		hit->adjust = n.Normalized() * (sr0 - dist);
+		return true;
+	}
+
+	dist = CalcDistancePointToLine2D(sp0, t2, t0);
+	if (dist <= sr0)
+	{
+		CVector2 edge = t0 - t2;
+		CVector2 n(-edge.Y(), edge.X());
+		hit->adjust = n.Normalized() * (sr0 - dist);
+		return true;
+	}
+
+	return false;
+}
+
+float CCollider::CalcDistancePointToLine2D(const CVector2& p, const CVector2& a, const CVector2& b)
+{
+	CVector2 ab = b - a;
+	CVector2 ap = p - a;
+	float t = CVector2::Dot(ap, ab) / ab.LengthSqr();
+
+	// 線分の範囲にクランプ
+	t = std::max(0.0f, std::min(1.0f, t));
+	CVector2 closest = a + ab * t;
+	return (p - closest).Length();
 }
 
 // 球と線分の衝突判定
@@ -1054,6 +1147,32 @@ bool CCollider::Collision(CCollider* c0, CCollider* c1, CHitInfo* hit)
 			float sr1;
 			circle1->Get(&sp1, &sr1);
 			return CollisionCircle(sp0, sr0, sp1, sr1, hit);
+		}
+		case EColliderType::eTriangle:
+		{
+			CColliderTriangle2D* triangle = dynamic_cast<CColliderTriangle2D*>(c1);
+			CVector2 t0, t1, t2;
+			triangle->Get(&t0, &t1, &t2);
+			return CollisionCircleTriangle(sp0, sr0, t0, t1, t2, hit);
+		}
+		}
+		break;
+	}
+	case EColliderType::eTriangle2:
+	{
+		CColliderTriangle2D* triangle = dynamic_cast<CColliderTriangle2D*>(c0);
+		CVector2 t0, t1, t2;
+		triangle->Get(&t0, &t1, &t2);
+
+		switch (c1->Type())
+		{
+		case EColliderType::eCircle:
+		{
+			CColliderCircle2D* circle0 = dynamic_cast<CColliderCircle2D*>(c1);
+			CVector2 sp0;
+			float sr0;
+			circle0->Get(&sp0, &sr0);
+			return CollisionCircleTriangle(sp0, sr0, t0, t1, t2, hit);
 		}
 		}
 		break;

@@ -184,6 +184,14 @@ CMatrix CQuaternion::Matrix() const
 	return m;
 }
 
+float CQuaternion::Matrix2() const
+{
+	// ‰ñ“]Šp‚ð“¾‚é
+	float angle = atan2f(2.0f * (mW * mZ + mX * mY), 1.0f - 2.0f * (mY * mY + mZ * mZ));
+
+	return angle;
+}
+
 float CQuaternion::Length() const
 {
 	return sqrtf(mX * mX + mY * mY + mZ * mZ + mW * mW);

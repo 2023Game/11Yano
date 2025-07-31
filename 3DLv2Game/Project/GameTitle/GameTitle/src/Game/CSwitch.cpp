@@ -1,6 +1,6 @@
 #include "CSwitch.h"
 #include "CInput.h"
-#include "CHackGame.h"
+#include "CHackGame2.h"
 #include "CGameScene.h"
 
 CSwitch::CSwitch(const CVector& pos, const CVector& angle, const CVector& size)
@@ -24,7 +24,7 @@ CSwitch::CSwitch(const CVector& pos, const CVector& angle, const CVector& size)
 	Rotation(angle);
 	Scale(size);
 
-	mpHackGame = new CHackGame();
+	mpHackGame = new CHackGame2();
 	mInteractStr = "ƒIƒ“‚É‚·‚é";
 
 	mpSE = CResourceManager::Get<CSound>("Boot");

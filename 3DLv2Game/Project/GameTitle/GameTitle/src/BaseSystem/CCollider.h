@@ -7,6 +7,7 @@
 #include "CBounds.h"
 #include "CBounds2D.h"
 #include "CRect.h"
+#include "CMatrix2.h"
 
 class CObjectBase;
 class CCollisionManager;
@@ -148,6 +149,8 @@ public:
 
 	// 行列を取得
 	CMatrix Matrix() const;
+	// 2D行列を取得
+	CMatrix2 Matrix2() const;
 
 	// バウンディングボックスを取得
 	CBounds Bounds() const;
@@ -277,6 +280,21 @@ public:
 	/// <returns>trueならば、衝突している</returns>
 	static bool CollisionCircle(const CVector2& sp0, const float sr0,
 		const CVector2& sp1, const float sr1, CHitInfo* hit);
+
+	/// <summary>
+	/// 円と円の衝突判定
+	/// </summary>
+	/// <param name="sp0">円の座標</param>
+	/// <param name="sr0">円の半径</param>
+	/// <param name="t0">三角形の1つ目の頂点</param>
+	/// <param name="t1">三角形の2つ目の頂点</param>
+	/// <param name="t2">三角形の3つ目の頂点</param> 
+	/// <param name="hit">衝突した時の情報</param>
+	/// <returns>trueならば、衝突している</returns>
+	static bool CollisionCircleTriangle(const CVector2& sp0, const float sr0, const CVector2& t0,
+		const CVector2& t1, const CVector2& t2, CHitInfo* hit);
+
+	static float CalcDistancePointToLine2D(const CVector2& p, const CVector2& a, const CVector2& b);
 
 	/// <summary>
 	/// 球と線分の衝突判定
@@ -472,5 +490,7 @@ private:
 	int mCollisionTags;		// 衝突判定を行うオブジェクトタグのビットフラグ
 
 	const CMatrix* mpAttachMtx;	// くっつける行列のポインター
+	const CMatrix2* mpAttachMtx2;
 	CMatrix mAttachMtx;			// くっつける行列の本体
+	CMatrix2 mAttachMtx2;
 };

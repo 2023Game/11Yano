@@ -51,6 +51,14 @@ public:
 	/// <param name="rad">円の半径</param>
 	/// <returns>バウンディングボックス</returns>
 	static CBounds2D GetCircleBounds(const CVector2& pos, float rad);
+
+	/// <summary>
+	/// 三角形のバウンディングボックスを取得
+	/// </summary>
+	/// <param name="pos">円の座標</param>
+	/// <param name="rad">円の半径</param>
+	/// <returns>バウンディングボックス</returns>
+	static CBounds2D GetTriangleBounds(const CVector2& v0, const CVector2& v1, const CVector2& v2);
 	
 private:
 	CVector2 mMin;	// 最小位置

@@ -3,6 +3,7 @@
 #include "CVector.h"
 #include "CQuaternion.h"
 #include <list>
+#include "CMatrix2.h"
 
 /*
 トランスフォームクラス
@@ -154,6 +155,9 @@ public:
 
 	// 位置、回転値、スケール値を合わせた行列を取得
 	virtual CMatrix Matrix() const;
+
+	virtual CMatrix2 Matrix2() const;
+
 
 	// 正面方向のベクトルを取得
 	CVector VectorZ() const;

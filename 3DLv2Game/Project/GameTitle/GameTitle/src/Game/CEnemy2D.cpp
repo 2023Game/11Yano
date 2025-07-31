@@ -8,6 +8,7 @@
 CEnemy2D::CEnemy2D(const CVector2& pos, float bulletTime)
 	: CObjectBase(ETag::eEnemy2D, ETaskPriority::eUI)
 	, mTime(bulletTime)
+	, mKilled(false)
 {
 	Position2D(pos);
 	mpImage = new CImage
@@ -26,11 +27,15 @@ CEnemy2D::CEnemy2D(const CVector2& pos, float bulletTime)
 		40.0f
 	);
 	mpCollider->SetCollisionTags({ ETag::eBullet2D });
+
+	mpSE = CResourceManager::Get<CSound>("Die");
 }
+
 CEnemy2D::~CEnemy2D()
 {
 	SAFE_DELETE(mpCollider);
 }
+
 void CEnemy2D::Update()
 {
 	if (IsKill()) return;
@@ -70,8 +75,15 @@ void CEnemy2D::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 	{
 		if (other->Tag() == ETag::eBullet2D)
 		{
-			Kill();
+			mpSE->Play(0.3f, true);
+			mKilled = true;
+			CTask::Kill();
 			return;
 		}
 	}
+}
+
+bool CEnemy2D::Killed() const
+{
+	return mKilled;
 }

@@ -15,19 +15,9 @@ CDebugFieldOfView::CDebugFieldOfView(CObjectBase* owner,
 	, mIsRender(false)
 	, mTime(SHOW_TIME)
 {
-	// ”wŒi¶¬
-	mpImage = new CImage
-	(
-		"UI/black_back.png",
-		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
-		false, false
-	);
-	mpImage->SetCenter(mpImage->GetSize() * 0.5f);
-	mpImage->SetPos(WINDOW_WIDTH, WINDOW_HEIGHT);
-	mpImage->SetColor(1.0f, 1.0f, 1.0f, 0.5f);
-	mpImage->SetEnable(true);
-	mpImage->SetShow(false);
 	SetShow(false);
+
+	mpSE = CResourceManager::Get<CSound>("View");
 }
 
 CDebugFieldOfView::~CDebugFieldOfView()
@@ -55,11 +45,11 @@ void CDebugFieldOfView::Update()
 {
 	if (CInput::PushKey('R'))
 	{
+		mpSE->Play(0.3f, true);
 		mIsRender = true;
 	}
 	if (mIsRender)
 	{
-		mpImage->SetShow(true);
 		SetShow(true);
 		mTime -= Times::DeltaTime();
 		if (mTime <= 0.0f)
@@ -76,7 +66,6 @@ void CDebugFieldOfView::Update()
 
 void CDebugFieldOfView::Render()
 {
-
 	switch (mType)
 	{
 	case EType::eSector:
@@ -111,7 +100,7 @@ void CDebugFieldOfView::Render()
 		// ‹–ì”ÍˆÍ‚Ì‰~‚ğ•`‰æ
 		Primitive::DrawCone
 		(
-			mpOwner->Position() + CVector(0.0f, -30.0f, 0.0f), // ‰~‚Ì’ê–Ê’†S‚ğİ’è
+			mpOwner->Position() + CVector(0.0f, -25.0f, 0.0f), // ‰~‚Ì’ê–Ê’†S‚ğİ’è
 			mpOwner->Position(),// ‰~‚Ì’¸“_
 			mFovLength, // ’ê–Ê‚Ì”¼Œa
 			mColor // F

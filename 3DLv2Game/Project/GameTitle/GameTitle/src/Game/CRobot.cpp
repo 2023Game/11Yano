@@ -9,36 +9,40 @@
 #include "CNavManager.h"
 #include "CBullet.h"
 #include "CColliderCapsule.h"
+#include "CBlackOut.h"
+#include "CTaskManager.h"
 
-#define ROBOT_HEIGHT 13.0f
-#define ROBOT_WIDTH 10.0f
-#define FOV_ANGLE 45.0f // 視野範囲の角度
-#define FOV_LENGTH 40.0f // 視野範囲の距離
-#define EYE_HEIGHT 10.0f // 視点の高さ
-#define WALK_SPEED 10.0f // 歩行速度
-#define RUN_SPEED 20.0f // 走行速度
-#define ROTATE_SPEED 6.0f // 回転速度
-#define ATTACK_LANGE 35.0f // 攻撃範囲
-#define PATROL_INTERVAL 3.0f // 次の巡回ポイントに移動開始するまでの時間
-#define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
-#define IDLE_TIME 5.0f // 待機状態の時間
-#define BULLET_TIME 0.5f // 弾の発射間隔
+#define ROBOT_HEIGHT		13.0f
+#define ROBOT_WIDTH			10.0f
+#define FOV_ANGLE			45.0f // 視野範囲の角度
+#define FOV_LENGTH			40.0f // 視野範囲の距離
+#define EYE_HEIGHT			10.0f // 視点の高さ
+#define WALK_SPEED			10.0f // 歩行速度
+#define RUN_SPEED			20.0f // 走行速度
+#define ROTATE_SPEED		 6.0f // 回転速度
+#define ATTACK_LANGE		35.0f // 攻撃範囲
+#define PATROL_INTERVAL		 3.0f // 次の巡回ポイントに移動開始するまでの時間
+#define PATROL_NEAR_DIST	10.0f // 巡回開始時に選択される巡回ポイントの最短距離
+#define IDLE_TIME			 5.0f // 待機状態の時間
+#define BULLET_TIME			 0.5f // 弾の発射間隔
 
 
 // プレイヤーのアニメーションデータのテーブル
 const CRobot::AnimData CRobot::ANIM_DATA[] =
 {
 	{ "",										true,	0.0f	},	// Tポーズ
-	{ "Character\\Robot\\anim\\idle.x",		true,	110.0f	},	// 待機
-	{ "Character\\Robot\\anim\\walk.x",		true,	78.0f	},	// 歩行
-	{ "Character\\Robot\\anim\\run.x",		true,	44.0f	},	// 走行
+	{ "Character\\Robot\\anim\\idle.x",			true,	110.0f	},	// 待機
+	{ "Character\\Robot\\anim\\walk.x",			true,	78.0f	},	// 歩行
+	{ "Character\\Robot\\anim\\run.x",			true,	44.0f	},	// 走行
 	{ "Character\\Robot\\anim\\attack.x",		true,	86.0f	},	// 攻撃
-	{ "Character\\Robot\\anim\\down.x",		false,	59.0f	},	// 死
+	{ "Character\\Robot\\anim\\down.x",			false,	59.0f	},	// 死
+	{ "Character\\Robot\\anim\\sit.x",			true,	0.0f	},	// 座る
+	{ "Character\\Robot\\anim\\around.x",		true,	221.0f	},	// 見渡す
 
 };
 
 // コンストラクタ
-CRobot::CRobot(std::vector<CVector> patrolPoints)
+CRobot::CRobot(std::vector<CVector> patrolPoints, CVector& rotate)
 	: CXCharacter(ETag::eEnemy, ETaskPriority::eDefault)
 	, mState(EState::eIdle)
 	, mStateStep(0)
@@ -50,7 +54,7 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 	, mNextMoveIndex(0)
 	, mBulletTime(0.0f)
 {
-	Rotate(CVector(0.0f, 270.0f, .0f));
+	Rotate(rotate);
 	// モデルデータ取得
 	CModelX* model = CResourceManager::Get<CModelX>("Robot");
 
@@ -75,7 +79,7 @@ CRobot::CRobot(std::vector<CVector> patrolPoints)
 		CVector(0.0f, ROBOT_HEIGHT, 0.0f),
 		3.0f
 	);
-	mpColliderCapsule->SetCollisionLayers({ ELayer::eAttackCol, ELayer::eRange });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eAttackCol, ELayer::eRange, ELayer::ePlayer });
 
 	// 視野範囲のデバッグ表示クラスを作成
 	mpDebugFov = new CDebugFieldOfView(this, mFovAngle, mFovLength, CDebugFieldOfView::EType::eSector);
@@ -129,7 +133,10 @@ void CRobot::DeleteObject(CObjectBase* obj)
 //更新処理
 void CRobot::Update()
 {
-	if (IsKill()) return;
+	if (IsKill())
+	{
+		return;
+	}
 
 	// 現在の状態に合わせて更新処理を切替
 	switch (mState)
@@ -139,6 +146,7 @@ void CRobot::Update()
 	case EState::eChase: UpdateChase(); break;
 	case EState::eLost: UpdateLost(); break;
 	case EState::eAttack: UpdateAttack(); break;
+	case EState::eAround: UpdateAround(); break;
 	case EState::eDie: UpdateDie(); break;
 	}
 
@@ -156,6 +164,12 @@ void CRobot::Update()
 		mpDebugFov->SetColor(GetStateColor(mState));
 	}
 
+	CBlackOut* black = CBlackOut::Instance();
+	if (black->IsBlack())
+	{
+		ChangeAnimation(EAnimType::eAround);
+		mState = EState::eAround;
+	}
 	//CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
 }
 
@@ -240,6 +254,34 @@ void CRobot::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 		}
 	}
 }
+
+bool CRobot::IsPlayerChase() const
+{
+	if (mState == EState::eChase || mState == EState::eAttack)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+bool CRobot::IsPlayerLost() const
+{
+	if (mState == EState::eLost)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+//
+//std::list<CRobot*> CRobot::GetRobots() const
+//{
+//	return mRobots;
+//}
 
 void CRobot::ChangeAnimation(EAnimType type)
 {
@@ -535,17 +577,17 @@ void CRobot::UpdateChase()
 	ChangeAnimation(EAnimType::eRun);
 
 
-	// 経路探索管理クラスが存在するとき
-	CNavManager* navMgr = CNavManager::Instance();
-	if (navMgr != nullptr)
-	{
-		// 自身のノードからプレイヤーのノードまでの最短経路を求める
-		CNavNode* playerNode = player->GetNavNode();
-		if (navMgr->Navigate(mpNavNode, playerNode, mMoveRoute))
-		{
-			targetPos = mMoveRoute[1]->GetPos();
-		}
-	}
+	//// 経路探索管理クラスが存在するとき
+	//CNavManager* navMgr = CNavManager::Instance();
+	//if (navMgr != nullptr)
+	//{
+	//	// 自身のノードからプレイヤーのノードまでの最短経路を求める
+	//	CNavNode* playerNode = player->GetNavNode();
+	//	if (navMgr->Navigate(mpNavNode, playerNode, mMoveRoute))
+	//	{
+	//		targetPos = mMoveRoute[1]->GetPos();
+	//	}
+	//}
 
 	if (MoveTo(targetPos, RUN_SPEED))
 	{
@@ -561,8 +603,8 @@ void CRobot::UpdateLost()
 		ChangeState(EState::eIdle);
 		return;
 	}
-	// プレイヤーが見えたら追跡状態へ移行
-	if (IsLookPlayer())
+	// プレイヤーが見えたら追跡状態へ移行(もとはIsLook)
+	if (IsFoundPlayer())
 	{
 		ChangeState(EState::eChase);
 		return;
@@ -612,16 +654,18 @@ void CRobot::UpdateAttack()
 	CVector pos = Position();
 	// 自身からプレイヤーまでのベクトルを求める
 	CVector vec = playerPos - pos;
+	// プレイヤーの方向を向く
+	Rotation(CQuaternion::LookRotation(CVector(vec.X(),0.0f,vec.Z())));
 	if (mBulletTime <= 0)
 	{
 		// 弾丸を生成
 		new CBullet
 		(
 			// 発射位置
-			Position() + CVector(0.0f, 10.0f, 0.0f),
-			vec,	// 発射方向
-			200.0f,	// 移動距離
-			200.0f,		// 飛距離
+			Position() + CVector(0.0f, 14.0f, 0.0f),
+			vec + CVector(0.0f, -4.0f, 0.0f),	// 発射方向
+			100.0f,	// 移動距離
+			100.0f,		// 飛距離
 			ELayer::eBullet
 		);
 		mBulletTime = BULLET_TIME;
@@ -637,12 +681,25 @@ void CRobot::UpdateAttack()
 	}
 }
 
+void CRobot::UpdateAround()
+{
+	CBlackOut* black = CBlackOut::Instance();
+	if (!black->IsBlack())
+	{
+		ChangeAnimation(EAnimType::eIdle);
+		mState = EState::eIdle;
+	}
+}
+
 void CRobot::UpdateDie()
 {
 	if (GetAnimationFrameRatio() >= 1.0f)
 	{
 		mpNavNode->ClearConnects();
-		Kill();
+		
+		CTask::Kill();
+		CTask::SetEnable(false);
+		nullptr;
 		return;
 	}
 }
@@ -656,6 +713,7 @@ std::string CRobot::GetStateStr(EState state) const
 	case EState::eChase: return "追跡";
 	case EState::eLost: return "見失う";
 	case EState::eAttack: return "攻撃";
+	case EState::eAround: return "見渡す";
 	}
 	return std::string();
 }
@@ -669,6 +727,7 @@ CColor CRobot::GetStateColor(EState state) const
 	case EState::eChase: return CColor::red;
 	case EState::eLost: return CColor::yellow;
 	case EState::eAttack: return CColor::red;
+	case EState::eAround: return CColor::yellow;
 	}
 	return CColor::white;
 }

@@ -20,6 +20,7 @@ class CSceneBase;
 class CInteractRobot : public CInteractObject
 {
 public:
+	static CInteractRobot* Instance();
 	// コンストラクタ
 	CInteractRobot();
 	~CInteractRobot();
@@ -33,6 +34,10 @@ public:
 
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
 private:
+	static CInteractRobot* spInstance;
+	// 敵との間に遮蔽物がないか
+	bool IsLookEnemy() const;
+
 	// キーの入力情報から移動ベクトルを求める
 	CVector CalcMoveVec() const;
 

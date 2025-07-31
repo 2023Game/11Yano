@@ -5,20 +5,20 @@
 #include "Primitive.h"
 #include "CNavNode.h"
 #include "CNavManager.h"
-#include "CField.h"
+#include "CFieldBase.h"
 #include "CBullet.h"
 #include <cmath>
 
 #define FOV_ANGLE 45.0f // 視野範囲の角度
-#define FOV_LENGTH 25.0f // 視野範囲の半径
-#define EYE_HEIGHT -40.0f // 視点の高さ
+#define FOV_LENGTH 20.0f // 視野範囲の半径
+#define EYE_HEIGHT -25.0f // 視点の高さ
 #define WALK_SPEED 10.0f // 歩行速度
 #define RUN_SPEED 10.0f // 走行速度
 #define ROTATE_SPEED 6.0f // 回転速度
 #define PATROL_INTERVAL 3.0f // 次の巡回ポイントに移動開始するまでの時間
 #define PATROL_NEAR_DIST 10.0f // 巡回開始時に選択される巡回ポイントの最短距離
 #define IDLE_TIME 5.0f // 待機状態の時間
-#define ATTACK_LANGE 35.0f // 攻撃範囲
+#define ATTACK_LANGE 30.0f // 攻撃範囲
 #define BULLET_TIME 1.0f // 弾の発射間隔
 
 CDrone::CDrone(std::vector<CVector> patrolPoints)
@@ -90,7 +90,10 @@ void CDrone::DeleteObject(CObjectBase* obj)
 
 void CDrone::Update()
 {
-	if (IsKill()) return;
+	if (IsKill())
+	{
+		return;
+	}
 
 	if (mStop)
 	{
@@ -150,7 +153,7 @@ void CDrone::Render()
 	//}
 
 	//CPlayer* player = CPlayer::Instance();
-	//CField* field = CField::Instanse();
+	//CFieldBase* field = CFieldBase::Instance();
 	//if (player != nullptr && field != nullptr)
 	//{
 	//	CVector offsetPos = CVector(0.0f, EYE_HEIGHT, 0.0f);
@@ -181,6 +184,30 @@ void CDrone::Render()
 	//}
 }
 
+bool CDrone::IsPlayerChase() const
+{
+	if (mState == EState::eChase || mState == EState::eAttack)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool CDrone::IsPlayerLost() const
+{
+	if (mState == EState::eLost)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void CDrone::ChangeState(EState state)
 {
 	//すでに同じ状態であれば処理しない
@@ -203,7 +230,7 @@ bool CDrone::IsFoundPlayer() const
 	CVector pos = Position();
 	// 自身からプレイヤーまでのベクトルを求める
 	CVector vec = playerPos - pos;
-	//vec.Y(0.0f); // プレイヤーとの高さの差を考慮しない
+
 
 	// ①視野角度内か求める
 	// ベクトルを正規化して長さを1にする
@@ -236,12 +263,12 @@ bool CDrone::IsLookPlayer() const
 	CPlayer* player = CPlayer::Instance();
 	if (player == nullptr) return false;
 	// フィールドが存在しない場合(遮蔽物がない)は見える
-	CField* field = CField::Instanse();
+	CFieldBase* field = CFieldBase::Instance();
 	if (field == nullptr) return true;
 
 	CVector offsetPos = CVector(0.0f, EYE_HEIGHT, 0.0f);
 	// プレイヤー座標取得
-	CVector playerPos = player->Position();
+	CVector playerPos = player->Position() + offsetPos;
 	// 自分の座標取得
 	CVector selfPos = Position() + offsetPos;
 
@@ -457,17 +484,17 @@ void CDrone::UpdateChase()
 		return;
 	}
 
-	// 経路探索管理クラスが存在するとき
-	CNavManager* navMgr = CNavManager::Instance();
-	if (navMgr != nullptr)
-	{
-		// 自身のノードからプレイヤーのノードまでの最短経路を求める
-		CNavNode* playerNode = player->GetNavNode();
-		if (navMgr->Navigate(mpNavNode, playerNode, mMoveRoute))
-		{
-			targetPos = mMoveRoute[1]->GetPos();
-		}
-	}
+	//// 経路探索管理クラスが存在するとき
+	//CNavManager* navMgr = CNavManager::Instance();
+	//if (navMgr != nullptr)
+	//{
+	//	// 自身のノードからプレイヤーのノードまでの最短経路を求める
+	//	CNavNode* playerNode = player->GetNavNode();
+	//	if (navMgr->Navigate(mpNavNode, playerNode, mMoveRoute))
+	//	{
+	//		targetPos = mMoveRoute[1]->GetPos();
+	//	}
+	//}
 
 	if (MoveTo(targetPos, RUN_SPEED))
 	{
@@ -539,7 +566,7 @@ void CDrone::UpdateAttack()
 			Position() + CVector(0.0f, 0.0f, 0.0f),
 			vec,	// 発射方向
 			50.0f,	// 移動距離
-			100.0f,		// 飛距離
+			50.0f,		// 飛距離
 			ELayer::eBullet
 		);
 		mBulletTime = BULLET_TIME;
@@ -562,7 +589,10 @@ void CDrone::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 	{
 		if (other->Layer() == ELayer::eAttackCol)
 		{
-			Kill();
+			CTask::Kill();
+			CTask::SetEnable(false);
+			nullptr;
+			return;
 
 		}
 	}

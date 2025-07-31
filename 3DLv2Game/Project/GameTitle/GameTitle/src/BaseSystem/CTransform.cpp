@@ -326,6 +326,15 @@ CMatrix CTransform::Matrix() const
 	return s * r * t;
 }
 
+CMatrix2 CTransform::Matrix2() const
+{
+	CMatrix2 m;
+	m.Translate(mPosition.X(), mPosition.Y());
+	m.Rotate(mRotation.Matrix2());
+	m.Scale(mScale.X(), mScale.Y());
+	return m;
+}
+
 // ³–Ê•ûŒü‚ÌƒxƒNƒgƒ‹‚ğæ“¾
 CVector CTransform::VectorZ() const
 {

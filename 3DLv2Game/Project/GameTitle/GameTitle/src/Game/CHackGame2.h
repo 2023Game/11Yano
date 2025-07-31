@@ -12,7 +12,6 @@ class CFont;
 class CHackGame2 : public CTask
 {
 public:
-	void Start();
 	CHackGame2();
 	~CHackGame2();
 

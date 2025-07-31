@@ -274,7 +274,7 @@ void CTaskManager::Update()
 	for (CTask* task : m3dTasks)
 	{
 		// 更新するタスクであれば、タスクを更新
-		if (IsUpdate(task))
+		if (task != nullptr && IsUpdate(task))
 		{
 			task->Update();
 		}
@@ -283,7 +283,7 @@ void CTaskManager::Update()
 	for (CTask* task : m2dTasks)
 	{
 		// 更新するタスクであれば、タスクを更新
-		if (IsUpdate(task))
+		if (task != nullptr && IsUpdate(task))
 		{
 			task->Update();
 		}

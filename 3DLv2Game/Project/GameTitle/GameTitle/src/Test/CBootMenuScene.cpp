@@ -14,8 +14,6 @@ CBootMenuScene::CBootMenuScene()
 		{ "■メイン", EScene::eNone },
 		{ "タイトル画面", EScene::eTitle },
 		{ "ゲーム画面", EScene::eGame },
-		{ "ゲーム画面2", EScene::eGame2 },
-		{ "ゲーム画面3", EScene::eGame3 },
 		{ "", EScene::eNone },
 		{ "■デバッグ", EScene::eNone },
 		{ "衝突判定テスト", EScene::eColTest },

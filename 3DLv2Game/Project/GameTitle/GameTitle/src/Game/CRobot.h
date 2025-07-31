@@ -15,7 +15,7 @@ class CRobot : public CXCharacter
 {
 public:
 	// コンストラクタ
-	CRobot(std::vector<CVector> patrolPoints);
+	CRobot(std::vector<CVector> patrolPoints, CVector& rotate);
 	~CRobot();
 	void DeleteObject(CObjectBase* obj);
 	// 更新処理
@@ -23,8 +23,10 @@ public:
 	void Render() override;
 
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
+
+	bool IsPlayerChase() const override;
+	bool IsPlayerLost() const override;
 private:
-	
 	enum class EAnimType
 	{
 		None = -1,
@@ -35,6 +37,8 @@ private:
 		eRun,
 		eAttack,
 		eDie,
+		eWait,
+		eAround,
 
 		Num
 	};
@@ -59,6 +63,7 @@ private:
 		eLost,      // プレイヤーを見失う
 		eAttack,	// 攻撃
 		eDie,       // 死
+		eAround,	// 見渡す
 	};
 	// 状態切り替え
 	void ChangeState(EState state);
@@ -85,6 +90,8 @@ private:
 	void UpdateLost();
 	// 攻撃時の更新処理
 	void UpdateAttack();
+	// 見渡し時の更新処理
+	void UpdateAround();
 	// 死亡時の更新処理
 	void UpdateDie();
 
@@ -113,7 +120,7 @@ private:
 	std::vector<CNavNode*> mMoveRoute;// 求めた最短経路記憶用
 	int mNextMoveIndex; // 次に移動するノードのインデックス値
 
-	float mBulletTime;
+	float mBulletTime; // 弾の発射間隔
 };
 
 #endif

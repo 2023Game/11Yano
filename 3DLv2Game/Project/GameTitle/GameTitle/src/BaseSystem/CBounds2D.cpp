@@ -1,4 +1,5 @@
 #include "CBounds2D.h"
+#include <algorithm>
 
 CBounds2D::CBounds2D()
 {
@@ -76,4 +77,20 @@ CBounds2D CBounds2D::GetCircleBounds(const CVector2& pos, float rad)
 	CBounds2D ret;
 	ret.SetRange(min, max);
 	return ret;
+}
+
+CBounds2D CBounds2D::GetTriangleBounds(const CVector2& v0, const CVector2& v1, const CVector2& v2)
+{
+	CVector2 min(
+		std::min(std::min(v0.X(), v1.X()), v2.X()),
+		std::min(std::min(v0.Y(), v1.Y()), v2.Y())
+	);
+	CVector2 max(
+		std::max(std::max(v0.X(), v1.X()), v2.X()),
+		std::max(std::max(v0.Y(), v1.Y()), v2.Y())
+	);
+
+	CBounds2D bounds;
+	bounds.SetRange(min, max);
+	return bounds;
 }

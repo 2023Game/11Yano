@@ -8,3 +8,13 @@ CCharaBase::CCharaBase(ETag tag, ETaskPriority prio, int sortOrder, ETaskPauseTy
 CCharaBase::~CCharaBase()
 {
 }
+
+bool CCharaBase::IsPlayerChase() const
+{
+	return false;
+}
+
+bool CCharaBase::IsPlayerLost() const
+{
+	return false;
+}

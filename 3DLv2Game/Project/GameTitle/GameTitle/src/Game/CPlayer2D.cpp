@@ -15,6 +15,7 @@ CPlayer2D::CPlayer2D(const CVector2& pos)
 	, mTime(0.0f)
 	, mPosition(pos)
 	, mHp(3)
+	, mKilled(false)
 {
 	//インスタンスの設定
 	spInstance = this;
@@ -31,11 +32,46 @@ CPlayer2D::CPlayer2D(const CVector2& pos)
 	mpImage->SetPos(pos);
 	mpImage->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+	mpHp1 = new CImage
+	(
+		"UI/heart.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
+		false, false
+	);
+	mpHp1->SetSize(CVector2(50.0f, 50.0f));
+	mpHp1->SetCenter(mpHp1->GetSize() * 0.5f);
+	mpHp1->SetPos(CVector2(200.0f, 600.0f));
+	mpHp1->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	mpHp2 = new CImage
+	(
+		"UI/heart.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
+		false, false
+	);
+	mpHp2->SetSize(CVector2(50.0f, 50.0f));
+	mpHp2->SetCenter(mpHp2->GetSize() * 0.5f);
+	mpHp2->SetPos(CVector2(300.0f, 600.0f));
+	mpHp2->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	mpHp3 = new CImage
+	(
+		"UI/heart.png",
+		ETaskPriority::eUI, 0, ETaskPauseType::eMenu,
+		false, false
+	);
+	mpHp3->SetSize(CVector2(50.0f, 50.0f));
+	mpHp3->SetCenter(mpHp3->GetSize() * 0.5f);
+	mpHp3->SetPos(CVector2(400.0f, 600.0f));
+	mpHp3->SetColor(1.0f, 1.0f, 1.0f, 1.0f);
+
 	mpCollider = new CColliderCircle2D(
 		this, ELayer::ePlayer,
 		30.0f
 	);
 	mpCollider->SetCollisionTags({ ETag::eEnemy2D });
+
+	mpSE = CResourceManager::Get<CSound>("Damage");
 }
 
 CPlayer2D::~CPlayer2D()
@@ -45,6 +81,7 @@ CPlayer2D::~CPlayer2D()
 
 void CPlayer2D::Update()
 {
+	
 	if (IsKill()) return;
 
 	switch (mState)
@@ -87,6 +124,10 @@ void CPlayer2D::Update()
 
 void CPlayer2D::Render()
 {
+	
+	if (mHp >= 1) mpHp1->Render();
+	if (mHp >= 2) mpHp2->Render();
+	if (mHp >= 3) mpHp3->Render();
 	mpImage->Render();
 }
 
@@ -134,10 +175,21 @@ void CPlayer2D::Collision(CCollider* self, CCollider* other, const CHitInfo& hit
 	{
 		if (other->Tag() == ETag::eEnemy2D)
 		{
-			Kill();
-			return;
+			mpSE->Play(0.3f, true);
+			mHp--;
+			if (mHp <= 0)
+			{
+				mKilled = true;
+				CTask::Kill();
+				return;
+			}
 		}
 	}
+}
+
+bool CPlayer2D::Killed() const
+{
+	return mKilled;
 }
 
 CPlayer2D* CPlayer2D::Instance()

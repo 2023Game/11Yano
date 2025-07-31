@@ -60,8 +60,6 @@ private:
 	// [QUIT]クリック時のコールバック関数
 	void OnClickQuit();
 	void OnClickStage1();
-	void OnClickStage2();
-	void OnClickStage3();
 
 	EState mState;		// 現在の状態
 	int mStateStep;		// 状態内でのステップ管理用

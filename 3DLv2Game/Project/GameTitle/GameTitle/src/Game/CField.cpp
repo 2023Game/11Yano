@@ -10,6 +10,7 @@
 #include "CDoor.h"
 #include "CSwitch.h"
 #include "CGoal.h"
+#include "CBlackOut.h"
 
 // フィールドのインスタンス
 CField* CField::spInstanse = nullptr;
@@ -50,11 +51,11 @@ CField::~CField()
 
 void CField::CreateFieldObjects()
 {
-
+	// インターフォン
 	CIntercom* intercom = new CIntercom
 	(
-		CVector(141.5f, 25.0f, 94.0f),
-		CVector(0.0f, 270.0f, 0.0f),
+		CVector(-56.5f, 10.0f, 54.0f),
+		CVector(0.0f, 90.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
 #if _DEBUG
@@ -62,8 +63,8 @@ void CField::CreateFieldObjects()
 #endif
 	CIntercom* intercom2 = new CIntercom
 	(
-		CVector(-93.0f, 25.0f, -97.0f),
-		CVector(0.0f, 180.0f, 0.0f),
+		CVector(-116.0f, 10.0f, 106.0f),
+		CVector(0.0f, 90.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
 #if _DEBUG
@@ -71,72 +72,102 @@ void CField::CreateFieldObjects()
 #endif
 	CIntercom* intercom3 = new CIntercom
 	(
-		CVector(36.0f, 25.0f, -44.0f),
+		CVector(44.5f, 10.0f, 50.0f),
 		CVector(0.0f, 270.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
 #if _DEBUG
 	intercom3->SetDebugName("Intercom3");
 #endif
+	CIntercom* intercom4 = new CIntercom
+	(
+		CVector(-17.0f, 10.0f, -84.0f),
+		CVector(0.0f, 270.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
+	);
+#if _DEBUG
+	intercom4->SetDebugName("Intercom4");
+#endif
 
 	CSwitch* cswitch = new CSwitch
 	(
-		CVector(100.5f, 25.0f, -139.0f),
-		CVector(0.0f, 270.0f, 0.0f),
+		CVector(-129.0f, 10.30f, 148.0f),
+		CVector(0.0f, 90.0f, 0.0f),
 		CVector(0.5f, 0.5f, 0.5f)
 	);
 #if _DEBUG
 	cswitch->SetDebugName("cswitch");
 #endif
 
+	// ドア
 	CDoor* door = new CDoor
 	(
-		CVector(153.0f, 12.0f, 92.0f),
+		CVector(-68.0f, 0.0f, 54.8f),
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(1.0f, 1.0f, 1.0f)
 	);
 	door->SetAnimPos
 	(
-		CVector(163.0f, 12.0f, 94.0f),
-		CVector(153.0f, 12.0f, 94.0f)
+		CVector(-80.0f, 0.0f, 54.8f),
+		CVector(-68.0f, 0.0f, 54.8f)
 	);
 	door->AddIntercom(intercom);
 	CDoor* door2 = new CDoor
 	(
-		CVector(-93.0f, 12.0f, -117.0f),
-		CVector(0.0f, 90.0f, 0.0f),
+		CVector(-127.4f, 0.0f, 108.46f),
+		CVector(0.0f, 0.0f, 0.0f),
 		CVector(1.0f, 1.0f, 1.0f)
 	);
 	door2->SetAnimPos
 	(
-		CVector(-93.0f, 12.0f, -120.0f),
-		CVector(-93.0f, 12.0f, -107.0f)
+		CVector(-139.4f, 0.0f, 108.46f),
+		CVector(-127.4f, 0.0f, 108.46f)
 		
 	);
 	door2->AddIntercom(intercom2);
 	CDoor* door3 = new CDoor
 	(
-		CVector(153.0f, 12.0f, 92.0f),
+		CVector(54.93f, 0.0f, 48.83f),
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(1.0f, 1.0f, 1.0f)
 	);
 	door3->SetAnimPos
 	(
-		CVector(60.0f, 12.0f, -44.0f),
-		CVector(47.0f, 12.0f, -44.0f)
+		CVector(66.93f, 0.0f, 48.83f),
+		CVector(54.93f, 0.0f, 48.83f)
 	);
 	door3->AddIntercom(intercom3);
+	CDoor* door4 = new CDoor
+	(
+		CVector(-7.2f, 0.0f, -85.9f),
+		CVector(0.0f, 0.0f, 0.0f),
+		CVector(1.0f, 1.0f, 1.0f)
+	);
+	door4->SetAnimPos
+	(
+		CVector(5.2f, 0.0f, -85.9f),
+		CVector(-7.2f, 0.0f, -85.9f)
+	);
+	door4->AddIntercom(intercom4);
 	mDoors.push_back(door);
 	mDoors.push_back(door2);
 	mDoors.push_back(door3);
 
 
+	// 停電装置
+	CBlackOut* black = new CBlackOut
+	(
+		CVector(-88.5f, 15.0f, -120.0f),
+		CVector(0.0f, 180.0f, 0.0f),
+		CVector(0.5f, 0.5f, 0.5f)
+	);
+	// ゴール
 	CGoal* goal = new CGoal
 	(
-		CVector(-145.0f, 10.30f, -112.0f),
+		CVector(29.0f, 0.0f, -18.0f),
 		CVector(0.0f, 0.0f, 0.0f),
 		CVector(0.6f, 0.6f, 0.6f),
-		ELayer::eNextStage
+		ELayer::eGoal
 	);
 #if _DEBUG
 	goal->SetDebugName("Goal");
@@ -148,11 +179,23 @@ void CField::CreateNavNodes()
 	CNavManager* navMgr = CNavManager::Instance();
 	if (navMgr != nullptr)
 	{
-		// 壁①の周りの経路探索ノード
-		new CNavNode(CVector(129.0f, 0.0f, 15.0f));
-		new CNavNode(CVector(163.0f, 0.0f, 15.0f));
-		new CNavNode(CVector(163.0f, 0.0f, 28.0f));
-		new CNavNode(CVector(129.0f, 0.0f, 28.0f));
+		//// 壁①の周りの経路探索ノード
+		//new CNavNode(CVector(-142.0f, 0.0f, -56.0f));
+		//new CNavNode(CVector(-114.0f, 0.0f, -56.0f));
+		//new CNavNode(CVector(-114.0f, 0.0f, 25.0f));
+		//new CNavNode(CVector(-142.0f, 0.0f, 25.0f));
+
+		//// 壁②の周りの経路探索ノード
+		//new CNavNode(CVector(-103.0f, 0.0f, 25.0f));
+		//new CNavNode(CVector(-75.0f, 0.0f, 25.0f));
+		//new CNavNode(CVector(-75.0f, 0.0f, -56.0f));
+		//new CNavNode(CVector(-103.0f, 0.0f, -56.0f));
+
+		//// 壁③の周りの経路探索ノード
+		//new CNavNode(CVector(-64.0f, 0.0f, -56.0f));
+		//new CNavNode(CVector(-38.0f, 0.0f, -56.0f));
+		//new CNavNode(CVector(-38.0f, 0.0f, 25.0f));
+		//new CNavNode(CVector(-64.0f, 0.0f, 25.0f));
 	}
 }
 

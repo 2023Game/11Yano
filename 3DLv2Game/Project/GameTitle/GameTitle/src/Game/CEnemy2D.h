@@ -2,6 +2,7 @@
 #include "CObjectBase.h"
 #include "CImage.h"
 #include "CColliderCircle2D.h"
+#include "CSound.h"
 
 class CEnemy2D : public CObjectBase
 {
@@ -18,6 +19,8 @@ public:
 	/// <param name="other">衝突した相手のコライダー</param>
 	/// <param name="hit">衝突した時の情報</param>
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
+	// 死亡判定
+	bool Killed() const;
 private:
 	enum class EState
 	{
@@ -30,6 +33,9 @@ private:
 
 	CImage* mpImage;
 
+	CSound* mpSE;
+
 	float mTime;
 	CColliderCircle2D* mpCollider;
+	bool mKilled;
 };

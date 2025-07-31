@@ -34,10 +34,20 @@ public:
 	/// <param name="other">衝突した相手のコライダー</param>
 	/// <param name="hit">衝突した時の情報</param>
 	void Collision(CCollider* self, CCollider* other, const CHitInfo& hit) override;
+	// 衝突状態管理
+	void PostCollisionUpdate();
+	// コライダーが離れた
+	void OnCollisionExit(CCollider* col);
+
+	// image画像切替
+	int SetImage() const;
 
 	// 描画
 	void Render();
 
+	bool IsInteract() const;
+	// 死亡判定
+	bool IsDie() const;
 private:
 	// キーの入力情報から移動ベクトルを求める
 	CVector CalcMoveVec() const;
@@ -45,6 +55,9 @@ private:
 	// 待機状態
 	void UpdateIdle();
 
+	void UpdateDamage();
+
+	void UpdateDie();
 
 	// 移動の更新処理
 	void UpdateMove();
@@ -57,7 +70,9 @@ private:
 		eTPose,		// Tポーズ
 		eIdle,		// 待機
 		eWalk,		// 歩行
-		eSneak,     // しゃがみ
+		eRun,       // 走る
+		eDamage,    // ダメージ
+		eDie,       // 死
 
 
 		Num
@@ -82,18 +97,20 @@ private:
 	enum class EState
 	{
 		eIdle,		// 待機
-		eSneak,     // しゃがみ
+		eDamage,
+		eDie,
 	};
 	EState mState;	// プレイヤーの状態
 
 	CVector mMoveSpeed;	// 前後左右の移動速度
 	float mMoveSpeedY;	// 重力やジャンプによる上下の移動速度
 
-	bool mIsDash;
+	bool mIsDash; // ダッシュ中
+	bool mIsInteract; // インタラクト可能なオブジェクトに触れているか
 	
 
-	CColliderCapsule* mpColliderCapsule; // プレイヤーのコライダ
-	CColliderSphere* mpCollider;
+	CColliderCapsule* mpColliderCapsule; // プレイヤー自身のコライダ
+	CColliderSphere* mpCollider; // インタラクト用コライダ
 
 	bool mIsGrounded;	// 接地しているかどうかAdd commentMore actions
 	CVector mGroundNormal;	// 接地している地面の法線
@@ -101,12 +118,14 @@ private:
 	CInteractObject* GetNearInteractObj() const;
 	std::list<CInteractObject*> mNearInteractObjs;
 
-	CSound* mpSlashSE;
-	bool mIsPlayedSlashSE;
-	bool mIsSpawnedSlashEffect;
+	CSound* mpSE;
 
-	CImage* mpImage;
+	int mSetImage; // イメージ画像の切替用
+
+	std::vector<CCollider*> mColliders;
+	std::vector<CCollider*> mCurrentColliders;
 
 	CSceneBase* mpScene;
 
+	bool mIsDie;
 };

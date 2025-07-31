@@ -202,9 +202,13 @@ void CTitleUI::OnClickSelect()
 
 	for (CButton* btn : mButtons)
 	{
-		SAFE_DELETE(btn);
+		btn->SetEnable(false);
+		btn->SetShow(false);
 	}
 	mButtons.clear();
+	btn1 = nullptr;
+	btn2 = nullptr;
+	btn3 = nullptr;
 
 	// [stage1]ボタンを生成
 	CExpandButton* sbtn1 = new CExpandButton
@@ -224,34 +228,6 @@ void CTitleUI::OnClickSelect()
 	// ボタンリストに追加
 	mButtons.push_back(sbtn1);
 
-	// [stage2]ボタンを生成
-	CExpandButton* sbtn2 = new CExpandButton
-	(
-		CVector2(WINDOW_WIDTH * 0.5f, 550.0f),
-		CVector2(181.0f, 47.0f),
-		ETaskPriority::eUI, 0, ETaskPauseType::eGame,
-		false, false
-	);
-	sbtn2->LoadButtonImage("UI/stage2_0.png", "UI/stage2_1.png");
-	sbtn2->SetOnClickFunc(std::bind(&CTitleUI::OnClickStage2, this));
-	sbtn2->SetEnable(false);
-	sbtn2->SetScale(0.0f);
-	mButtons.push_back(sbtn2);
-
-	//// [stage3]ボタンを生成
-	//CExpandButton* sbtn3 = new CExpandButton
-	//(
-	//	CVector2(WINDOW_WIDTH * 0.5f, 650.0f),
-	//	CVector2(181.0f, 47.0f),
-	//	ETaskPriority::eUI, 0, ETaskPauseType::eGame,
-	//	false, false
-	//);
-	//sbtn3->LoadButtonImage("UI/stage3_0.png", "UI/stage3_1.png");
-	//sbtn3->SetOnClickFunc(std::bind(&CTitleUI::OnClickStage3, this));
-	//sbtn3->SetEnable(false);
-	//sbtn3->SetScale(0.0f);
-	//mButtons.push_back(sbtn3);
-
 	ChangeState(EState::eOpen);
 }
 
@@ -269,22 +245,6 @@ void CTitleUI::OnClickStage1()
 	if (mIsEnd) return;
 
 	mSelectIndex = 0;
-	mIsEnd = true;
-}
-
-void CTitleUI::OnClickStage2()
-{
-	if (mIsEnd) return;
-
-	mSelectIndex = 3;
-	mIsEnd = true;
-}
-
-void CTitleUI::OnClickStage3()
-{
-	if (mIsEnd) return;
-
-	mSelectIndex = 4;
 	mIsEnd = true;
 }
 
@@ -421,7 +381,10 @@ void CTitleUI::Update()
 	mpStartText->Update();
 	for (CButton* btn : mButtons)
 	{
-		btn->Update();
+		if (btn != nullptr)
+		{
+			btn->Update();
+		}
 	}
 }
 

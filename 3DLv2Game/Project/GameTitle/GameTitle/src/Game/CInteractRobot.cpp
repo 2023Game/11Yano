@@ -10,6 +10,7 @@
 #include "CHackGame2.h"
 #include "CBullet.h"
 #include "CSceneBase.h"
+#include "CFieldBase.h"
 
 #define ROBOT_HEIGHT 13.0f
 #define ROBOT_WIDTH 10.0f
@@ -41,6 +42,13 @@ const CInteractRobot::AnimData CInteractRobot::ANIM_DATA[] =
 
 };
 
+CInteractRobot* CInteractRobot::spInstance = nullptr;
+
+CInteractRobot* CInteractRobot::Instance()
+{
+	return spInstance;
+}
+
 // コンストラクタ
 CInteractRobot::CInteractRobot()
 	: mState(EState::eWait)
@@ -58,6 +66,7 @@ CInteractRobot::CInteractRobot()
 	, mIsClear(false)
 	, mBulletTime(0.0f)
 {
+	spInstance = this;
 	// モデルデータ取得
 	CModelX* model = CResourceManager::Get<CModelX>("Robot");
 
@@ -100,6 +109,11 @@ CInteractRobot::~CInteractRobot()
 {
 	SAFE_DELETE(mpColliderSphere);
 	SAFE_DELETE(mpColliderCapsule);
+
+	if (spInstance != nullptr)
+	{
+		spInstance = nullptr;
+	}
 
 	// 視野範囲のデバッグ表示が存在したら一緒に削除
 	if (mpDebugFov != nullptr)
@@ -154,11 +168,12 @@ void CInteractRobot::Update()
 		break;
 	}
 
-	//CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
+	
 	if (mpHackGame->IsClear())
 	{
+		//CDebugPrint::Print("状態 : %s\n", GetStateStr(mState).c_str());
 		mIsClear = true;
-		mpColliderCapsule->ChangeLayer(ELayer::ePlayer);
+		mpColliderCapsule->ChangeLayer(ELayer::ePlayRobot);
 	}
 
 	if (mpScene->CameraTarget() != this)
@@ -341,6 +356,27 @@ void CInteractRobot::Collision(CCollider* self, CCollider* other, const CHitInfo
 	}
 }
 
+bool CInteractRobot::IsLookEnemy() const
+{
+	// プレイヤーが存在しない場合は見えない
+	if (mpTarget == nullptr) return false;
+	// フィールドが存在しない場合(遮蔽物がない)は見える
+	CFieldBase* field = CFieldBase::Instance();
+	if (field == nullptr) return true;
+
+	CVector offsetPos = CVector(0.0f, EYE_HEIGHT, 0.0f);
+	// プレイヤー座標取得
+	CVector playerPos = mpTarget->Position() + offsetPos;
+	// 自分の座標取得
+	CVector selfPos = Position() + offsetPos;
+
+	CHitInfo hit;
+	// 遮蔽物が存在した場合プレイヤーが見えない
+	if (field->CollisionRay(selfPos, playerPos, &hit)) return false;
+
+	return true;
+}
+
 void CInteractRobot::ChangeAnimation(EAnimType type)
 {
 	int index = (int)type;
@@ -370,13 +406,15 @@ void CInteractRobot::UpdateAttack()
 
 	if (mBulletTime <= 0)
 	{
-		CVector shootPos = Position() + CVector(0.0f, 14.0f, 0.0f) + VectorZ() * 20.0f;
-		CVector direction;
+		CVector shootPos = Position() + CVector(0.0f, 14.0f, 0.0f) + VectorZ() * 20.0f; // 発射位置
+		CVector direction; // 弾丸の向き
 
-		if (mpTarget != nullptr)
+		if (mpTarget != nullptr && IsLookEnemy())
 		{
 			CVector targetPos = mpTarget->Position(); // 毎回最新の位置を取得
-			direction = targetPos - shootPos;
+			direction = targetPos - shootPos; // 発射位置からターゲットのベクトル
+			// ターゲットの方向へ向く(Y固定)
+			Rotation(CQuaternion::LookRotation(CVector(direction.X(), 0.0f, direction.Z())));
 		}
 		else
 		{

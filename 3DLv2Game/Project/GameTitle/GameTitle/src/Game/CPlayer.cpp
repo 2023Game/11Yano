@@ -12,7 +12,8 @@
 #include "CInteractObject.h"
 #include "CSceneBase.h"
 #include "CTaskManager.h"
-
+#include "CSceneManager.h"
+#include "CFieldBase.h"
 // プレイヤーのインスタンス
 CPlayer* CPlayer::spInstance = nullptr;
 
@@ -22,16 +23,16 @@ const CPlayer::AnimData CPlayer::ANIM_DATA[] =
 	{ "",										true,	0.0f	},	// Tポーズ
 	{ "Character\\Mryotaisu\\anim\\idle.x",		true,	500.0f	},	// 待機
 	{ "Character\\Mryotaisu\\anim\\walk.x",		true,	62.0f	},	// 歩行
-	//{ "Character\\Mryotaisu\\anim\\sneak.x",		true,	54.0f	},	// しゃがみ歩行
-	//{ "Character\\Player\\anim\\jump_start.x",	false,	25.0f	},	// ジャンプ開始
-	//{ "Character\\Player\\anim\\jump.x",		true,	1.0f	},	// ジャンプ中
+	{ "Character\\Mryotaisu\\anim\\run.x",		true,	44.0f	},	// 走る
+	{ "Character\\Mryotaisu\\anim\\damage.x",    false,	71.0f	},	// ダメージ
+	{ "Character\\Mryotaisu\\anim\\die.x",	   	false,	221.0f	},	// 死
 	//{ "Character\\Player\\anim\\jump_end.x",	false,	26.0f	},	// ジャンプ終了
 };
 
 #define PLAYER_HEIGHT	 12.0f
 #define PLAYER_WIDTH	  5.0f
-#define MOVE_SPEED		  0.375f * 2.0f
-#define MOVE_SPEED2		  0.775f * 2.0f
+#define MOVE_SPEED		  0.375f
+#define MOVE_SPEED2		  0.775f
 #define GRAVITY			  0.0625f
 
 
@@ -41,11 +42,12 @@ CPlayer::CPlayer()
 	: CXCharacter(ETag::ePlayer, ETaskPriority::ePlayer)
 	, mState(EState::eIdle)
 	, mMoveSpeedY(0.0f)
-	, mIsPlayedSlashSE(false)
-	, mIsSpawnedSlashEffect(false)
 	, mIsDash(false)
 	, mpCollider(nullptr)
 	, mIsGrounded(false)
+	, mSetImage(0)
+	, mIsInteract(false)
+	, mIsDie(false)
 {
 	//インスタンスの設定
 	spInstance = this;
@@ -74,7 +76,7 @@ CPlayer::CPlayer()
 		CVector(0.0f, PLAYER_HEIGHT, 0.0f),
 		2.0f
 	);
-	mpColliderCapsule->SetCollisionLayers({ ELayer::eField, ELayer::eBullet });
+	mpColliderCapsule->SetCollisionLayers({ ELayer::eField, ELayer::eBullet, ELayer::eEnemy });
 
 	mpCollider = new CColliderSphere
 	(
@@ -82,26 +84,14 @@ CPlayer::CPlayer()
 		20.0f
 	);
 	mpCollider->SetCollisionTags({ ETag::eInteractObject });
-	mpCollider->SetCollisionLayers({ ELayer::eInteractObj, ELayer::eNextStage, ELayer::eGoal, ELayer::ePlayer });
+	mpCollider->SetCollisionLayers({ ELayer::eInteractObj, ELayer::eNextStage, ELayer::eGoal, ELayer::ePlayRobot });
 
-
-	// UI
-	mpImage = new CImage
-	(
-		"UI/NextStage.png",
-		ETaskPriority::eUI, 0, ETaskPauseType::eDefault,
-		false
-	);
-
-	mpImage->SetCenter(mpImage->GetSize() * 0.5f);
-	mpImage->SetPos(CVector2(930.0f, 350.0f));
-
-	mpImage->SetEnable(false);
-	mpImage->SetShow(false);
 
 	// 経路探索用ノードを作成
 	mpNavNode = new CNavNode(Position(), true);
 	mpNavNode->SetColor(CColor::red);
+
+	mpSE = CResourceManager::Get<CSound>("Die");
 
 }
 
@@ -113,10 +103,6 @@ CPlayer::~CPlayer()
 	if (mpNavNode != nullptr)
 	{
 		mpNavNode = nullptr;
-	}
-	if (spInstance != nullptr)
-	{
-		spInstance = nullptr;
 	}
 }
 
@@ -141,7 +127,6 @@ CInteractObject* CPlayer::GetNearInteractObj() const
 	for (CInteractObject* obj : mNearInteractObjs)
 	{
 		if (!obj->CanInteract()) continue;
-
 		float dist = (obj->Position() - pos).LengthSqr();
 		if (nearObj == nullptr || dist < nearDist)
 		{
@@ -166,6 +151,24 @@ void CPlayer::UpdateIdle()
 				obj->Interact();
 			}
 		}
+	}
+}
+
+void CPlayer::UpdateDamage()
+{
+	if (IsAnimationFinished())
+	{
+		mState = EState::eIdle;
+	}
+}
+
+void CPlayer::UpdateDie()
+{
+	mMoveSpeed = CVector::zero;
+	mMoveSpeedY = 0.0f;
+	if (IsAnimationFinished())
+	{
+		CSceneManager::Instance()->LoadScene(EScene::eGameOver);
 	}
 }
 
@@ -208,6 +211,7 @@ CVector CPlayer::CalcMoveVec() const
 	return move;
 }
 
+
 // 移動の更新処理
 void CPlayer::UpdateMove()
 {
@@ -220,10 +224,18 @@ void CPlayer::UpdateMove()
 	{
 		if (mIsDash == true)
 		{
+			if (mState != EState::eDamage)
+			{
+				ChangeAnimation(EAnimType::eRun);
+			}
 			mMoveSpeed += move * MOVE_SPEED2;
 		}
 		else
 		{
+			if (mState != EState::eDamage)
+			{
+				ChangeAnimation(EAnimType::eWalk);
+			}
 			mMoveSpeed += move * MOVE_SPEED;
 		}
 
@@ -231,7 +243,7 @@ void CPlayer::UpdateMove()
 		// 待機状態であれば、歩行アニメーションに切り替え
 		if (mState == EState::eIdle)
 		{
-			ChangeAnimation(EAnimType::eWalk);
+
 		}
 	}
 	// 移動キーを入力していない
@@ -258,10 +270,16 @@ void CPlayer::Update()
 		case EState::eIdle:
 			UpdateIdle();
 			break;
+		case EState::eDamage:
+			UpdateDamage();
+			break;
+		case EState::eDie:
+			UpdateDie();
+			break;
 		}
 
-		// 待機中とジャンプ中は、移動処理を行う
-		if (mState == EState::eIdle)
+		// 待機中とダメージ中は、移動処理を行う
+		if (mState == EState::eIdle || mState == EState::eDamage)
 		{
 			UpdateMove();
 		}
@@ -306,19 +324,22 @@ void CPlayer::Update()
 
 	mIsGrounded = false;
 
-	//CDebugPrint::Print("Position:%f:%f:%f\n", Position().X(), Position().Y(), Position().Z());
+	//CDebugPrint::Print("HP:%i\n", mHp);
 
-	CDebugPrint::Print("FPS:%f\n", Times::FPS());
+	//CDebugPrint::Print("FPS:%f\n", Times::FPS());
 
 	mNearInteractObjs.clear();
+
+	PostCollisionUpdate();
 }
 
 // 衝突処理
 void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 {
+	mCurrentColliders.push_back(other);
 	if (self == mpColliderCapsule)
 	{
-		if (other->Layer() == ELayer::eField)
+		if (other->Layer() == ELayer::eField || other->Layer() == ELayer::eEnemy)
 		{
 			CVector adjust = hit.adjust;
 			CVector normal = adjust.Normalized();
@@ -349,7 +370,11 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 		}
 		if (other->Layer() == ELayer::eBullet)
 		{
+			mpSE->Play(0.3f, true);
+			mIsDie = true;
 			// 死亡処理
+			mState = EState::eDie;
+			ChangeAnimation(EAnimType::eDie);
 		}
 	}
 	if (self == mpCollider)
@@ -367,38 +392,83 @@ void CPlayer::Collision(CCollider* self, CCollider* other, const CHitInfo& hit)
 
 		if (other->Layer() == ELayer::eNextStage)
 		{
-			mpImage->Load("UI/NextStage.png", false);
-
-			mpImage->SetEnable(true);
-			mpImage->SetShow(true);
+			mIsInteract = true;
+			mSetImage = 1;
 		}
 		if (other->Layer() == ELayer::eGoal)
 		{
-			mpImage->Load("UI/exit.png", false);
-
-			mpImage->SetEnable(true);
-			mpImage->SetShow(true);
+			mIsInteract = true;
+			mSetImage = 2;
 		}
-		if(other->Layer() == ELayer::eInteractObj)
+		if (other->Layer() == ELayer::eInteractObj)
 		{
-			mpImage->Load("UI/hacking.png", false);
-
-			mpImage->SetEnable(true);
-			mpImage->SetShow(true);
+			mIsInteract = true;
+			mSetImage = 3;
 		}
-		
+		if (other->Layer() == ELayer::ePlayRobot)
+		{
+			mIsInteract = false;
+			mSetImage = 0;
+		}
+
 	}
-	else
+
+}
+
+void CPlayer::PostCollisionUpdate()
+{
+	// 前フレームにあったが、今フレームにない　= 衝突終了
+	for (auto* prev : mColliders)
 	{
-		mpImage->SetEnable(false);
-		mpImage->SetShow(false);
+		bool found = false;
+		for (auto* curr : mCurrentColliders)
+		{
+			if (curr == prev)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			OnCollisionExit(prev);
+		}
+	}
+
+	// 現在の衝突状態を次フレームにコピー
+	mColliders = mCurrentColliders;
+	mCurrentColliders.clear();
+}
+
+void CPlayer::OnCollisionExit(CCollider* col)
+{
+	if (col->Layer() == ELayer::eInteractObj || col->Layer() == ELayer::eNextStage || col->Layer() == ELayer::eGoal)
+	{
+		mIsInteract = false;
+		mSetImage = 0;
 	}
 }
+
+int CPlayer::SetImage() const
+{
+	return mSetImage;
+}
+
 
 // 描画
 void CPlayer::Render()
 {
 	CXCharacter::Render();
-	mpImage->Render();
+}
+
+bool CPlayer::IsInteract() const
+{
+	return mIsInteract;
+}
+
+bool CPlayer::IsDie() const
+{
+	return mIsDie;
 }
 
